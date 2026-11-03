@@ -35,6 +35,13 @@ class ChemClawBrandTest(unittest.TestCase):
             self.assertIn('@drawable/ic_chemclaw_foreground',
                 source('app/android/app/src/main/res/mipmap-anydpi-v26/' + name + '.xml'))
 
+    def test_manifest_android_classes_resolve_in_source_namespace(self):
+        manifest = source('app/android/app/src/main/AndroidManifest.xml')
+        self.assertNotIn('android:name=".', manifest)
+        self.assertNotIn('android:targetActivity=".', manifest)
+        self.assertIn('android:name="io.github.ccch1mneyyy.dsh_app.MainActivity"', manifest)
+        self.assertIn('android:name="io.github.ccch1mneyyy.dsh_app.LauncherMist"', manifest)
+
     def test_mcp_not_hardcoded_to_a_real_host(self):
         config = source('config/chemcloud-mcp.example.yml')
         self.assertIn('transport: streamable-http', config)
