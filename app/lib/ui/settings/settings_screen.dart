@@ -48,6 +48,7 @@ import '../shell/page_frame.dart';
 import '../theme/app_icons.dart';
 import '../theme/theme.dart';
 import '../update/update_tiles.dart' show UpdateBadge;
+import 'chemclaw_mcp_page.dart';
 import 'about_page.dart';
 import 'appearance/appearance_page.dart';
 import 'background_guide_page.dart';
@@ -197,6 +198,13 @@ class SettingsScreen extends ConsumerWidget {
                       style: AppType.tabular(Theme.of(context).textTheme.bodyMedium!),
                     ),
               onTap: () => _push(context, const PluginsScreen()),
+            ),
+            SettingsTile(
+              icon: Icons.hub_outlined,
+              tint: SettingsHues.abilities,
+              title: '化工数据 MCP',
+              subtitle: '接入当前主机的化工行业数据服务',
+              onTap: () => _push(context, const ChemClawMcpPage()),
             ),
             // The plugins' own settings sections, when the host has any.
             ...pluginSettingsTiles(ref, tint: SettingsHues.abilities),
