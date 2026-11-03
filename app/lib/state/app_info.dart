@@ -1,5 +1,3 @@
-import '../l10n/l10n.dart';
-
 /// Build-time app metadata.
 ///
 /// There is no package_info plugin in the dependency set, so the version is a
@@ -24,10 +22,10 @@ abstract final class AppInfo {
 
   /// Required wording: the app is built on DSH but is not an official DeepSeek product.
   /// Shown on the About and licence pages.
-  static String get disclaimer => appL10n.stateAppDisclaimer;
+  static String get disclaimer => 'ChemClaw 手机版基于 DSH Go / DeepSeek Harness 开源项目开发，非 DeepSeek 官方应用。';
 
   /// The line under the brand mark (welcome page, 关于 dsh-go).
-  static String get slogan => appL10n.appSlogan;
+  static String get slogan => 'ChemClaw · 化工行业 AI 智能体';
 
   /// Mobile project publisher. Preserve upstream author attribution below.
   static const publisher = 'ChemCloud Intelligence';

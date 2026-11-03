@@ -1,5 +1,4 @@
-// About DSH Go: app information, the original author and personal profiles,
-// then the brand mark, slogan and unofficial-app disclaimer.
+// About ChemClaw Mobile: publisher, independent project and upstream DSH Go attribution.
 
 import 'dart:async';
 
@@ -65,7 +64,14 @@ class AboutPage extends ConsumerWidget {
           ],
         ),
         SettingsSection(
-          title: l10n.hubAboutAuthor,
+          title: 'ChemClaw 手机版',
+          children: [
+            const SettingsTile(title: '开发维护：芯化和云（ChemCloud Intelligence）'),
+            const SettingsTile(title: '基于 DSH Go 的独立开源派生项目'),
+          ],
+        ),
+        SettingsSection(
+          title: '上游项目及原作者 · DSH Go',
           children: [
             const SettingsTile(title: AppInfo.author),
             _authorLink(

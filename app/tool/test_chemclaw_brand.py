@@ -27,6 +27,7 @@ class ChemClawBrandTest(unittest.TestCase):
             self.assertIn('M8.5,23.5', source('app/assets/brand/' + name))
         d = source('app/android/app/src/main/res/drawable/ic_chemclaw_foreground.xml')
         self.assertIn('M8.5,23.5', d)
+        self.assertIn('M8.5,23.5', source('app/android/app/src/main/res/drawable/ic_stat_dsh.xml'))
         r = ROOT / 'app/android/app/src/main/res'
         for density in ['mdpi','hdpi','xhdpi','xxhdpi','xxxhdpi']:
             self.assertFalse(list((r / ('mipmap-' + density)).glob('ic_launcher*.png')))
