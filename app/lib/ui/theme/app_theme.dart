@@ -21,7 +21,7 @@ import 'typography.dart';
 ///
 /// [glyphLocale] pins the locale CJK glyphs are picked by (the English UI
 /// passes zh_CN so Chinese content keeps Chinese shapes).
-ThemeData buildLightTheme({AppAccent accent = AppAccent.mist, bool glassBlur = true, Locale? glyphLocale}) => _build(
+ThemeData buildLightTheme({AppAccent accent = AppAccent.paper, bool glassBlur = true, Locale? glyphLocale}) => _build(
   DshPalette.lightScheme(accent),
   DshColors.forAccent(Brightness.light, accent),
   DshSurfaces.light(accent, blurEnabled: glassBlur),
@@ -30,7 +30,7 @@ ThemeData buildLightTheme({AppAccent accent = AppAccent.mist, bool glassBlur = t
 );
 
 /// 深色主题。
-ThemeData buildDarkTheme({AppAccent accent = AppAccent.mist, bool glassBlur = true, Locale? glyphLocale}) => _build(
+ThemeData buildDarkTheme({AppAccent accent = AppAccent.paper, bool glassBlur = true, Locale? glyphLocale}) => _build(
   DshPalette.darkScheme(accent),
   DshColors.forAccent(Brightness.dark, accent),
   DshSurfaces.dark(accent, blurEnabled: glassBlur),

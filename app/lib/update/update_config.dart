@@ -21,7 +21,7 @@
 library;
 
 /// GitHub repository the releases live in.
-const updateRepo = 'ccch1mneyyy/dsh-go';
+const updateRepo = 'zoeyzhang233666/chemclaw-mobile';
 
 /// `releases/latest` of the REST API: tag, notes, assets with sizes and
 /// SHA-256 digests. Unauthenticated: 60 requests per hour per IP.
@@ -40,12 +40,12 @@ Uri githubReleaseAsset(String tag, String name) =>
 
 /// The share host (services/share-worker). It serves the beta channel under
 /// `/beta/`; public files come from [updateDownloadOrigin].
-const updateMirrorOrigin = 'https://go.dshtui.com';
+const updateMirrorOrigin = 'https://chemclaw-mobile.invalid';
 
 /// Our public copy of the release files (an R2 bucket): `/update.json`, the
 /// latest public manifest with absolute asset URLs, and
 /// `/download/<version>/<file>` for every file of every release.
-const updateDownloadOrigin = 'https://dl.dshtui.com';
+const updateDownloadOrigin = 'https://chemclaw-mobile.invalid';
 
 /// The beta channel: `<origin>/beta/update.json` and `<origin>/beta/<version>/<file>`,
 /// both behind `Authorization: Bearer <token>`. The token is compiled into beta

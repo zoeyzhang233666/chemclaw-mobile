@@ -6,7 +6,7 @@ import '../l10n/l10n.dart';
 /// constant kept in sync with `pubspec.yaml` (`version: 1.0.2+1`). Release builds can
 /// override it: `flutter build apk --dart-define=DSH_APP_VERSION=1.2.0+7`.
 abstract final class AppInfo {
-  static const version = String.fromEnvironment('DSH_APP_VERSION', defaultValue: '1.0.2+1');
+  static const version = String.fromEnvironment('DSH_APP_VERSION', defaultValue: '0.1.0+1');
 
   /// "1.0.0 (1)" for display.
   static String get displayVersion {
@@ -16,11 +16,11 @@ abstract final class AppInfo {
 
   /// The app's name as the phone shows it: launcher, Recents, notifications, system
   /// settings, the licence page. Matches `android:label` in AndroidManifest.xml.
-  static const name = 'DSH Go';
+  static const name = 'ChemClaw 手机版';
 
   /// The in-app wordmark: the drawer's lockup, the welcome page and the brand mark's
   /// spoken label.
-  static const wordmark = 'DSH';
+  static const wordmark = 'ChemClaw';
 
   /// Required wording: the app is built on DSH but is not an official DeepSeek product.
   /// Shown on the About and licence pages.
@@ -28,6 +28,9 @@ abstract final class AppInfo {
 
   /// The line under the brand mark (welcome page, 关于 dsh-go).
   static String get slogan => appL10n.appSlogan;
+
+  /// Mobile project publisher. Preserve upstream author attribution below.
+  static const publisher = 'ChemCloud Intelligence';
 
   /// The original DSH Go author and their personal profiles, not project pages.
   static const author = 'ccch1mneyyy';
