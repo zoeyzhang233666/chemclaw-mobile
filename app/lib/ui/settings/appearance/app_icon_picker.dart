@@ -212,10 +212,10 @@ class AppIconArt {
   static AppIconArt of(AppIcon icon) => switch (icon) {
     // The default icon; on the phone its glyph is the original art, here the
     // brand master's glass (the same fit).
-    AppIcon.mist => const AppIconArt._(Color(0xFF9AB0E8), Color(0xFF405AAD), AppIconGlyph.glassDark),
-    AppIcon.night => const AppIconArt._(Color(0xFF2C3D6C), Color(0xFF0C122D), AppIconGlyph.glassDark),
-    AppIcon.frost => const AppIconArt._(Color(0xFFFCFDFF), Color(0xFFDDE5F8), AppIconGlyph.glassLight),
-    AppIcon.ink => const AppIconArt._(Color(0xFF292B30), Color(0xFF0D0E11), AppIconGlyph.mono, Color(0xFFF5F7FB)),
+    AppIcon.mist => const AppIconArt._(Color(0xFFFAF9F5), Color(0xFFF3F0E8), AppIconGlyph.glassDark),
+    AppIcon.night => const AppIconArt._(Color(0xFF34322D), Color(0xFF1F1E1B), AppIconGlyph.glassDark),
+    AppIcon.frost => const AppIconArt._(Color(0xFFF6F3EB), Color(0xFFFAF9F5), AppIconGlyph.glassLight),
+    AppIcon.ink => const AppIconArt._(Color(0xFF34322D), Color(0xFF262521), AppIconGlyph.mono, Color(0xFFF5F7FB)),
   };
 }
 
@@ -261,20 +261,21 @@ class _IconPainter extends CustomPainter {
         const Rect.fromLTWH(0, 0, 108, 108),
         Paint()..shader = ui.Gradient.linear(AppIconArt.start, AppIconArt.end, [art.from, art.to]),
       );
-    switch (art.glyph) {
-      case AppIconGlyph.mono:
-        final paint = Paint()..color = art.mono!;
-        canvas
-          ..drawPath(BrandGlyph.body, paint)
-          ..drawPath(BrandGlyph.bubble, paint);
-      case AppIconGlyph.glassDark || AppIconGlyph.glassLight:
-        final dark = art.glyph == AppIconGlyph.glassDark;
-        canvas
-          ..drawPath(BrandGlyph.body, Paint()..shader = dark ? BrandGlyph.tailDark : BrandGlyph.tailLight)
-          ..drawPath(BrandGlyph.fin, Paint()..shader = dark ? BrandGlyph.finDark : BrandGlyph.finLight)
-          ..drawPath(BrandGlyph.belly, Paint()..shader = dark ? BrandGlyph.bellyDark : BrandGlyph.bellyLight)
-          ..drawPath(BrandGlyph.bubble, Paint()..shader = dark ? BrandGlyph.bubbleDark : BrandGlyph.bubbleLight);
-    }
+    // The same vector outline as the native Android adaptive launcher icon.
+    canvas
+      ..save()
+      ..translate(14, 19)
+      ..scale(2.4)
+      ..drawPath(
+        BrandGlyph.cloud,
+        Paint()
+          ..color = const Color(0xFFF16A45)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2.3
+          ..strokeCap = StrokeCap.round
+          ..strokeJoin = StrokeJoin.round,
+      )
+      ..restore();
     canvas
       ..restore()
       // Half of it falls outside the clip: a 1 px line just inside the edge.
