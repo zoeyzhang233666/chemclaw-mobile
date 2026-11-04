@@ -189,10 +189,12 @@ final featureSections = <FeatureSection>[
   // ChemClaw experts are the product's primary workflow, never a DS Bot
   // marketplace item or an install prompt for another team's package.
   FeatureSection('ChemClaw', [
-    FeatureItem(
+    FeatureItem.localized(
       id: 'chemclaw-team',
-      title: '化工专家与专家群',
-      summary: '使用当前 ChemClaw 主机的行业专家、协作群和专业技能',
+      title: (_) => AppLocale.isEnglish ? 'ChemClaw Experts & Groups' : '化工专家与专家群',
+      summary: (_) => AppLocale.isEnglish
+          ? 'Work with industry specialists, expert groups and skills on your connected ChemClaw host'
+          : '使用当前 ChemClaw 主机的行业专家、协作群和专业技能',
       icon: AppIcons.bot,
       native: (_) => const BotsPage(chemclawOnly: true),
     ),
