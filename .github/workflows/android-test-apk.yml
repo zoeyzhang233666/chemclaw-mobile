@@ -101,12 +101,12 @@ jobs:
           report = json.loads(Path("dist/test/APK_AUDIT.json").read_text())
           lines = [
               "## ChemClaw Mobile — DEVELOPMENT APK integrity report",
-              f"- Source commit: \`{os.environ['GITHUB_SHA']}\`",
-              f"- SHA-256: \`{report['apk_sha256']}\`",
-              f"- Package: \`{report['package']['application_id']}\`",
-              f"- Signing certificate SHA-256: \`{report['signature']['certificate_sha256']}\`",
-              f"- Debug-signing certificate: \`{report['signature']['temporary_debug_signing']}\`",
-              f"- Android target SDK: \`{report['package']['target_sdk']}\`",
+              f"- Source commit: `{os.environ['GITHUB_SHA']}`",
+              f"- SHA-256: `{report['apk_sha256']}`",
+              f"- Package: `{report['package']['application_id']}`",
+              f"- Signing certificate SHA-256: `{report['signature']['certificate_sha256']}`",
+              f"- Debug-signing certificate: `{report['signature']['temporary_debug_signing']}`",
+              f"- Android target SDK: `{report['package']['target_sdk']}`",
               f"- Permissions requiring review: {', '.join(report['sensitive_permission_review']) or 'none'}",
               "",
               "**This checks integrity, not malware safety.** Chrome Safe Browsing or",
@@ -121,7 +121,7 @@ jobs:
           ls -lh dist/test/
 
       - name: Upload APK as workflow artifact (not a release)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ChemClaw-Mobile-Android-arm64-TEST
           path: |
