@@ -120,14 +120,35 @@ jobs:
           PY
           ls -lh dist/test/
 
-      - name: Upload APK as workflow artifact (not a release)
+      # A single GitHub Actions v7 artifact can be downloaded as a *direct*
+      # file without a ZIP archive. This is a format change, not an AV bypass.
+      - name: Upload APK directly (no ZIP)
+        id: direct-apk
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: ChemClaw-Mobile-Android-arm64-TEST
+          path: dist/test/ChemClaw-Mobile-Android-arm64-TEST.apk
+          archive: false
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload checksum and signing audit separately
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ChemClaw-Mobile-Android-arm64-AUDIT
           path: |
-            dist/test/ChemClaw-Mobile-Android-arm64-TEST.apk
             dist/test/SHA256SUMS
             dist/test/APK_AUDIT.json
           if-no-files-found: error
-          compression-level: 0
           retention-days: 7
+
+      - name: Show direct download in build summary
+        env:
+          DIRECT_URL: ${{ steps.direct-apk.outputs.artifact-url }}
+        run: |
+          {
+            echo
+            echo "### Verified-format test APK (direct file, no ZIP)"
+            echo "[$(basename dist/test/ChemClaw-Mobile-Android-arm64-TEST.apk)]($DIRECT_URL)"
+            echo "GitHub sign-in required. This is a developer build, not malware-cleared."
+            echo "If Chrome blocks the APK itself, do NOT disable Safe Browsing."
+          } >> "$GITHUB_STEP_SUMMARY"
