@@ -186,6 +186,17 @@ const settingsFeatureSection = 'settings';
 /// What 全部功能 holds: things to do now. Settings live in 设置; the last
 /// group is a few shortcuts there (docs/design/settings-ia.md §4.6).
 final featureSections = <FeatureSection>[
+  // ChemClaw experts are the product's primary workflow, never a DS Bot
+  // marketplace item or an install prompt for another team's package.
+  FeatureSection('ChemClaw', [
+    FeatureItem(
+      id: 'chemclaw-team',
+      title: '化工专家与专家群',
+      summary: '使用当前 ChemClaw 主机的行业专家、协作群和专业技能',
+      icon: AppIcons.bot,
+      native: (_) => const BotsPage(chemclawOnly: true),
+    ),
+  ]),
   FeatureSection.localized((l10n) => l10n.catalogCurrentChat, [
     FeatureItem.localized(
       id: 'session-detail',
@@ -335,13 +346,6 @@ final featureSections = <FeatureSection>[
       icon: AppIcons.community,
       tile: FeatureKind.community,
       native: (_) => communityPage(),
-    ),
-    FeatureItem.localized(
-      id: 'ds-bot',
-      title: (_) => 'ChemClaw Bot',
-      summary: (l10n) => l10n.catalogBotSummary,
-      icon: AppIcons.bot,
-      native: (_) => const BotsPage(),
     ),
     FeatureItem.localized(
       id: 'share-profile',
