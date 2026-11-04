@@ -1,11 +1,11 @@
 ---
-# dsh-go:managed — the dsh-go app keeps this skill up to date; delete this line to keep your own edits.
+# dsh-go:managed — ChemClaw keeps this guide updated; delete this line to keep your own edits.
 name: dsh-go-guide
-description: dsh-go 手机 App 自带的使用说明（中文 / English）：功能在哪、怎么用、每个设置的作用、删除或重置会丢什么。用户问 dsh-go App 本身怎么用时先加载它，比如「悬浮条怎么调透明度」「怎么接入自己的模型」「本机环境能卸载吗」「分享链接怎么删」「宠物不见了」。The dsh-go app's own user guide — where each feature is, what each setting does, what an action deletes.
-whenToUse: The user asks how to use the dsh-go app (手机 App) itself. Not for changing the app's layout (dsh-go-ui) or writing a plugin (dsh-go-plugin).
+description: ChemClaw 手机版自带的使用说明（中文 / English）：功能在哪、怎么用、每个设置的作用、删除或重置会丢什么。用户问 ChemClaw App 本身怎么用时先加载它，比如「悬浮条怎么调透明度」「怎么接入自己的模型」「本机环境能卸载吗」「分享链接怎么删」「宠物不见了」。The ChemClaw app's own user guide — where each feature is, what each setting does, what an action deletes.
+whenToUse: The user asks how to use the ChemClaw app (手机 App) itself. Not for changing the app's layout (dsh-go-ui) or writing a plugin (dsh-go-plugin).
 ---
 
-# dsh-go 使用说明
+# ChemClaw 使用说明
 
 说明文件都在本技能目录里：`README.md`、`zh/`、`en/`，按需读取。
 
