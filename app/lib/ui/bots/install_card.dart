@@ -48,8 +48,15 @@ class DsBotInstallCard extends ConsumerWidget {
     final job = ref.watch(pluginInstallsProvider.select((jobs) => jobs[dsBotPackage]));
     final busy = job?.isActive ?? false;
     final canInstall = host?.canInstall ?? false;
-    final title = _update ? l10n.botsMobileUnsupportedTitle : l10n.botsInstall;
-    final message = _update ? l10n.botsMobileApiRequired : l10n.botsMobileApiMissing;
+    final desktop = status.desktopTeam;
+    final title = desktop != null
+        ? (AppLocale.isEnglish ? 'ChemClaw team found on this Host' : '已发现当前主机的 ChemClaw 专家团队')
+        : _update ? l10n.botsMobileUnsupportedTitle : l10n.botsInstall;
+    final message = desktop != null
+        ? (AppLocale.isEnglish
+            ? '${desktop.bots} Bots · ${desktop.rooms} groups · ${desktop.skills} skills. These are already available in desktop ChemClaw. Open the connected Host\'s web client to use them; native mobile Bot chat still requires a compatible protocol.'
+            : '当前主机有 ${desktop.bots} 位专家、${desktop.rooms} 个专家群、${desktop.skills} 项专业技能。其能力由电脑版 ChemClaw 管理，可通过当前主机的网页版使用；原生手机版对话协议尚未适配。')
+        : _update ? l10n.botsMobileApiRequired : l10n.botsMobileApiMissing;
     return EmptyView(
       icon: AppIcons.bot,
       title: title,
@@ -58,7 +65,7 @@ class DsBotInstallCard extends ConsumerWidget {
       action: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
+          if (desktop == null) Text(
             AppLocale.isEnglish
                 ? 'Desktop ChemClaw uses a separate Bot plugin. Installing DS Bot creates a different team; until the mobile protocol is supported, use the web client for desktop Bots and groups.'
                 : '电脑版 ChemClaw 使用独立 Bot 插件。安装 DS Bot 会创建另一套团队；在原生协议适配完成前，请通过网页版访问电脑版的 Bot 和群聊。',
@@ -72,10 +79,18 @@ class DsBotInstallCard extends ConsumerWidget {
             key: const ValueKey('dsbot-open-web'),
             onPressed: () => ref.read(dsBotWebOpenerProvider)(context, ref),
             icon: const Icon(AppIcons.webApp, size: 18),
-            label: Text(l10n.commonOpenInWeb),
+            label: Text(desktop != null
+                ? (AppLocale.isEnglish ? 'Open ChemClaw experts' : '打开 ChemClaw 专家团队')
+                : l10n.commonOpenInWeb),
           ),
           const SizedBox(height: 8),
-          if (_update)
+          if (desktop != null)
+            TextButton(
+              key: const ValueKey('chemclaw-desktop-recheck'),
+              onPressed: () => ref.read(dsBotProvider.notifier).retry(),
+              child: Text(l10n.commonRetry),
+            )
+          else if (_update)
             TextButton(
               key: const ValueKey('dsbot-recheck-mobile'),
               onPressed: () => ref.read(dsBotProvider.notifier).retry(),

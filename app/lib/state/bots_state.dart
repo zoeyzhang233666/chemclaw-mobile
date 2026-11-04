@@ -42,7 +42,8 @@ enum DsBotAvailability {
   /// The host has no DS Bot (or has it turned off).
   missing,
 
-  /// A DS Bot from before the mobile API, or one with no version in common.
+  /// A DS Bot from before the mobile API, a desktop ChemClaw team without
+  /// the native mobile protocol, or one with no version in common.
   outdated,
 
   /// Talking to DS Bot.
@@ -50,6 +51,35 @@ enum DsBotAvailability {
 
   /// DS Bot answered with something unexpected.
   failed,
+}
+
+/// A desktop ChemClaw team detected through its authenticated /api/bot 'state'
+/// endpoint. Detection is read-only; it never installs a competing DS Bot or
+/// guesses that the older endpoint shapes support native mobile chat.
+@immutable
+class ChemClawDesktopTeam {
+  const ChemClawDesktopTeam({required this.bots, required this.rooms, required this.skills});
+
+  final int bots;
+  final int rooms;
+  final int skills;
+
+  static ChemClawDesktopTeam? fromState(Object? answer) {
+    if (answer is! Map ||
+        answer['bots'] is! List ||
+        answer['rooms'] is! List ||
+        answer['mainBotIds'] is! List ||
+        !answer.containsKey('workspaceId') ||
+        answer['capabilities'] is! List) {
+      return null;
+    }
+    final capabilities = answer['capabilities'] as List;
+    return ChemClawDesktopTeam(
+      bots: (answer['bots'] as List).length,
+      rooms: (answer['rooms'] as List).length,
+      skills: capabilities.where((item) => item is Map && item['kind'] == 'skill').length,
+    );
+  }
 }
 
 @immutable
@@ -60,6 +90,7 @@ class DsBotStatus {
     this._hostLabel,
     this.isLocal = true,
     this.hello,
+    this.desktopTeam,
     this.team,
     this.live = const DsBotLive(),
     this.error,
@@ -72,6 +103,9 @@ class DsBotStatus {
   String get hostLabel => _hostLabel ?? appL10n.commonThisPhone;
   final bool isLocal;
   final DsBotHello? hello;
+
+  /// Desktop ChemClaw is installed but doesn't implement DS Bot mobile API v1.
+  final ChemClawDesktopTeam? desktopTeam;
 
   /// Null until the first `state` answer.
   final DsBotTeam? team;
@@ -89,6 +123,7 @@ class DsBotStatus {
   DsBotStatus copyWith({
     DsBotAvailability? availability,
     DsBotHello? hello,
+    ChemClawDesktopTeam? desktopTeam,
     DsBotTeam? team,
     DsBotLive? live,
     String? Function()? error,
@@ -99,6 +134,7 @@ class DsBotStatus {
     hostLabel: _hostLabel,
     isLocal: isLocal,
     hello: hello ?? this.hello,
+    desktopTeam: desktopTeam ?? this.desktopTeam,
     team: team ?? this.team,
     live: live ?? this.live,
     error: error == null ? this.error : error(),
@@ -235,6 +271,28 @@ class DsBotController extends Notifier<DsBotStatus> {
       hello = await api.hello(version: AppInfo.version);
     } catch (error) {
       if (!_current(generation)) return;
+      // Desktop ChemClaw shares the route but intentionally has no DS Bot
+      // mobile 'hello'. Probe only for a missing endpoint, using the same
+      // authenticated Host transport. A legacy DS Bot has no capability
+      // library and is not misidentified as ChemClaw.
+      if (error is DshRemoteException && error.code == 'bot/not-found') {
+        try {
+          final answer = await api.call('state', const {}, const Duration(seconds: 6));
+          if (!_current(generation)) return;
+          final desktop = ChemClawDesktopTeam.fromState(answer);
+          if (desktop != null) {
+            state = state.copyWith(
+              availability: DsBotAvailability.outdated,
+              desktopTeam: desktop,
+              error: () => null,
+            );
+            return;
+          }
+        } catch (_) {
+          if (!_current(generation)) return;
+          // Preserve the original hello error; this detection is best-effort.
+        }
+      }
       final availability = switch (error) {
         DshHttpException(:final statusCode) when statusCode == 404 => DsBotAvailability.missing,
         DshRemoteException(:final code) when code == 'bot/not-found' || code == 'bot/read-only' =>

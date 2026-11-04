@@ -69,13 +69,44 @@ void main() {
       // The copy names no release: none with the mobile API has shipped yet.
       expect(find.textContaining(RegExp(r'v\d+\.\d+')), findsNothing);
       expect(fake.feedOpens, 0);
-      expect(fake.endpoints, ['hello']);
+      // Check desktop ChemClaw's read-only state after a missing hello;
+      // the official older DS Bot has no ChemClaw capability library.
+      expect(fake.endpoints, ['hello', 'state']);
       await tester.ensureVisible(find.byKey(const ValueKey('dsbot-open-web')));
       await tester.tap(find.byKey(const ValueKey('dsbot-open-web')));
       expect(webOpens, 1);
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('desktop ChemClaw team uses Web fallback and never offers to install upstream DS Bot', (tester) async {
+    final fake = FakeDsBotTransport()..handlers.remove('hello');
+    fake.handlers['state'] = (_) => {
+      'workspaceId': null,
+      'mainBotIds': ['main'],
+      'bots': [{'id': 'main', 'name': 'ChemClaw'}],
+      'rooms': [{'id': 'r', 'name': '采购寻源群'}],
+      'capabilities': [{'kind': 'skill', 'name': 'chem-sourcing'}],
+    };
+    var webOpens = 0;
+    usePhoneView(tester);
+    await tester.pumpWidget(goldenApp(
+      home: const BotsPage(),
+      brightness: Brightness.light,
+      overrides: [...dsBotOverrides(fake), dsBotWebOpenerProvider.overrideWithValue((_, _) => webOpens++)],
+    ));
+    await frames(tester);
+    expect(find.textContaining('1 位专家'), findsOneWidget);
+    expect(find.textContaining('1 项专业技能'), findsOneWidget);
+    expect(find.byKey(const ValueKey('dsbot-open-web')), findsOneWidget);
+    expect(find.text(appL10n.commonInstall), findsNothing);
+    await tester.ensureVisible(find.byKey(const ValueKey('dsbot-open-web')));
+    await tester.tap(find.byKey(const ValueKey('dsbot-open-web')));
+    expect(webOpens, 1);
+    expect(fake.endpoints, ['hello', 'state']);
+    expect(fake.feedOpens, 0);
+    expect(tester.takeException(), isNull);
+  });
 
   for (final brightness in Brightness.values) {
     testWidgets('missing route at 320dp 2x $brightness has explicit capability and Web action', (tester) async {

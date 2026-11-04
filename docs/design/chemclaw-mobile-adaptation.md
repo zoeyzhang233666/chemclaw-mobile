@@ -69,3 +69,17 @@ before a branded public release.
   that the entire embedded DSH user interface has been reskinned.
 - Multiple legacy Flutter update tests and other UI assertions remain outside
   this patch. Do not turn them off or release publicly without triage.
+
+## Desktop ChemClaw team detection (no data duplication)
+
+The mobile DS Bot client requires the v1 native hello/room-chat API, but
+ChemClaw desktop v0.3.0 ships the older `/api/bot` state endpoint without
+that handshake. When hello returns `bot/not-found`, the mobile app performs
+one authenticated, read-only `state` probe. A ChemClaw-specific state shape
+(bots, rooms, mainBotIds, workspaceId and capability library array) is used
+to show real Bot, group and skill counts with a Web fallback on the **same
+active Host**. It does **not** install `ds-bot`, copy secrets or create a
+new team. Legacy DS Bot without a capability library stays on its existing
+update/install path. All network errors remain best-effort fallback and
+reconnect resets the state. Native desktop parity requires an explicit
+versioned compatibility adapter; this read-only probe does not provide it.

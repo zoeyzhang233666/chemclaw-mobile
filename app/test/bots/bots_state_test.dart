@@ -51,6 +51,42 @@ void main() {
       expect((await start(later)).read(dsBotProvider).availability, DsBotAvailability.outdated);
     });
 
+    test('desktop ChemClaw skill-equipped team is detected without creating a second roster', () async {
+      final transport = FakeDsBotTransport()..handlers.remove('hello');
+      transport.handlers['state'] = (_) => {
+        'workspaceId': null,
+        'revision': 17,
+        'mainBotIds': ['chemclaw'],
+        'bots': [
+          {'id': 'chemclaw', 'name': 'ChemClaw'},
+          {'id': 'spot', 'name': '现货行情分析师'},
+        ],
+        'rooms': [{'id': 'research', 'name': '期现研究群'}],
+        'capabilities': [
+          {'kind': 'mcp', 'name': 'chem-data-hub'},
+          {'kind': 'skill', 'name': 'chem-market-brief'},
+          {'kind': 'skill', 'name': 'chem-basis-research'},
+          {'kind': 'pack', 'name': 'pack-market'},
+        ],
+      };
+      final container = await start(transport);
+      final status = container.read(dsBotProvider);
+      expect(status.availability, DsBotAvailability.outdated);
+      expect(status.desktopTeam?.bots, 2);
+      expect(status.desktopTeam?.rooms, 1);
+      expect(status.desktopTeam?.skills, 2);
+      expect(status.team, isNull);
+      expect(transport.endpoints, ['hello', 'state']);
+      expect(transport.feedOpens, 0);
+    });
+
+    test('older DS Bot without the capability library is not mistaken for desktop ChemClaw', () async {
+      final old = FakeDsBotTransport()..handlers.remove('hello');
+      final container = await start(old);
+      expect(container.read(dsBotProvider).desktopTeam, isNull);
+      expect(container.read(dsBotProvider).availability, DsBotAvailability.outdated);
+    });
+
     test('a relay that refuses dsBot/* reads as the relay, not as a missing plugin', () async {
       final transport = FakeDsBotTransport();
       transport.handlers['hello'] = (_) =>
