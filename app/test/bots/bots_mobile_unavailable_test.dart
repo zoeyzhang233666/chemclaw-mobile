@@ -64,88 +64,19 @@ void main() {
         ),
       );
       await frames(tester);
-      expect(find.text('连接 ChemClaw 专家团队'), findsOneWidget);
+      expect(find.text('请使用智能体团队'), findsOneWidget);
       expect(find.text('安装 DS Bot'), findsNothing);
       // The copy names no release: none with the mobile API has shipped yet.
       expect(find.textContaining(RegExp(r'v\d+\.\d+')), findsNothing);
       expect(fake.feedOpens, 0);
-      // Check desktop ChemClaw's read-only state after a missing hello;
-      // the official older DS Bot has no ChemClaw capability library.
-      expect(fake.endpoints, ['hello', 'state']);
+      // No second team is probed when the legacy mobile API fails.
+      expect(fake.endpoints, ['hello']);
       expect(find.byKey(const ValueKey('dsbot-open-web')), findsNothing);
       expect(find.byKey(const ValueKey('dsbot-recheck-mobile')), findsOneWidget);
       expect(webOpens, 0);
       expect(tester.takeException(), isNull);
     });
   }
-
-  testWidgets('desktop ChemClaw team uses Web fallback and never offers to install upstream DS Bot', (tester) async {
-    final fake = FakeDsBotTransport()..handlers.remove('hello');
-    fake.handlers['state'] = (_) => {
-      'workspaceId': null,
-      'mainBotIds': ['main'],
-      'bots': [{'id': 'main', 'name': 'ChemClaw'}],
-      'rooms': [{'id': 'r', 'name': '采购寻源群'}],
-      'capabilities': [{'kind': 'skill', 'name': 'chem-sourcing'}],
-    };
-    var webOpens = 0;
-    usePhoneView(tester);
-    await tester.pumpWidget(goldenApp(
-      home: const BotsPage(),
-      brightness: Brightness.light,
-      overrides: [...dsBotOverrides(fake), dsBotWebOpenerProvider.overrideWithValue((_, _) => webOpens++)],
-    ));
-    await frames(tester);
-    expect(find.textContaining('1 位专家'), findsOneWidget);
-    expect(find.textContaining('1 项专业技能'), findsOneWidget);
-    expect(find.byKey(const ValueKey('dsbot-open-web')), findsOneWidget);
-    expect(find.text(appL10n.commonInstall), findsNothing);
-    await tester.ensureVisible(find.byKey(const ValueKey('dsbot-open-web')));
-    await tester.tap(find.byKey(const ValueKey('dsbot-open-web')));
-    expect(webOpens, 1);
-    expect(fake.endpoints, ['hello', 'state']);
-    expect(fake.feedOpens, 0);
-    expect(tester.takeException(), isNull);
-  });
-
-  testWidgets('native ChemClaw roster shows expert skills and group membership without a second install', (tester) async {
-    final fake = FakeDsBotTransport()..handlers.remove('hello');
-    fake.handlers['state'] = (_) => {
-      'workspaceId': 'chemclaw-workspace',
-      'mainBotIds': ['main'],
-      'bots': [
-        {'id': 'main', 'name': 'ChemClaw', 'role': '主控', 'capabilities': []},
-        {'id': 'spot', 'name': '现货行情分析师', 'role': '行情研究', 'capabilities': ['pack-market']},
-      ],
-      'rooms': [
-        {'id': 'r', 'name': '期现研究群', 'members': ['main', 'spot'], 'admin': 'main'},
-      ],
-      'capabilities': [
-        {'name': 'chem-market-brief', 'kind': 'skill', 'labels': {'zh': '行情快报'}},
-        {'name': 'pack-market', 'kind': 'pack', 'items': ['chem-market-brief']},
-        {'name': 'chem-data-hub', 'kind': 'mcp', 'headers': {'Authorization': 'secret-key'}},
-      ],
-    };
-    usePhoneView(tester);
-    await tester.pumpWidget(goldenApp(
-      home: const BotsPage(),
-      brightness: Brightness.light,
-      overrides: [...dsBotOverrides(fake), dsBotWebOpenerProvider.overrideWithValue((_, _) {})],
-    ));
-    await frames(tester);
-    expect(find.text('现货行情分析师'), findsOneWidget);
-    expect(find.textContaining('关联技能：行情快报'), findsOneWidget);
-    expect(find.text('期现研究群'), findsOneWidget);
-    expect(find.text('专业技能（1）'), findsOneWidget);
-    expect(find.byKey(const ValueKey('chemclaw-roster-search')), findsOneWidget);
-    expect(find.text(appL10n.commonInstall), findsNothing);
-    expect(fake.feedOpens, 0);
-    await tester.enterText(find.byKey(const ValueKey('chemclaw-roster-search')), '不存在的技能');
-    await tester.pump();
-    expect(find.text('现货行情分析师'), findsNothing);
-    expect(find.textContaining('未找到匹配'), findsOneWidget);
-    expect(tester.takeException(), isNull);
-  });
 
   for (final brightness in Brightness.values) {
     testWidgets('missing route at 320dp 2x $brightness has explicit capability and Web action', (tester) async {
@@ -163,7 +94,7 @@ void main() {
         ),
       );
       await frames(tester);
-      expect(find.text('连接 ChemClaw 专家团队'), findsOneWidget);
+      expect(find.text('请使用智能体团队'), findsOneWidget);
       expect(find.byKey(const ValueKey('dsbot-open-web')), findsNothing);
       expect(tester.widget<TextButton>(find.byKey(const ValueKey('dsbot-recheck-mobile'))).onPressed, isNotNull);
       expect(tester.takeException(), isNull);
@@ -190,7 +121,7 @@ void main() {
     expect(find.byType(TextField), findsOneWidget);
     fake.stream.addError(const DshHttpException(404, 'controlled missing feed'));
     await frames(tester);
-    expect(find.text('连接 ChemClaw 专家团队'), findsOneWidget);
+    expect(find.text('请使用智能体团队'), findsOneWidget);
     expect(find.byType(TextField), findsNothing);
     expect(fake.feedOpens, 1);
     await tester.ensureVisible(find.byKey(const ValueKey('dsbot-recheck-mobile')));

@@ -1,7 +1,5 @@
-import 'package:dsh_app/state/bots_state.dart';
 import 'package:dsh_app/state/session_search.dart';
 import 'package:dsh_app/state/sessions_state.dart';
-import 'package:dsh_app/ui/common/tile_grid.dart';
 import 'package:dsh_app/ui/features/all_features_page.dart';
 import 'package:dsh_app/ui/features/feature_catalog.dart';
 import 'package:dsh_app/ui/files/files_page.dart';
@@ -16,13 +14,6 @@ import '../search/support.dart';
 import '../shell/golden_harness.dart';
 
 FeatureItem item(String id) => featureSections.expand((section) => section.items).singleWhere((item) => item.id == id);
-
-class _Inbox extends DsBotInboxController {
-  @override
-  DsBotInbox build() => const DsBotInbox();
-
-  void counts(Map<String, int> unread) => state = DsBotInbox(unread: unread);
-}
 
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
@@ -48,32 +39,9 @@ void main() {
     expect(webIds, {'voice-input', 'web'});
   });
 
-  testWidgets('ChemClaw 专家入口不冒用通用 DS Bot 未读数', (tester) async {
-    final inbox = _Inbox();
-    final tile = FeatureTileFor(item: item('chemclaw-team'), tint: 2, onOpen: () {});
-    await tester.pumpWidget(
-      goldenApp(
-        brightness: Brightness.light,
-        overrides: [dsBotInboxProvider.overrideWith(() => inbox)],
-        home: Scaffold(body: SizedBox(width: 200, child: tile)),
-      ),
-    );
-    await tester.pumpAndSettle();
-    String? badge() => tester.widget<FeatureCard>(find.byType(FeatureCard)).badge;
-    expect(badge(), isNull);
-
-    // The host reports a generic DS Bot inbox, but no ChemClaw desktop
-    // roster was identified. The ChemClaw card must not use these notices.
-    inbox.counts({'bot': 2, 'room': 5});
-    await tester.pumpAndSettle();
-    expect(badge(), isNull);
-    expect(find.text('7'), findsNothing);
-
-    inbox.counts({});
-    await tester.pumpAndSettle();
-    expect(badge(), isNull);
-    expect(find.text('99+'), findsNothing);
-    expect(tester.takeException(), isNull);
+  test('智能体团队保留，化工专家和专家群入口不再存在', () {
+    expect(item('agent-team').native, isNotNull);
+    expect(featureSections.expand((s) => s.items).any((item) => item.id == 'chemclaw-team' || item.id == 'ds-bot'), isFalse);
   });
 
   testWidgets('全部功能搜索结果返回首页并选中对应对话', (tester) async {
