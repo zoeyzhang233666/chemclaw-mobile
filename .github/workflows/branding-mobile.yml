@@ -1,0 +1,44 @@
+# One-time ChemClaw user-visible branding regeneration. No release or desktop repo access.
+name: ChemClaw Mobile · unify user-visible branding
+
+on:
+  push:
+    branches: [feat/chemclaw-mobile-brand-and-mcp]
+
+permissions:
+  contents: write
+
+jobs:
+  brand:
+    if: >-
+      github.repository == 'zoeyzhang233666/chemclaw-mobile' &&
+      contains(github.event.head_commit.message, '[refresh-mobile-brand]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: true
+      - uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: '3.47.7'
+          channel: stable
+          cache: true
+      - name: Rebrand displayed names only, preserve upstream credits
+        run: |
+          python3 tooling/chemclaw_mobile_brand_sweep.py --write
+          python3 tooling/chemclaw_mobile_brand_sweep.py --check
+      - name: Regenerate actual UI localizations and bundled guide
+        run: |
+          (cd app && flutter pub get --enforce-lockfile && python3 tool/l10n_merge.py)
+          python3 app/tool/guide_sync.py
+          python3 app/tool/l10n_merge.py --check
+          python3 app/tool/guide_sync.py --check
+      - name: Commit only mobile UI strings, native strings, and guides
+        run: |
+          git add -u -- app/lib app/android/app/src/main app/test docs/guide app/assets/skills/dsh-go-guide
+          git diff --cached --check
+          git diff --cached --stat | tail -n 45
+          if git diff --cached --quiet; then exit 0; fi
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'fix(mobile): replace upstream labels and regenerate localizations'
+          git push origin "HEAD:$GITHUB_REF_NAME"
