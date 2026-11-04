@@ -133,8 +133,8 @@ jobs:
           import json
           from pathlib import Path
           report = json.loads(Path('dist/preview/APK_AUDIT.json').read_text())
-          if report['signature']['temporary_debug_signing']:
-              raise SystemExit('BLOCKED: debug-signed APK cannot be distributed via verified preview')
+          if report['signature']['temporary_debug_signing'] is not False:
+              raise SystemExit('BLOCKED: debug or unknown signer identity; cannot create release preview')
           PY
           cp "$apk" dist/preview/ChemClaw-Mobile-Android-arm64.apk
           (cd dist/preview && sha256sum ChemClaw-Mobile-Android-arm64.apk > SHA256SUMS)

@@ -27,6 +27,48 @@ class AuditTestApkTest(unittest.TestCase):
         self.assertTrue(s["temporary_debug_signing"])
         self.assertIn(2, s["schemes"])
 
+    def test_sdk_ranged_signer_from_new_apksigner(self):
+        raw = ("Verifies\n"
+               "Verified using v1 scheme (JAR signing): false\n"
+               "Verified using v2 scheme (APK Signature Scheme v2): true\n"
+               "Signer (minSdkVersion=26, maxSdkVersion=32) certificate SHA-256 digest: "
+               + "b" * 64 + "\n"
+               "Signer (minSdkVersion=26, maxSdkVersion=32) certificate DN: CN=Android Debug,O=Android\n")
+        signature = parse_signature(raw)
+        self.assertEqual(signature["certificate_sha256"], "b" * 64)
+        self.assertEqual(signature["signers"][0]["signer"], "(minSdkVersion=26, maxSdkVersion=32)")
+        self.assertTrue(signature["temporary_debug_signing"])
+
+    def test_sdk_ranged_cert_without_dn_is_unknown_not_release(self):
+        raw = ("Verified using v3 scheme (APK Signature Scheme v3): true\n"
+               "Signer (minSdkVersion=28, maxSdkVersion=99) certificate SHA-256 digest: "
+               + "c" * 64 + "\n")
+        signature = parse_signature(raw)
+        self.assertIsNone(signature["certificate_dn"])
+        self.assertIsNone(signature["temporary_debug_signing"])
+
+    def test_multiple_distinct_signers_are_not_mixed(self):
+        raw = ("Verified using v2 scheme (APK Signature Scheme v2): true\n"
+               "Signer (minSdkVersion=26, maxSdkVersion=27) certificate SHA-256 digest: " + "1" * 64 + "\n"
+               "Signer (minSdkVersion=28, maxSdkVersion=99) certificate SHA-256 digest: " + "2" * 64 + "\n"
+               "Signer (minSdkVersion=28, maxSdkVersion=99) certificate DN: CN=Android Debug\n")
+        s = parse_signature(raw)
+        self.assertEqual(len(s["signers"]), 2)
+        self.assertIsNone(s["temporary_debug_signing"])
+        self.assertEqual(s["signers"][1]["certificate_sha256"], "2" * 64)
+
+    def test_reject_missing_certificate_digest_even_when_v2_verified(self):
+        raw = ("Verified using v2 scheme (APK Signature Scheme v2): true\n"
+               "Signer #1 certificate DN: CN=Android Debug\n")
+        with self.assertRaisesRegex(RuntimeError, "invalid SHA-256"):
+            parse_signature(raw)
+
+    def test_reject_truncated_digest(self):
+        raw = ("Verified using v2 scheme (APK Signature Scheme v2): true\n"
+               "Signer #1 certificate SHA-256 digest: ff00\n")
+        with self.assertRaisesRegex(RuntimeError, "invalid SHA-256"):
+            parse_signature(raw)
+
     def test_permissions_are_deduplicated(self):
         data = ("package: com.chemcloud.chemclaw.mobile\n"
                 "uses-permission: name='android.permission.INTERNET'\n"

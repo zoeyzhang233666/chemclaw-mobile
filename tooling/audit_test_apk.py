@@ -55,20 +55,64 @@ def parse_badging(raw):
     }
 
 def parse_signature(raw):
+    """Read *verified* APK signer certificates across Android SDK output formats.
+
+    Newer apksigner can print "Signer (minSdkVersion=26, maxSdkVersion=32)"
+    instead of "Signer #1". The digest, not a certificate DN, establishes
+    identity; missing DN must remain unknown (never silently marked release).
+    """
     scheme = [int(n) for n, value in re.findall(
-        r"Verified using v([1234]) scheme[^:]*:\s*(true|false)", raw, re.I
+        r"Verified using v([1234]) scheme[^:\r\n]*:[ \t]*(true|false)",
+        raw, re.I,
     ) if value.lower() == "true"]
-    if not ({2, 3, 4} & set(scheme)):
-        raise RuntimeError("APK is not verified with v2/v3/v4 APK signing")
-    sha = re.search(r"Signer #1 certificate SHA-256 digest:\s*([a-fA-F0-9:]+)", raw)
-    dn = re.search(r"Signer #1 certificate DN:\s*(.*)", raw)
-    if not sha or not dn:
-        raise RuntimeError("Cannot establish APK signer certificate identity")
+    if not ({2, 3} & set(scheme)):
+        raise RuntimeError("APK is not verified using v2 or v3 APK signing")
+
+    # Android's apksigner has both numbered and SDK-range signers. Parse all
+    # fields by signer so one certificate's DN never becomes another's digest.
+    signers = {}
+    for match in re.finditer(
+        r"^Signer[ \t]+(?P<name>#[0-9]+|\([^\r\n]+\))[ \t]+"
+        r"certificate[ \t]+(?P<field>DN|SHA-256 digest):[ \t]*(?P<value>[^\r\n]*)",
+        raw, re.I | re.M,
+    ):
+        name = match.group("name")
+        field = match.group("field").lower()
+        signers.setdefault(name, {})[field] = match.group("value").strip()
+
+    certificates = []
+    for name, details in signers.items():
+        fingerprint = re.sub(r"[: \t]", "", details.get("sha-256 digest", "")).lower()
+        if not re.fullmatch(r"[0-9a-f]{64}", fingerprint):
+            raise RuntimeError(f"Missing or invalid SHA-256 certificate digest for signer {name}")
+        dn = details.get("dn", "")
+        certificates.append({
+            "signer": name,
+            "certificate_sha256": fingerprint,
+            "certificate_dn": dn or None,
+            # None is intentionally fail-closed for the verified release gate.
+            "temporary_debug_signing": ("android debug" in dn.lower()) if dn else None,
+        })
+    if not certificates:
+        labels = sorted(set(re.findall(r"(?m)^Signer[^:\r\n]*:", raw)))
+        raise RuntimeError(
+            "Cannot read verified APK signing certificate fingerprint; "
+            f"signer field labels: {labels[:12]}"
+        )
+
+    # Prefer a numbered signer, then the first ranged signer; preserve every
+    # signer in the report and fail closed for unrecognized certificate identity.
+    primary = next((cert for cert in certificates if cert["signer"] == "#1"), certificates[0])
     return {
         "schemes": scheme,
-        "certificate_sha256": sha.group(1).replace(":", "").lower(),
-        "certificate_dn": dn.group(1).strip(),
-        "temporary_debug_signing": "android debug" in dn.group(1).lower(),
+        "certificate_sha256": primary["certificate_sha256"],
+        "certificate_dn": primary["certificate_dn"],
+        "temporary_debug_signing": (
+            True if any(cert["temporary_debug_signing"] is True for cert in certificates)
+            else None if any(cert["temporary_debug_signing"] is None for cert in certificates)
+            else False
+        ),
+        "signers": certificates,
     }
 
 def parse_permissions(raw):
