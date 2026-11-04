@@ -4,7 +4,7 @@ An independent Android adaptation of [DSH Go](https://github.com/ccch1mneyyy/dsh
 
 **Status: development only. Not a verified APK or production release.**
 
-The first-stage changes provide ChemClaw identity, a separate Android application ID, Paper light/dark colors, a cloud launcher icon, a separate update repository, and an in-app guide to connecting an MCP service to the currently selected DSH host.
+The first-stage changes provide ChemClaw identity, a separate Android application ID, Paper light/dark colors, a cloud launcher icon, a separate update repository, and first-class **APIHub** and **ChemCloud chemical-data MCP** setup shortcuts at the very top of Settings. Each shortcut opens its own key form first; optional DeepSeek account sign-in is moved lower on the Settings page.
 
 **MCP**: DSH's local runtime and SSH-connected remote hosts can execute MCP tools configured on the *active host*. A real ChemCloud MCP endpoint and credentials must be provided by the data service operator. No URL or token is bundled and no live connection has been verified. See [MCP setup and acceptance](docs/CHEMCLOUD_MCP.md).
 

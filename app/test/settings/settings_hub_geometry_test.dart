@@ -9,6 +9,7 @@ import 'package:dsh_app/state/hosts_state.dart';
 import 'package:dsh_app/state/settings_state.dart';
 import 'package:dsh_app/ui/common/search_capsule.dart';
 import 'package:dsh_app/ui/settings/settings_screen.dart';
+import 'package:dsh_app/ui/settings/chemclaw_mcp_page.dart';
 import 'package:dsh_app/ui/settings/settings_widgets.dart';
 import 'package:dsh_app/ui/theme/theme.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +49,17 @@ void main() {
     expect([for (final s in sections) s.title], ['首选服务', 'AI', '能力', '外观', '通用', '主机', '帮助与关于']);
 
     final capsule = tester.getRect(find.byType(SearchCapsuleButton));
+    expect(find.byKey(const ValueKey('settings-apihub-primary')), findsOneWidget);
+    expect(find.byKey(const ValueKey('settings-chemcloud-primary')), findsOneWidget);
+    // Both preferred service entries appear before DeepSeek account login.
+    expect(
+      tester.getRect(find.byKey(const ValueKey('settings-apihub-primary'))).top,
+      lessThan(tester.getRect(find.byType(SettingsOverview)).top),
+    );
+    expect(
+      tester.getRect(find.byKey(const ValueKey('settings-chemcloud-primary'))).top,
+      lessThan(tester.getRect(find.byType(SettingsOverview)).top),
+    );
     for (final section in find.byType(SettingsSection).evaluate()) {
       final card = tester.getRect(
         find.descendant(of: find.byWidget(section.widget), matching: find.byType(GlassSurface)).first,
@@ -84,5 +96,38 @@ void main() {
         reason: title,
       );
     }
+  });
+
+  testWidgets('service shortcuts open the matching credential form first', (tester) async {
+    tester.view.devicePixelRatio = 2;
+    tester.view.physicalSize = const Size(_width * 2, 1600 * 2);
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(
+      goldenApp(
+        home: const SettingsScreen(),
+        brightness: Brightness.light,
+        overrides: [
+          activeHostProvider.overrideWith(() => FixedActiveHost(HostRef.local)),
+          hostsProvider.overrideWith(FixedHosts.new),
+          localRuntimeProvider.overrideWith(
+            () => FakeRuntime(const LocalRuntimeState(loaded: true, status: runningStatus)),
+          ),
+          settingsProvider.overrideWith(() => FakeSettings(const AppSettings(loaded: true))),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const ValueKey('settings-apihub-primary')));
+    await tester.pumpAndSettle();
+    expect(tester.widget<ChemClawMcpPage>(find.byType(ChemClawMcpPage)).preferredService,
+        ChemClawService.apiHub);
+
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('settings-chemcloud-primary')));
+    await tester.pumpAndSettle();
+    expect(tester.widget<ChemClawMcpPage>(find.byType(ChemClawMcpPage)).preferredService,
+        ChemClawService.dataHub);
   });
 }
