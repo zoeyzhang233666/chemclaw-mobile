@@ -166,7 +166,7 @@ bool isArtifactPath(String path) {
 const phoneStorageGuestPath = '/sdcard';
 
 /// The folder the local engine's instructions send output files to.
-const phoneOutputDir = '$phoneStorageGuestPath/Download/DSH-Go';
+const phoneOutputDir = '$phoneStorageGuestPath/Download/ChemClaw';
 
 /// How an artifact was found.
 enum ArtifactOrigin {
@@ -179,7 +179,7 @@ enum ArtifactOrigin {
   /// Linked from the turn's final reply, and named by its tool calls.
   linked,
 
-  /// Appeared in `/sdcard/Download/DSH-Go` (or the old `DSH`) while the turn ran (local engine).
+  /// Appeared in `/sdcard/Download/ChemClaw` (or the old `DSH`) while the turn ran (local engine).
   phoneOutput,
 }
 
@@ -247,7 +247,7 @@ class TurnArtifacts {
 class PhoneOutput {
   const PhoneOutput({required this.path, required this.modified, this.bytes});
 
-  /// Guest path (`/sdcard/Download/DSH-Go/…`).
+  /// Guest path (`/sdcard/Download/ChemClaw/…`).
   final String path;
   final DateTime modified;
   final int? bytes;
@@ -489,11 +489,11 @@ class FilesChannel {
   Future<void> open(String hostPath, {required String name, required String mime, bool chooser = false}) =>
       channel.invokeMethod<void>('open', {'path': hostPath, 'name': name, 'mime': mime, 'chooser': chooser});
 
-  /// Copies an Android file into the public Downloads (`Download/DSH-Go`);
-  /// returns where it landed (`Download/DSH-Go/report.pdf`).
+  /// Copies an Android file into the public Downloads (`Download/ChemClaw`);
+  /// returns where it landed (`Download/ChemClaw/report.pdf`).
   Future<String> saveToDownloads(String hostPath, {required String name, required String mime}) async =>
       await channel.invokeMethod<String>('saveToDownloads', {'path': hostPath, 'name': name, 'mime': mime}) ??
-      'Download/DSH-Go/$name';
+      'Download/ChemClaw/$name';
 
   /// Page sizes (PDF points) of a PDF on this phone.
   Future<List<({int width, int height})>> pdfInfo(String hostPath) async {

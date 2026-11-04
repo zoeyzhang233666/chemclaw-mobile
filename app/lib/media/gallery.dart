@@ -21,11 +21,11 @@ class MediaChannel {
   final MethodChannel channel;
 
   /// Saves [bytes] (PNG, JPEG, GIF or WebP, of type [mime]) into the
-  /// gallery's DSH Go album as [name]; returns where it landed
-  /// (`Pictures/DSH Go/chart.png`).
+  /// gallery's ChemClaw album as [name]; returns where it landed
+  /// (`Pictures/ChemClaw/chart.png`).
   Future<String> saveImage(Uint8List bytes, {required String name, required String mime}) async =>
       await channel.invokeMethod<String>('saveImage', {'bytes': bytes, 'name': name, 'mime': mime}) ??
-      'Pictures/DSH Go/$name';
+      'Pictures/ChemClaw/$name';
 
   /// The app's page in system settings (storage was refused for good).
   Future<bool> openSettings() async => await channel.invokeMethod<bool>('openSettings') ?? false;

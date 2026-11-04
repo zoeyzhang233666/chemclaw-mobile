@@ -118,9 +118,9 @@ void main() {
 
   group('saveToGallery', () {
     test('sends the bytes, the name and the type; returns the place', () async {
-      final calls = _mockMedia((_) async => 'Pictures/DSH Go/chart.png');
+      final calls = _mockMedia((_) async => 'Pictures/ChemClaw/chart.png');
       final where = await saveToGallery(const MediaChannel(), _png, name: 'chart.png');
-      expect(where, 'Pictures/DSH Go/chart.png');
+      expect(where, 'Pictures/ChemClaw/chart.png');
       expect(calls.single.method, 'saveImage');
       final args = calls.single.arguments as Map;
       expect(args['name'], 'chart.png');
@@ -152,7 +152,7 @@ void main() {
     }
 
     testWidgets('saved: 已保存到相册, and the key shows a tick for a moment', (tester) async {
-      _mockMedia((_) async => 'Pictures/DSH Go/chart.png');
+      _mockMedia((_) async => 'Pictures/ChemClaw/chart.png');
       await pumpButton(tester);
       await tester.tap(find.byTooltip('保存到相册'));
       await pumpFrames(tester, 2);
@@ -179,7 +179,7 @@ void main() {
     });
 
     testWidgets('long-press menu: save goes through the same path', (tester) async {
-      final calls = _mockMedia((_) async => 'Pictures/DSH Go/chart.png');
+      final calls = _mockMedia((_) async => 'Pictures/ChemClaw/chart.png');
       usePhoneView(tester);
       await tester.pumpWidget(
         testApp(

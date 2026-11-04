@@ -121,7 +121,7 @@ class RecordingShareOut extends ShareOut {
   @override
   Future<String> save(File file) async {
     saved.add(file.path);
-    return 'Download/DSH-Go/${file.uri.pathSegments.last}';
+    return 'Download/ChemClaw/${file.uri.pathSegments.last}';
   }
 }
 

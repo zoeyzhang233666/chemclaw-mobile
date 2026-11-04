@@ -660,7 +660,7 @@
   "featuresExportRemoteHint": "经 DSH Remote 中转时拿不到日志，可以在电脑上的网页版导出",
   "featuresExportShareHint": "附在问题反馈里，或发给自己",
   "featuresExportSaveDownloads": "存到「下载」",
-  "featuresExportDownloadsHint": "存进 下载/DSH-Go",
+  "featuresExportDownloadsHint": "存进 下载/ChemClaw",
   "featuresExportContents": "含这个对话和子代理的全部记录与附件",
   "featuresSkillUseHere": "在对话里用",
   "featuresSkillUseNew": "新对话里用",

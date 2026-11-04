@@ -334,7 +334,7 @@
   "featuresExportRemoteHint": "Logs aren’t available over DSH Remote. Export them from DSH Web on your computer.",
   "featuresExportShareHint": "Attach to feedback or send to yourself",
   "featuresExportSaveDownloads": "Save to Downloads",
-  "featuresExportDownloadsHint": "Save in Downloads/DSH-Go",
+  "featuresExportDownloadsHint": "Save in Downloads/ChemClaw",
   "featuresExportContents": "All records and attachments from this chat and its subagents",
   "featuresSkillUseHere": "Use in chat",
   "featuresSkillUseNew": "New chat",

@@ -33,7 +33,7 @@ import java.security.SecureRandom
  * and a redelivered request updates in place. With two or more in a group a silent summary
  * (id [SUMMARY_ID]) bundles them.
  *
- * Lock screen: every notification is VISIBILITY_PRIVATE with a public version ("DSH Go · 有一轮完成了"),
+ * Lock screen: every notification is VISIBILITY_PRIVATE with a public version ("ChemClaw · 有一轮完成了"),
  * which Android shows when the person's lock-screen setting hides sensitive content. Posted while
  * the device is locked, the notification itself carries only that public text whatever the
  * setting, and gets its real title and text once the person unlocks (USER_PRESENT), silently.

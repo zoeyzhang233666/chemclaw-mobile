@@ -85,12 +85,12 @@ void main() {
             expect(await File(path).readAsBytes(), [0x50, 0x4b, 1, 1]);
             if (missingAtCleanup) await File(path).parent.delete(recursive: true);
             if (failure) throw original;
-            return 'Download/DSH-Go/dsh-session-S.zip';
+            return 'Download/ChemClaw/dsh-session-S.zip';
           }).saveToDownloads('S');
           if (failure) {
             await expectLater(operation, throwsA(same(original)));
           } else {
-            expect(await operation, 'Download/DSH-Go/dsh-session-S.zip');
+            expect(await operation, 'Download/ChemClaw/dsh-session-S.zip');
           }
           expect(source, isNotNull);
           expect(await File(source!).parent.exists(), isFalse);
@@ -176,7 +176,7 @@ void main() {
           // file.inputStream/copyTo. Hold this same pre-read boundary explicitly.
           if (saves.length == 1) await save.release.future;
           save.consumed = await File(save.path).readAsBytes();
-          return 'Download/DSH-Go/${(call.arguments as Map)['name']}';
+          return 'Download/ChemClaw/${(call.arguments as Map)['name']}';
         });
         usePhoneView(tester);
         try {

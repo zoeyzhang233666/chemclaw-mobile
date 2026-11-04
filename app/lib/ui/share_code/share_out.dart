@@ -1,5 +1,5 @@
 // Where a share code goes — the clipboard, the Android share sheet, a `.dshgo`
-// file in Download/DSH-Go. A seam: tests record instead.
+// file in Download/ChemClaw. A seam: tests record instead.
 
 import 'dart:io';
 
@@ -72,7 +72,7 @@ class ShareOut {
     ),
   );
 
-  /// Into `Download/DSH-Go`; returns where it landed.
+  /// Into `Download/ChemClaw`; returns where it landed.
   Future<String> save(File file) =>
       files.saveToDownloads(file.path, name: file.uri.pathSegments.last, mime: shareFileMime);
 }
