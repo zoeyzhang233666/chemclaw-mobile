@@ -83,11 +83,13 @@ class ChemClawDesktopTeam {
     required this.expertItems,
     required this.groupItems,
     required this.skillItems,
+    this.readOnly,
   });
 
   final List<ChemClawExpertSummary> expertItems;
   final List<ChemClawGroupSummary> groupItems;
   final List<String> skillItems;
+  final String? readOnly;
   int get bots => expertItems.length;
   int get rooms => groupItems.length;
   int get skills => skillItems.length;
@@ -116,6 +118,15 @@ class ChemClawDesktopTeam {
       final fallback = safeText(raw['displayName']);
       skillLabels[name] = display.isNotEmpty ? display : fallback.isNotEmpty ? fallback : name;
     }
+
+    // A generic older DS Bot may expose a structurally similar state route.
+    // Requiring ChemClaw identity prevents a second team being rebranded as ours.
+    final names = (answer['bots'] as List)
+        .whereType<Map>()
+        .map((bot) => safeText(bot['name']).toLowerCase());
+    final hasChemClawIdentity = names.contains('chemclaw') ||
+        library.keys.any((name) => name.startsWith('chem-') || name.startsWith('chemical-'));
+    if (!hasChemClawIdentity) return null;
 
     final botNames = <String, String>{};
     final experts = <ChemClawExpertSummary>[];
@@ -172,6 +183,7 @@ class ChemClawDesktopTeam {
       expertItems: List.unmodifiable(experts),
       groupItems: List.unmodifiable(groups),
       skillItems: List.unmodifiable(skillLabels.values),
+      readOnly: safeText(answer['readOnly']).isEmpty ? null : safeText(answer['readOnly']),
     );
   }
 }
@@ -210,7 +222,7 @@ class DsBotStatus {
   bool get ready => availability == DsBotAvailability.ready && team != null;
 
   /// Another DSH holds the team: it shows but cannot change.
-  String? get readOnly => team?.readOnly ?? hello?.readOnly;
+  String? get readOnly => team?.readOnly ?? hello?.readOnly ?? desktopTeam?.readOnly;
 
   bool supports(String capability) => hello?.supports(capability) ?? false;
 
