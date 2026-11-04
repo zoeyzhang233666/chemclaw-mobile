@@ -14,6 +14,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../l10n/l10n.dart';
 import '../../state/connection_state.dart';
 import '../../state/features_state.dart';
+import '../../state/hosts_state.dart';
 import '../../state/schedule_editor_state.dart';
 import '../../state/sessions_state.dart';
 import '../common/feature_tile.dart';
@@ -31,6 +32,7 @@ import '../common/smooth_size.dart';
 import 'schedule_editor/schedule_editor_page.dart';
 import 'schedule_editor/schedule_pickers.dart' show zoneLabel;
 import '../common/brief_notice.dart';
+import '../settings/background_guide_page.dart';
 
 enum ScheduleFilter { all, active, ended }
 
@@ -130,6 +132,7 @@ class _SchedulesPageState extends ConsumerState<SchedulesPage> {
       );
     }
     final scheme = Theme.of(context).colorScheme;
+    final localHost = ref.watch(activeHostProvider).isLocal;
     return AppPage.list(
       title: l10n.featuresSchedules,
       subtitle: Text(l10n.featuresSchedulesSubtitle),
@@ -172,6 +175,20 @@ class _SchedulesPageState extends ConsumerState<SchedulesPage> {
             ),
           ),
         ),
+        if (localHost)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(builder: (_) => const BackgroundGuidePage()),
+                ),
+                icon: const Icon(AppIcons.settings, size: 18),
+                label: Text(AppLocale.isEnglish ? 'Background settings' : '本机后台运行设置'),
+              ),
+            ),
+          ),
         if (list != null && list.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),

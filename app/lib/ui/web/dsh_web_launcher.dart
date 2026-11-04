@@ -97,7 +97,7 @@ void openDshWeb(BuildContext context, WidgetRef ref, {DshWebTarget target = cons
     case SshDshWeb(:final url, :final hostName):
       page = WebViewPage(
         url: url,
-        title: context.l10n.webTitle,
+        title: AppLocale.isEnglish ? 'ChemClaw · Classic' : 'ChemClaw · 经典模式',
         subtitle: hostName,
         externalDisabledReason: context.l10n.webSshAppOnly,
         // Android suspends the page in the background and its socket drops.

@@ -338,7 +338,7 @@ final featureSections = <FeatureSection>[
     ),
     FeatureItem.localized(
       id: 'ds-bot',
-      title: (_) => 'DS Bot',
+      title: (_) => 'ChemClaw Bot',
       summary: (l10n) => l10n.catalogBotSummary,
       icon: AppIcons.bot,
       native: (_) => const BotsPage(),

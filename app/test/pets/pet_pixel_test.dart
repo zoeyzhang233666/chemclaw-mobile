@@ -63,6 +63,14 @@ int px(Uint8List rgba, int w, int x, int y) {
   return rgba[i] << 24 | rgba[i + 1] << 16 | rgba[i + 2] << 8 | rgba[i + 3];
 }
 
+// Match the branded runtime's reversible red/blue channel swap. The pixel
+// integrity check still rejects any blended or interpolated art pixels.
+int chemClawPetColor(int rgba) =>
+    ((rgba & 0x0000ff00) << 16) |
+    (rgba & 0x00ff0000) |
+    ((rgba & 0xff000000) >> 16) |
+    (rgba & 0x000000ff);
+
 void main() {
   tearDown(PetSheets.instance.clear);
 
@@ -97,7 +105,7 @@ void main() {
         final colours = <int>{};
         for (var y = src.top.toInt(); y < src.bottom; y++) {
           for (var x = src.left.toInt(); x < src.right; x++) {
-            colours.add(px(data, sheet.width, x, y));
+            colours.add(chemClawPetColor(px(data, sheet.width, x, y)));
           }
         }
         sheet.dispose();

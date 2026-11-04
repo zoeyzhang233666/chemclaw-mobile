@@ -11,6 +11,7 @@ import '../../state/models_state.dart';
 import '../../state/provider_keys.dart';
 import '../../state/providers_state.dart';
 import '../plugins/plugins_screen.dart';
+import '../theme/app_icons.dart';
 
 /// Preconfigured ChemClaw services. Readiness comes from the active Host.
 class ChemClawMcpPage extends ConsumerStatefulWidget {
@@ -216,12 +217,12 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
           suffixIcon: Row(mainAxisSize: MainAxisSize.min, children: [
             IconButton(
               tooltip: hidden ? '显示密钥' : '隐藏密钥',
-              icon: Icon(hidden ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+              icon: Icon(hidden ? AppIcons.showSecret : AppIcons.hideSecret),
               onPressed: toggle,
             ),
             IconButton(
               tooltip: '从剪贴板粘贴',
-              icon: const Icon(Icons.content_paste),
+              icon: const Icon(AppIcons.paste),
               onPressed: () => _paste(controller),
             ),
           ]),
@@ -275,7 +276,7 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
               const SizedBox(height: 12),
               FilledButton.icon(
                 onPressed: busy || backend == null ? null : _saveApiHub,
-                icon: const Icon(Icons.check_circle_outline),
+                icon: const Icon(AppIcons.completed),
                 label: Text(_busyApi ? '正在获取模型…' : '验证并保存 APIHub'),
               ),
               TextButton(onPressed: () => _openKeyPage(apiHubKeysUrl), child: const Text('获取 APIHub 密钥')),
@@ -290,7 +291,7 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
               const SizedBox(height: 12),
               FilledButton.icon(
                 onPressed: busy || client == null ? null : _connectHub,
-                icon: const Icon(Icons.hub_outlined),
+                icon: const Icon(AppIcons.cloud),
                 label: Text(_busyHub ? '正在连接 MCP…' : '保存密钥并连接数据中台'),
               ),
               TextButton(onPressed: () => _openKeyPage(dataHubKeysUrl), child: const Text('获取数据中台密钥')),
@@ -335,7 +336,7 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
                   const SizedBox(height: 12),
                   FilledButton.icon(
                     onPressed: busy || client == null ? null : _connectQcc,
-                    icon: const Icon(Icons.business_outlined),
+                    icon: const Icon(AppIcons.workspace),
                     label: Text(_busyQcc ? '正在连接企查查…' : '保存密钥并连接 4 个 MCP'),
                   ),
                   if (_qccMessage != null) Text(_qccMessage!),
@@ -346,7 +347,7 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
             huagongsheMcpUrl,
             OutlinedButton.icon(
               onPressed: busy || client == null ? null : _connectPublic,
-              icon: const Icon(Icons.science_outlined),
+              icon: const Icon(AppIcons.search),
               label: Text(_busyPublic ? '连接中…' : '连接公开检索（免密钥）'),
             ),
         ),
@@ -355,14 +356,14 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
             await Clipboard.setData(const ClipboardData(text: ChemClawMcpPage.testPrompt));
             if (context.mounted) _note('MCP 查询测试问题已复制');
           },
-          icon: const Icon(Icons.copy_outlined),
+          icon: const Icon(AppIcons.copy),
           label: const Text('复制现货行情验证问题'),
         ),
         TextButton.icon(
           onPressed: () => Navigator.of(context).push(MaterialPageRoute<void>(
             builder: (_) => const PluginsScreen(),
           )),
-          icon: const Icon(Icons.extension_outlined),
+          icon: const Icon(AppIcons.plugin),
           label: const Text('高级插件管理'),
         ),
         const SizedBox(height: 16),

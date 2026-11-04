@@ -44,7 +44,7 @@ void main() {
 
   testWidgets('the home lists the Main Bot first, then the others and the group; a row opens its chat', (tester) async {
     await open(tester, const BotsPage());
-    expect(tester.widget<AppPage>(find.byType(AppPage)).title, 'DS Bot');
+    expect(tester.widget<AppPage>(find.byType(AppPage)).title, 'ChemClaw · Bot 与群聊');
     expect(find.text('本机 · 3 个 Bot · 1 个群聊'), findsOneWidget);
     final chief = tester.getTopLeft(find.text('Chief'));
     final writer = tester.getTopLeft(find.text('Writer'));
@@ -279,7 +279,7 @@ void main() {
     await tester.tap(find.byKey(const ValueKey('dsbot-drawer-row')));
     await frames(tester, 4);
     expect(find.byType(BotsPage), findsOneWidget);
-    expect(tester.widget<AppPage>(find.byType(AppPage)).title, 'DS Bot');
+    expect(tester.widget<AppPage>(find.byType(AppPage)).title, 'ChemClaw · Bot 与群聊');
   });
 
   testWidgets('without DS Bot the drawer row draws nothing', (tester) async {

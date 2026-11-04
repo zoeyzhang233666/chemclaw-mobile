@@ -60,14 +60,14 @@ class ProvidersPage extends ConsumerWidget {
           child: Card(
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              leading: Icon(Icons.hub_outlined, color: Theme.of(context).colorScheme.primary),
+              leading: Icon(AppIcons.cloud, color: Theme.of(context).colorScheme.primary),
               title: Text(AppLocale.isEnglish
                   ? 'Recommended · APIHub / ChemCloud data'
                   : '官方推荐 · APIHub / 芯化和云数据中台'),
               subtitle: Text(AppLocale.isEnglish
                   ? 'Paste your keys, discover models and connect chemical spot-data MCP on the active Host.'
                   : '粘贴密钥即可发现模型，并在当前主机接入化工现货数据 MCP。'),
-              trailing: const Icon(Icons.chevron_right),
+              trailing: const Icon(AppIcons.disclosure),
               onTap: () => _push(context, const ChemClawMcpPage()),
             ),
           ),

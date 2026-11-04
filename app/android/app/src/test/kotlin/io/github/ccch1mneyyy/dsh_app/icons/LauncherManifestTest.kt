@@ -81,9 +81,18 @@ class LauncherManifestTest {
                     if (type == "drawable") assertTrue(res, File(main, "res/drawable/$res.xml").exists())
                     else for (d in DENSITIES) assertTrue("$d/$res", File(main, "res/mipmap-$d/$res.png").exists())
                 }
-                // Android 8+ adaptive icons use a vector foreground; no legacy raster fish tail.
+                // Each alias combines the original ChemClaw vector with freshly rendered
+                // raster fallbacks (no upstream fish-tail assets).
                 assertTrue(name, layers["foreground"] == ("drawable" to "ic_chemclaw_foreground"))
-                for (d in DENSITIES) assertFalse("$d/$name must not carry restricted upstream art", File(main, "res/mipmap-$d/$name.png").exists())
+                for (d in DENSITIES) {
+                    val image = File(main, "res/mipmap-$d/$name.png")
+                    assertTrue("$d/$name missing", image.exists())
+                    assertTrue("$d/$name is not a PNG", image.inputStream().use { input ->
+                        input.readNBytes(8).contentEquals(byteArrayOf(
+                            0x89.toByte(), 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+                        ))
+                    })
+                }
             }
         }
     }

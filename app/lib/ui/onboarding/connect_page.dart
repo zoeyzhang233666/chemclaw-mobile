@@ -288,7 +288,7 @@ class _Choose extends StatelessWidget {
         // Primary ChemClaw path: existing preconfigured APIHub / data MCP page.
         FilledButton.icon(
           onPressed: onChemClaw,
-          icon: const Icon(Icons.hub_outlined),
+          icon: const Icon(AppIcons.cloud),
           label: Text(AppLocale.isEnglish ? 'APIHub / Chemical Data MCP' : '连接 APIHub / 化工数据 MCP'),
         ),
         const SizedBox(height: 10),

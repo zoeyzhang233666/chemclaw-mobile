@@ -44,3 +44,28 @@ assert feature parity with the desktop ChemClaw application.
 
 This remains a development test APK; CI and legal/visual acceptance are required
 before a branded public release.
+
+## Verified compatibility and CI audit · November 4, 2026
+
+- The mobile native Bot client expects DS Bot mobile protocol v1: POST
+  `/api/bot` with `hello` and `room-chat`, plus an SSE feed. Desktop
+  `chemclaw-bot` uses the same HTTP route but lacks those mobile endpoints;
+  sharing the URL alone does not provide native compatibility. Do not install
+  upstream `ds-bot` to access existing ChemClaw desktop Bot/group data: it
+  uses a separate state store. Until a verified adapter exists, open the
+  active Host's DSH web client as a fallback, without claiming native sync.
+- Android JVM launcher test now checks generated ChemClaw PNG fallback assets
+  and their signatures instead of prohibiting the intended new rasters.
+- The launch test renderer accepts Paper's flat colour background (previous
+  two-stop-only gradient construction crashed).
+- Rebranded native entry points use the project's AppIcons roles, while the
+  renderer still uses the original Pet animation frames and tests RGB channel
+  conversion without removing nearest-neighbour integrity assertions.
+- Schedule list offers a direct path to the Android background settings on
+  a local Host; no new scheduler is created. A remote Host remains responsible
+  for tasks hosted remotely.
+- Classic web container titles are rebranded; its embedded upstream web client
+  still needs separate, tested Paper/brand styling. This commit does not claim
+  that the entire embedded DSH user interface has been reskinned.
+- Multiple legacy Flutter update tests and other UI assertions remain outside
+  this patch. Do not turn them off or release publicly without triage.

@@ -58,6 +58,16 @@ class DsBotInstallCard extends ConsumerWidget {
       action: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          Text(
+            AppLocale.isEnglish
+                ? 'Desktop ChemClaw uses a separate Bot plugin. Installing DS Bot creates a different team; until the mobile protocol is supported, use the web client for desktop Bots and groups.'
+                : '电脑版 ChemClaw 使用独立 Bot 插件。安装 DS Bot 会创建另一套团队；在原生协议适配完成前，请通过网页版访问电脑版的 Bot 和群聊。',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 12),
           FilledButton.icon(
             key: const ValueKey('dsbot-open-web'),
             onPressed: () => ref.read(dsBotWebOpenerProvider)(context, ref),

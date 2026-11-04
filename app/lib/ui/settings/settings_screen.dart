@@ -200,7 +200,7 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () => _push(context, const PluginsScreen()),
             ),
             SettingsTile(
-              icon: Icons.hub_outlined,
+              icon: AppIcons.cloud,
               tint: SettingsHues.abilities,
               spot: Spots.chemMcp,
               subtitle: 'APIHub 模型 · 芯化和云数据 MCP',

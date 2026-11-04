@@ -61,6 +61,18 @@ class ChemClawBrandTest(unittest.TestCase):
         self.assertIn("onPressed: onChemClaw", onboarding)
         self.assertIn("onPressed: onSignIn", onboarding)
 
+    def test_compatibility_and_mobile_entry_points(self):
+        for page in [
+            'app/lib/ui/onboarding/connect_page.dart',
+            'app/lib/ui/providers/providers_page.dart',
+            'app/lib/ui/settings/chemclaw_mcp_page.dart',
+        ]:
+            self.assertNotIn('Icons.hub_outlined', source(page))
+        self.assertIn('BackgroundGuidePage', source('app/lib/ui/features/schedules_page.dart'))
+        self.assertIn('Desktop ChemClaw uses a separate Bot plugin',
+                      source('app/lib/ui/bots/install_card.dart'))
+        self.assertIn('ChemClaw · 经典模式', source('app/lib/ui/web/local_web_screen.dart'))
+
     def test_default_paper_theme(self):
         self.assertIn('AppAccent accent = AppAccent.paper',
                       source('app/lib/ui/theme/app_theme.dart'))
