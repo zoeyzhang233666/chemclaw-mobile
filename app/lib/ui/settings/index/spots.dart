@@ -596,8 +596,8 @@ abstract final class Spots {
     'chemcloud-mcp',
     page: SettingsPageId.hub,
     group: _abilities,
-    title: (_) => '化工数据 MCP',
-    keywords: (_) => 'ChemCloud, MCP, 化工数据, 现货, 行情',
+    title: (_) => 'ChemClaw 服务连接',
+    keywords: (_) => 'APIHub, ChemCloud, MCP, 化工数据, 现货, 行情, 密钥',
     freq: Freq.medium,
   );
 
