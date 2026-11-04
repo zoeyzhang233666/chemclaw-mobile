@@ -24,7 +24,7 @@ const _width = 390.0;
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
-  testWidgets('six groups on one grid', (tester) async {
+  testWidgets('seven groups on one grid', (tester) async {
     tester.view.devicePixelRatio = 2;
     tester.view.physicalSize = const Size(_width * 2, 2600 * 2);
     addTearDown(tester.view.reset);
@@ -45,7 +45,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final sections = tester.widgetList<SettingsSection>(find.byType(SettingsSection)).toList();
-    expect([for (final s in sections) s.title], ['AI', '能力', '外观', '通用', '主机', '帮助与关于']);
+    expect([for (final s in sections) s.title], ['首选服务', 'AI', '能力', '外观', '通用', '主机', '帮助与关于']);
 
     final capsule = tester.getRect(find.byType(SearchCapsuleButton));
     for (final section in find.byType(SettingsSection).evaluate()) {
@@ -73,7 +73,11 @@ void main() {
     for (final tile in tester.widgetList<SettingsTile>(find.byType(SettingsTile))) {
       final title = tile.title ?? tile.spot!.title(appL10n);
       final row = find.ancestor(of: find.text(title), matching: find.byType(ConstrainedBox)).first;
-      expect(tester.getSize(row).height, SettingsMetrics.rowHeight, reason: title);
+      expect(
+        tester.getSize(row).height,
+        tile.subtitle == null ? SettingsMetrics.rowHeight : SettingsMetrics.rowHeightTwoLine,
+        reason: title,
+      );
       expect(
         tester.getRect(find.text(title)).left,
         moreOrLessEquals(16 + SettingsMetrics.textStart, epsilon: _tol),

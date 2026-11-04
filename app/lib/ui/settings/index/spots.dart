@@ -287,6 +287,7 @@ const pluginFormPrefix = 'plugin:';
 // The hub's groups, by intent (docs/design/settings-ia.md §4.2).
 String _ai(L10n l) => l.hubGroupAi;
 String _abilities(L10n l) => l.hubGroupCapabilities;
+String _services(L10n l) => AppLocale.isEnglish ? 'Recommended connections' : '首选服务';
 String _look(L10n l) => l.hubSettingsAppearance;
 String _general(L10n l) => l.hubGroupGeneral;
 String _hosts(L10n l) => l.hubGroupHosts;
@@ -591,14 +592,22 @@ abstract final class Spots {
     keywords: (l) => l.searchKwCommunity,
   );
 
-  /// ChemClaw industry MCP guide, indexed as a real hub setting.
+  /// Primary model and chemical-data connections shown before DeepSeek login.
+  static final apiHub = SettingSpot(
+    'chemclaw-apihub',
+    page: SettingsPageId.hub,
+    group: _services,
+    title: (_) => AppLocale.isEnglish ? 'APIHub model service' : 'APIHub 模型服务',
+    keywords: (_) => 'APIHub, API key, 模型, 模型服务, DeepSeek',
+    freq: Freq.high,
+  );
   static final chemMcp = SettingSpot(
     'chemcloud-mcp',
     page: SettingsPageId.hub,
-    group: _abilities,
-    title: (_) => 'ChemClaw 服务连接',
-    keywords: (_) => 'APIHub, ChemCloud, MCP, 化工数据, 现货, 行情, 密钥',
-    freq: Freq.medium,
+    group: _services,
+    title: (_) => AppLocale.isEnglish ? 'ChemCloud chemical data MCP' : '芯化和云数据中台 MCP',
+    keywords: (_) => '芯化和云, 化工数据中台, ChemCloud, MCP, 现货价格, 行情, 密钥',
+    freq: Freq.high,
   );
 
   // 模型.
@@ -1046,6 +1055,7 @@ final _rows = <SettingSpot>[
   Spots.language,
   Spots.askAi,
   Spots.community,
+  Spots.apiHub,
   Spots.chemMcp,
   Spots.addProvider,
   Spots.permissionCurrent,

@@ -66,6 +66,7 @@ import 'voice_settings_page.dart';
 
 /// One hue per group on the hub: rows of a group share it.
 abstract final class SettingsHues {
+  static const services = 2;
   static const ai = 0;
   static const abilities = 4;
   static const appearance = 1;
@@ -74,9 +75,9 @@ abstract final class SettingsHues {
   static const help = 7;
 }
 
-/// Settings hub: search, the overview card (account, balance, engine), then
-/// six groups by what people come to do — AI, 能力, 外观, 通用, 主机, 帮助与
-/// 关于 (docs/design/settings-ia.md §4.2). Every row that opens a page says
+/// Settings hub: search, ChemClaw recommended services first, then grouped
+/// settings. The optional DeepSeek account and engine overview is lower down.
+/// Every row that opens a page says
 /// where it stands; nothing here loosens a safeguard or deletes anything:
 /// those live on their own pages.
 class SettingsScreen extends ConsumerWidget {
@@ -138,7 +139,33 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => Navigator.of(context).push(SettingsSearchPage.route()),
           ),
         ),
-        const SettingsOverview(),
+        SettingsSection(
+          title: AppLocale.isEnglish ? 'Recommended connections' : '首选服务',
+          children: [
+            SettingsTile(
+              key: const ValueKey('settings-apihub-primary'),
+              icon: AppIcons.providers,
+              tint: SettingsHues.services,
+              spot: Spots.apiHub,
+              subtitle: AppLocale.isEnglish
+                  ? 'Paste your APIHub key to discover models automatically'
+                  : '粘贴 APIHub 密钥，自动获取模型列表并完成配置',
+              onTap: () => _push(context,
+                  const ChemClawMcpPage(preferredService: ChemClawService.apiHub)),
+            ),
+            SettingsTile(
+              key: const ValueKey('settings-chemcloud-primary'),
+              icon: AppIcons.cloud,
+              tint: SettingsHues.services,
+              spot: Spots.chemMcp,
+              subtitle: AppLocale.isEnglish
+                  ? 'Connect chemical spot-price and enterprise data using an MCP key'
+                  : '粘贴数据中台密钥，连接化工现货、企业与化合物 MCP 数据',
+              onTap: () => _push(context,
+                  const ChemClawMcpPage(preferredService: ChemClawService.dataHub)),
+            ),
+          ],
+        ),
         SettingsSection(
           title: l10n.hubGroupAi,
           children: [
@@ -198,13 +225,6 @@ class SettingsScreen extends ConsumerWidget {
                       style: AppType.tabular(Theme.of(context).textTheme.bodyMedium!),
                     ),
               onTap: () => _push(context, const PluginsScreen()),
-            ),
-            SettingsTile(
-              icon: AppIcons.cloud,
-              tint: SettingsHues.abilities,
-              spot: Spots.chemMcp,
-              subtitle: 'APIHub 模型 · 芯化和云数据 MCP',
-              onTap: () => _push(context, const ChemClawMcpPage()),
             ),
             // The plugins' own settings sections, when the host has any.
             ...pluginSettingsTiles(ref, tint: SettingsHues.abilities),
@@ -331,6 +351,8 @@ class SettingsScreen extends ConsumerWidget {
             ),
           ],
         ),
+        // DeepSeek login and account balance remain available but secondary.
+        const SettingsOverview(),
         Padding(
           padding: const EdgeInsets.only(top: 8),
           child: Center(child: BrandMark(size: 18, color: colors.textDisabled)),

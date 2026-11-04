@@ -13,9 +13,14 @@ import '../../state/providers_state.dart';
 import '../plugins/plugins_screen.dart';
 import '../theme/app_icons.dart';
 
+/// Which service a settings shortcut opens first (other services remain accessible).
+enum ChemClawService { apiHub, dataHub }
+
 /// Preconfigured ChemClaw services. Readiness comes from the active Host.
 class ChemClawMcpPage extends ConsumerStatefulWidget {
-  const ChemClawMcpPage({super.key});
+  const ChemClawMcpPage({super.key, this.preferredService = ChemClawService.apiHub});
+
+  final ChemClawService preferredService;
   static const testPrompt =
       '请先确认当前主机是否已加载 chem-data-hub MCP 工具。'
       '如果可用，请通过 MCP 查询甲醇华东现货最近一个月价格，'
@@ -258,8 +263,67 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
       _statuses = client?.listChemClawConnectors();
     }
     final busy = _busyApi || _busyHub || _busyPublic || _busyQcc;
+    final apiCard = _card('APIHub · 模型服务',
+        configured ? '已在当前主机注册 APIHub 模型渠道' : '自动验证密钥，读取可用模型并创建模型渠道',
+        apiHubBaseUrl,
+        Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          _keyField(_apiKey, '粘贴 APIHub 密钥', _hideApi, () => setState(() => _hideApi = !_hideApi)),
+          const SizedBox(height: 12),
+          FilledButton.icon(
+            onPressed: busy || backend == null ? null : _saveApiHub,
+            icon: const Icon(AppIcons.completed),
+            label: Text(_busyApi ? '正在获取模型…' : '验证并保存 APIHub'),
+          ),
+          TextButton(onPressed: () => _openKeyPage(apiHubKeysUrl), child: const Text('获取 APIHub 密钥')),
+          if (_apiMessage != null) Text(_apiMessage!),
+        ]),
+    );
+    final hubCard = _card('芯化和云数据中台 · MCP',
+        '现货价格、企业及化合物数据；预置 Streamable HTTP 和 Bearer 鉴权',
+        dataHubMcpUrl,
+        Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          _keyField(_hubKey, '粘贴数据中台 MCP 密钥', _hideHub, () => setState(() => _hideHub = !_hideHub)),
+          const SizedBox(height: 12),
+          FilledButton.icon(
+            onPressed: busy || client == null ? null : _connectHub,
+            icon: const Icon(AppIcons.cloud),
+            label: Text(_busyHub ? '正在连接 MCP…' : '保存密钥并连接数据中台'),
+          ),
+          TextButton(onPressed: () => _openKeyPage(dataHubKeysUrl), child: const Text('获取数据中台密钥')),
+          if (_hubMessage != null) Text(_hubMessage!),
+          const SizedBox(height: 8),
+          FutureBuilder<List<ChemClawConnectorStatus>?>(
+            future: _statuses,
+            builder: (context, state) {
+              if (client == null) return const Text('状态：DSH 主机尚未连接');
+              if (state.connectionState != ConnectionState.done) return const Text('正在检查 MCP 状态…');
+              if (state.hasError) return const Text('MCP 状态未知，请点击刷新');
+              if (state.data == null) return const Text('此主机未安装 ChemClaw MCP 预置桥接');
+              final service = state.data!.where((s) => s.id == chemDataHubId).firstOrNull;
+              return Text('数据中台状态：${switch (service?.state) {
+                'ready' => '已挂载（待实际查询验证）',
+                'needs-key' => '等待密钥',
+                'connecting' => '连接中',
+                'error' => '连接失败',
+                _ => '尚未就绪',
+              }}');
+            },
+          ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              onPressed: client == null ? null : () => _refresh(client),
+              child: const Text('刷新 MCP 状态'),
+            ),
+          ),
+        ]),
+    );
     return Scaffold(
-      appBar: AppBar(title: const Text('ChemClaw 服务连接')),
+      appBar: AppBar(
+        title: Text(widget.preferredService == ChemClawService.dataHub
+            ? '芯化和云数据中台'
+            : 'APIHub · 模型服务'),
+      ),
       body: ListView(padding: const EdgeInsets.all(16), children: [
         Text('当前主机：${host.isLocal ? '本机 DSH 引擎' : '远程 DSH 主机'}',
             style: Theme.of(context).textTheme.titleMedium),
@@ -268,61 +332,13 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
             '模型 API Key 与数据中台 MCP 密钥分别授权，需各粘贴一次。'
             '密钥不会随 APK 发布。'),
         const SizedBox(height: 16),
-        _card('APIHub · 模型服务',
-            configured ? '已在当前主机注册 APIHub 模型渠道' : '自动验证密钥，读取可用模型并创建模型渠道',
-            apiHubBaseUrl,
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              _keyField(_apiKey, '粘贴 APIHub 密钥', _hideApi, () => setState(() => _hideApi = !_hideApi)),
-              const SizedBox(height: 12),
-              FilledButton.icon(
-                onPressed: busy || backend == null ? null : _saveApiHub,
-                icon: const Icon(AppIcons.completed),
-                label: Text(_busyApi ? '正在获取模型…' : '验证并保存 APIHub'),
-              ),
-              TextButton(onPressed: () => _openKeyPage(apiHubKeysUrl), child: const Text('获取 APIHub 密钥')),
-              if (_apiMessage != null) Text(_apiMessage!),
-            ]),
-        ),
-        _card('芯化和云数据中台 · MCP',
-            '现货价格、企业及化合物数据；预置 Streamable HTTP 和 Bearer 鉴权',
-            dataHubMcpUrl,
-            Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              _keyField(_hubKey, '粘贴数据中台 MCP 密钥', _hideHub, () => setState(() => _hideHub = !_hideHub)),
-              const SizedBox(height: 12),
-              FilledButton.icon(
-                onPressed: busy || client == null ? null : _connectHub,
-                icon: const Icon(AppIcons.cloud),
-                label: Text(_busyHub ? '正在连接 MCP…' : '保存密钥并连接数据中台'),
-              ),
-              TextButton(onPressed: () => _openKeyPage(dataHubKeysUrl), child: const Text('获取数据中台密钥')),
-              if (_hubMessage != null) Text(_hubMessage!),
-              const SizedBox(height: 8),
-              FutureBuilder<List<ChemClawConnectorStatus>?>(
-                future: _statuses,
-                builder: (context, state) {
-                  if (client == null) return const Text('状态：DSH 主机尚未连接');
-                  if (state.connectionState != ConnectionState.done) return const Text('正在检查 MCP 状态…');
-                  if (state.hasError) return const Text('MCP 状态未知，请点击刷新');
-                  if (state.data == null) return const Text('此主机未安装 ChemClaw MCP 预置桥接');
-                  final service = state.data!.where((s) => s.id == chemDataHubId).firstOrNull;
-                  return Text('数据中台状态：${switch (service?.state) {
-                    'ready' => '已挂载（待实际查询验证）',
-                    'needs-key' => '等待密钥',
-                    'connecting' => '连接中',
-                    'error' => '连接失败',
-                    _ => '尚未就绪',
-                  }}');
-                },
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: client == null ? null : () => _refresh(client),
-                  child: const Text('刷新 MCP 状态'),
-                ),
-              ),
-            ]),
-        ),
+        if (widget.preferredService == ChemClawService.dataHub) ...[
+          hubCard,
+          apiCard,
+        ] else ...[
+          apiCard,
+          hubCard,
+        ],
         ExpansionTile(
           title: const Text('企查查 MCP（可选）'),
           subtitle: const Text('一个密钥连接企业、知产、经营、风险 4 项服务'),
