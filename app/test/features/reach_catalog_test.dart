@@ -48,9 +48,9 @@ void main() {
     expect(webIds, {'voice-input', 'web'});
   });
 
-  testWidgets('DS Bot 徽标实时汇总未读，零隐藏，超过 99 封顶', (tester) async {
+  testWidgets('ChemClaw 专家入口不冒用通用 DS Bot 未读数', (tester) async {
     final inbox = _Inbox();
-    final tile = FeatureTileFor(item: item('ds-bot'), tint: 2, onOpen: () {});
+    final tile = FeatureTileFor(item: item('chemclaw-team'), tint: 2, onOpen: () {});
     await tester.pumpWidget(
       goldenApp(
         brightness: Brightness.light,
@@ -62,18 +62,12 @@ void main() {
     String? badge() => tester.widget<FeatureCard>(find.byType(FeatureCard)).badge;
     expect(badge(), isNull);
 
+    // The host reports a generic DS Bot inbox, but no ChemClaw desktop
+    // roster was identified. The ChemClaw card must not use these notices.
     inbox.counts({'bot': 2, 'room': 5});
     await tester.pumpAndSettle();
-    expect(badge(), '7');
-    expect(find.text('7'), findsOneWidget);
-
-    inbox.counts({'bot': 99});
-    await tester.pumpAndSettle();
-    expect(badge(), '99');
-    inbox.counts({'bot': 99, 'room': 1});
-    await tester.pumpAndSettle();
-    expect(badge(), '99+');
-    expect(find.text('99+'), findsOneWidget);
+    expect(badge(), isNull);
+    expect(find.text('7'), findsNothing);
 
     inbox.counts({});
     await tester.pumpAndSettle();
