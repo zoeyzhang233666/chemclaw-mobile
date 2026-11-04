@@ -7,9 +7,12 @@ import '../../l10n/l10n.dart';
 import '../../runtime/runtime_state.dart';
 import '../../state/account_state.dart';
 import '../../state/onboarding_state.dart';
+import '../../state/chemclaw_setup.dart';
+import '../../state/providers_state.dart';
 import '../account/account_widgets.dart';
 import '../common/progress_halo.dart';
 import '../providers/provider_form_page.dart';
+import '../settings/chemclaw_mcp_page.dart';
 import '../theme/app_icons.dart';
 import '../theme/theme.dart';
 import 'api_key_page.dart';
@@ -166,6 +169,30 @@ class _ConnectPageState extends ConsumerState<ConnectPage> {
     widget.onDone();
   }
 
+  /// Users may choose the preconfigured APIHub / MCP service without typing
+  /// URLs, protocols, model IDs or plugin commands. An unready Host cannot
+  /// falsely complete onboarding.
+  Future<void> _chemclawServices() async {
+    ref.read(accountProvider.notifier).dismissFailure();
+    await Navigator.of(context).push<void>(
+      MaterialPageRoute<void>(builder: (_) => const ChemClawMcpPage()),
+    );
+    if (!mounted) return;
+    final backend = ref.read(providerBackendProvider);
+    if (backend == null) return;
+    try {
+      final settings = await backend.read();
+      final keys = await backend.credentials([apiHubKeyRef]);
+      if (!mounted) return;
+      if (settings?.byRoute(apiHubRouteId) != null && keys[apiHubKeyRef]?.configured == true) {
+        await ref.read(onboardingPrefsProvider.notifier).setKeySkipped(true);
+        if (mounted) widget.onDone();
+      }
+    } catch (_) {
+      // Retain this step when the active Host is unavailable.
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen(accountProvider.select((s) => s.signedIn), (prev, signedIn) {
@@ -194,6 +221,7 @@ class _ConnectPageState extends ConsumerState<ConnectPage> {
           setState(() => _keyEntry = true);
         },
         onOther: _otherProvider,
+        onChemClaw: () => unawaited(_chemclawServices()),
         onSkip: _skip,
       );
     }
@@ -226,6 +254,7 @@ class _Choose extends StatelessWidget {
     required this.onSignIn,
     required this.onApiKey,
     required this.onOther,
+    required this.onChemClaw,
     required this.onSkip,
   });
 
@@ -233,6 +262,7 @@ class _Choose extends StatelessWidget {
   final VoidCallback onSignIn;
   final VoidCallback onApiKey;
   final VoidCallback onOther;
+  final VoidCallback onChemClaw;
   final VoidCallback onSkip;
 
   @override
@@ -268,6 +298,12 @@ class _Choose extends StatelessWidget {
           FilledButton(onPressed: onSignIn, child: Text(l10n.shellSignInDeepSeek)),
           const SizedBox(height: 10),
         ],
+        OutlinedButton.icon(
+          onPressed: onChemClaw,
+          icon: const Icon(Icons.hub_outlined),
+          label: const Text('连接 ChemClaw 服务（APIHub / MCP）'),
+        ),
+        const SizedBox(height: 10),
         OutlinedButton(onPressed: onApiKey, child: Text(l10n.shellUseApiKey)),
         const SizedBox(height: 6),
         // Two equal halves: the quieter ways on.
