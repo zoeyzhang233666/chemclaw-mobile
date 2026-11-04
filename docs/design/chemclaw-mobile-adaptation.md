@@ -83,3 +83,21 @@ new team. Legacy DS Bot without a capability library stays on its existing
 update/install path. All network errors remain best-effort fallback and
 reconnect resets the state. Native desktop parity requires an explicit
 versioned compatibility adapter; this read-only probe does not provide it.
+
+## Native read-only ChemClaw roster and reproducible APK downloads
+
+- The mobile Bot page now lists actual expert names, assigned Skill labels
+  (including one-level capability-pack expansion), member names in groups,
+  and the native skill catalog from the active desktop ChemClaw Host. This is
+  read-only. A named Web action opens the existing authenticated Host client.
+- The state mapper whitelists **only** names, roles, group membership and
+  Skill labels: it explicitly does not store or display MCP env/headers,
+  credential values, skill bodies, or Bot instructions on the phone.
+- A desktop Host's first 'state' read may initialize its own ChemClaw roster
+  if it has never been bootstrapped; the mobile app does not create a separate
+  DS Bot team, copy Bot records or install upstream DS Bot.
+- ARM64 runtime downloads from the Ubuntu archive mirror fall back to the
+  official Ubuntu archive when unreachable. Existing sha256 pins, signed
+  InRelease checks and the package-index hash chain remain mandatory.
+- CI must still prove proper UI layout, artifact goldens, real-run task
+  safety, and updates before public distribution.

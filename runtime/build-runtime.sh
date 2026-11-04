@@ -99,7 +99,24 @@ fetch() {
   if [[ -f "$dest" && -n "$want" && "$(sha256 "$dest")" == "$want" ]]; then return 0; fi
   if [[ -f "$dest" && -z "$want" ]]; then return 0; fi
   log "download $url"
-  curl -fL --retry 3 --retry-delay 2 --connect-timeout 20 -sS -o "$dest.part" "$url"
+  local backup=""
+  # Ubuntu archive mirrors may be unreachable from GitHub Actions. Fall back
+  # ONLY for Ubuntu archive paths, never for npm/Termux or arbitrary URLs.
+  # Existing SHA256 pins and the signed InRelease -> Packages checks apply
+  # identically to artifacts from either mirror.
+  case "$url" in
+    "$UBUNTU_ARCHIVE_ARM64/"*) backup="https://ports.ubuntu.com/ubuntu-ports/${url#"$UBUNTU_ARCHIVE_ARM64/"}" ;;
+    "$UBUNTU_ARCHIVE_AMD64/"*) backup="https://archive.ubuntu.com/ubuntu/${url#"$UBUNTU_ARCHIVE_AMD64/"}" ;;
+  esac
+  if ! curl -fL --retry 3 --retry-delay 2 --connect-timeout 20 -sS -o "$dest.part" "$url"; then
+    rm -f "$dest.part"
+    if [[ -z "$backup" || "$backup" == "$url" ]]; then
+      die "download failed; no verified fallback configured for $url"
+    fi
+    log "Ubuntu mirror unavailable; trying official archive $backup"
+    curl -fL --retry 3 --retry-delay 2 --connect-timeout 20 -sS -o "$dest.part" "$backup" \
+      || { rm -f "$dest.part"; die "Ubuntu primary and official fallback both failed"; }
+  fi
   mv "$dest.part" "$dest"
   if [[ -n "$want" ]]; then
     local got; got="$(sha256 "$dest")"

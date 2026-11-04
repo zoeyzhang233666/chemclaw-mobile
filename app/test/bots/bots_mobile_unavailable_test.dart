@@ -108,6 +108,45 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('native ChemClaw roster shows expert skills and group membership without a second install', (tester) async {
+    final fake = FakeDsBotTransport()..handlers.remove('hello');
+    fake.handlers['state'] = (_) => {
+      'workspaceId': 'chemclaw-workspace',
+      'mainBotIds': ['main'],
+      'bots': [
+        {'id': 'main', 'name': 'ChemClaw', 'role': '主控', 'capabilities': []},
+        {'id': 'spot', 'name': '现货行情分析师', 'role': '行情研究', 'capabilities': ['pack-market']},
+      ],
+      'rooms': [
+        {'id': 'r', 'name': '期现研究群', 'members': ['main', 'spot'], 'admin': 'main'},
+      ],
+      'capabilities': [
+        {'name': 'chem-market-brief', 'kind': 'skill', 'labels': {'zh': '行情快报'}},
+        {'name': 'pack-market', 'kind': 'pack', 'items': ['chem-market-brief']},
+        {'name': 'chem-data-hub', 'kind': 'mcp', 'headers': {'Authorization': 'secret-key'}},
+      ],
+    };
+    usePhoneView(tester);
+    await tester.pumpWidget(goldenApp(
+      home: const BotsPage(),
+      brightness: Brightness.light,
+      overrides: [...dsBotOverrides(fake), dsBotWebOpenerProvider.overrideWithValue((_, _) {})],
+    ));
+    await frames(tester);
+    expect(find.text('现货行情分析师'), findsOneWidget);
+    expect(find.textContaining('关联技能：行情快报'), findsOneWidget);
+    expect(find.text('期现研究群'), findsOneWidget);
+    expect(find.text('专业技能（1）'), findsOneWidget);
+    expect(find.byKey(const ValueKey('chemclaw-roster-search')), findsOneWidget);
+    expect(find.text(appL10n.commonInstall), findsNothing);
+    expect(fake.feedOpens, 0);
+    await tester.enterText(find.byKey(const ValueKey('chemclaw-roster-search')), '不存在的技能');
+    await tester.pump();
+    expect(find.text('现货行情分析师'), findsNothing);
+    expect(find.textContaining('未找到匹配'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final brightness in Brightness.values) {
     testWidgets('missing route at 320dp 2x $brightness has explicit capability and Web action', (tester) async {
       final fake = FakeDsBotTransport();

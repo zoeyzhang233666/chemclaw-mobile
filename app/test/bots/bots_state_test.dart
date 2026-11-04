@@ -75,9 +75,50 @@ void main() {
       expect(status.desktopTeam?.bots, 2);
       expect(status.desktopTeam?.rooms, 1);
       expect(status.desktopTeam?.skills, 2);
+      expect(status.desktopTeam?.expertItems.map((e) => e.name), ['ChemClaw', '现货行情分析师']);
+      expect(status.desktopTeam?.groupItems.single.name, '期现研究群');
+      expect(status.desktopTeam?.skillItems, ['chem-market-brief', 'chem-basis-research']);
       expect(status.team, isNull);
       expect(transport.endpoints, ['hello', 'state']);
       expect(transport.feedOpens, 0);
+    });
+
+    test('desktop ChemClaw pack skills resolve to experts; credentials are never retained', () {
+      final team = ChemClawDesktopTeam.fromState({
+        'workspaceId': 'host-owned',
+        'mainBotIds': ['a'],
+        'bots': [
+          {
+            'id': 'a', 'name': '行情专家', 'role': '化工行情',
+            'capabilities': ['pack-market'],
+          },
+        ],
+        'rooms': [
+          {'name': '研究群', 'members': ['a'], 'admin': 'a'},
+        ],
+        'capabilities': [
+          {
+            'name': 'spot-prices', 'kind': 'skill',
+            'labels': {'zh': '现货价格查询'},
+            'content': 'secret-from-instruction',
+          },
+          {
+            'name': 'chem-data-hub', 'kind': 'mcp',
+            'headers': {'Authorization': 'Bearer sk-do-not-store'},
+          },
+          {'name': 'pack-market', 'kind': 'pack', 'items': ['spot-prices', 'chem-data-hub']},
+        ],
+      });
+      expect(team, isNotNull);
+      expect(team!.bots, 1);
+      expect(team.rooms, 1);
+      expect(team.skills, 1);
+      expect(team.expertItems.single.skills, ['现货价格查询']);
+      expect(team.groupItems.single.members, ['行情专家']);
+      expect(team.groupItems.single.admin, '行情专家');
+      expect(team.skillItems, ['现货价格查询']);
+      expect(team.skillItems.join(' '), isNot(contains('sk-do-not-store')));
+      expect(team.expertItems.single.skills.join(' '), isNot(contains('secret-from-instruction')));
     });
 
     test('older DS Bot without the capability library is not mistaken for desktop ChemClaw', () async {

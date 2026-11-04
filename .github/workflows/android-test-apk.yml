@@ -60,8 +60,10 @@ jobs:
         with:
           gradle-version: '9.3.1'
 
-      - name: Verify ChemClaw brand and package isolation
-        run: python3 -m unittest app/tool/test_chemclaw_brand.py
+      - name: Verify ChemClaw brand, runtime shell and package isolation
+        run: |
+          bash -n runtime/build-runtime.sh
+          python3 -m unittest app/tool/test_chemclaw_brand.py
 
       - name: Resolve Flutter packages
         working-directory: app

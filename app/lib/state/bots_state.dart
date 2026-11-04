@@ -53,16 +53,42 @@ enum DsBotAvailability {
   failed,
 }
 
-/// A desktop ChemClaw team detected through its authenticated /api/bot 'state'
-/// endpoint. Detection is read-only; it never installs a competing DS Bot or
-/// guesses that the older endpoint shapes support native mobile chat.
+/// Minimal, read-only metadata from desktop ChemClaw, bound to the active
+/// Host. Intentionally excludes MCP headers, environment and skill instructions.
+@immutable
+class ChemClawExpertSummary {
+  const ChemClawExpertSummary({required this.name, required this.role, required this.skills});
+  final String name;
+  final String role;
+  final List<String> skills;
+}
+
+@immutable
+class ChemClawGroupSummary {
+  const ChemClawGroupSummary({required this.name, required this.members, required this.admin});
+  final String name;
+  final List<String> members;
+  final String? admin;
+}
+
+/// Desktop ChemClaw has /api/bot 'state' but no DS Bot mobile v1 'hello'.
+/// This data powers an informative native roster; conversations continue in
+/// the same Host's authenticated web client until a versioned mobile protocol
+/// is verified. No state, capability content or secret is copied to the phone.
 @immutable
 class ChemClawDesktopTeam {
-  const ChemClawDesktopTeam({required this.bots, required this.rooms, required this.skills});
+  const ChemClawDesktopTeam._({
+    required this.expertItems,
+    required this.groupItems,
+    required this.skillItems,
+  });
 
-  final int bots;
-  final int rooms;
-  final int skills;
+  final List<ChemClawExpertSummary> expertItems;
+  final List<ChemClawGroupSummary> groupItems;
+  final List<String> skillItems;
+  int get bots => expertItems.length;
+  int get rooms => groupItems.length;
+  int get skills => skillItems.length;
 
   static ChemClawDesktopTeam? fromState(Object? answer) {
     if (answer is! Map ||
@@ -73,11 +99,75 @@ class ChemClawDesktopTeam {
         answer['capabilities'] is! List) {
       return null;
     }
-    final capabilities = answer['capabilities'] as List;
-    return ChemClawDesktopTeam(
-      bots: (answer['bots'] as List).length,
-      rooms: (answer['rooms'] as List).length,
-      skills: capabilities.where((item) => item is Map && item['kind'] == 'skill').length,
+
+    String safeText(Object? value) => value is String ? value.trim() : '';
+    final library = <String, Map>{};
+    final skillLabels = <String, String>{};
+    for (final raw in answer['capabilities'] as List) {
+      if (raw is! Map) continue;
+      final name = safeText(raw['name']);
+      if (name.isEmpty) continue;
+      library[name] = raw;
+      if (raw['kind'] != 'skill') continue;
+      final labels = raw['labels'];
+      final display = safeText(labels is Map ? labels['zh'] : null);
+      final fallback = safeText(raw['displayName']);
+      skillLabels[name] = display.isNotEmpty ? display : fallback.isNotEmpty ? fallback : name;
+    }
+
+    final botNames = <String, String>{};
+    final experts = <ChemClawExpertSummary>[];
+    for (final raw in answer['bots'] as List) {
+      if (raw is! Map) continue;
+      final id = safeText(raw['id']);
+      final name = safeText(raw['name']);
+      if (id.isEmpty || name.isEmpty) continue;
+      botNames[id] = name;
+      final attached = <String>{};
+      // A Bot normally receives packs, not individual skills. Expand only one
+      // pack level, exactly as the desktop capability library does.
+      final assigned = raw['capabilities'];
+      if (assigned is List) {
+        for (final value in assigned) {
+          final key = safeText(value);
+          final item = library[key];
+          if (item?['kind'] == 'skill') attached.add(key);
+          if (item?['kind'] == 'pack' && item?['items'] is List) {
+            for (final child in item!['items'] as List) {
+              final childKey = safeText(child);
+              if (library[childKey]?['kind'] == 'skill') attached.add(childKey);
+            }
+          }
+        }
+      }
+      experts.add(ChemClawExpertSummary(
+        name: name,
+        role: safeText(raw['role']),
+        skills: List.unmodifiable(attached.map((id) => skillLabels[id] ?? id)),
+      ));
+    }
+
+    final groups = <ChemClawGroupSummary>[];
+    for (final raw in answer['rooms'] as List) {
+      if (raw is! Map) continue;
+      final name = safeText(raw['name']);
+      if (name.isEmpty) continue;
+      final members = raw['members'];
+      final groupMembers = members is List
+          ? List<String>.unmodifiable(
+              members.map((id) => botNames[safeText(id)]).whereType<String>(),
+            )
+          : const <String>[];
+      groups.add(ChemClawGroupSummary(
+        name: name,
+        members: groupMembers,
+        admin: botNames[safeText(raw['admin'])],
+      ));
+    }
+    return ChemClawDesktopTeam._(
+      expertItems: List.unmodifiable(experts),
+      groupItems: List.unmodifiable(groups),
+      skillItems: List.unmodifiable(skillLabels.values),
     );
   }
 }

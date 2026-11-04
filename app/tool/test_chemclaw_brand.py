@@ -73,6 +73,14 @@ class ChemClawBrandTest(unittest.TestCase):
                       source('app/lib/ui/bots/install_card.dart'))
         self.assertIn('ChemClaw · 经典模式', source('app/lib/ui/web/local_web_screen.dart'))
 
+    def test_runtime_ubuntu_fallback_keeps_pinned_hash_verification(self):
+        runtime = source('runtime/build-runtime.sh')
+        self.assertIn('https://ports.ubuntu.com/ubuntu-ports/', runtime)
+        self.assertIn('https://archive.ubuntu.com/ubuntu/', runtime)
+        self.assertIn('Ubuntu mirror unavailable', runtime)
+        self.assertIn('sha256 mismatch', runtime)
+        self.assertIn('gpgv --keyring', runtime)
+
     def test_default_paper_theme(self):
         self.assertIn('AppAccent accent = AppAccent.paper',
                       source('app/lib/ui/theme/app_theme.dart'))
