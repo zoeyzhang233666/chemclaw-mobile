@@ -111,7 +111,7 @@ class DshSurfaces extends ThemeExtension<DshSurfaces> {
     required this.sheet,
     required this.card,
     required this.pill,
-    this.accent = AppAccent.mist,
+    this.accent = AppAccent.paper,
     this.blurEnabled = true,
   });
 

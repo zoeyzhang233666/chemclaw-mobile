@@ -289,7 +289,7 @@ class AppAccent {
     for (final p in presets) {
       if (p.id == id) return p;
     }
-    return mist;
+    return paper;
   }
 
   // ══ 现推:自定义、跟随壁纸 ═══════════════════════════════════════════

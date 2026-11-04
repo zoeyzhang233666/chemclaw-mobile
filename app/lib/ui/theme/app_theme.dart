@@ -13,8 +13,7 @@ import 'squircle.dart';
 import 'surfaces.dart';
 import 'typography.dart';
 
-/// 浅色主题。默认参数保留上游 Mist，以便公共控件测试和旧组件明确比较原皮肤；
-/// 实际手机端通过 app.dart 的 accentProvider 选择 ChemClaw Paper（默认）。
+/// 浅色主题。ChemClaw Paper 是默认外观；旧 Mist 可作为可选预设显式选择。
 ///
 /// [accent] 是整套配色(强调色 + 中性色的色调),见 `accent.dart`。
 /// [glassBlur] 关掉后所有玻璃改用近乎不透明的填充(设置里的"减少透明效果",
@@ -22,7 +21,7 @@ import 'typography.dart';
 ///
 /// [glyphLocale] pins the locale CJK glyphs are picked by (the English UI
 /// passes zh_CN so Chinese content keeps Chinese shapes).
-ThemeData buildLightTheme({AppAccent accent = AppAccent.mist, bool glassBlur = true, Locale? glyphLocale}) => _build(
+ThemeData buildLightTheme({AppAccent accent = AppAccent.paper, bool glassBlur = true, Locale? glyphLocale}) => _build(
   DshPalette.lightScheme(accent),
   DshColors.forAccent(Brightness.light, accent),
   DshSurfaces.light(accent, blurEnabled: glassBlur),
@@ -31,7 +30,7 @@ ThemeData buildLightTheme({AppAccent accent = AppAccent.mist, bool glassBlur = t
 );
 
 /// 深色主题。
-ThemeData buildDarkTheme({AppAccent accent = AppAccent.mist, bool glassBlur = true, Locale? glyphLocale}) => _build(
+ThemeData buildDarkTheme({AppAccent accent = AppAccent.paper, bool glassBlur = true, Locale? glyphLocale}) => _build(
   DshPalette.darkScheme(accent),
   DshColors.forAccent(Brightness.dark, accent),
   DshSurfaces.dark(accent, blurEnabled: glassBlur),

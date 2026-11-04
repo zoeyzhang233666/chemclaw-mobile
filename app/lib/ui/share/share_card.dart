@@ -153,7 +153,7 @@ class ShareCard extends StatelessWidget {
   static final _themes = <(ShareTemplate, AppAccent), ThemeData>{};
 
   /// The theme [template] is drawn in, in [accent]'s colours.
-  static ThemeData themeFor(ShareTemplate template, {AppAccent accent = AppAccent.mist}) {
+  static ThemeData themeFor(ShareTemplate template, {AppAccent accent = AppAccent.paper}) {
     final key = (template, accent);
     final hit = _themes.remove(key);
     if (hit != null) return _themes[key] = hit;
@@ -209,7 +209,7 @@ class ShareCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final accent = this.accent ?? Theme.of(context).extension<DshSurfaces>()?.accent ?? AppAccent.mist;
+    final accent = this.accent ?? Theme.of(context).extension<DshSurfaces>()?.accent ?? AppAccent.paper;
     final blocks = [
       for (final block in content.blocks)
         if (showQuestion || block is! ShareQuestion) block,

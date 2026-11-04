@@ -410,7 +410,7 @@ class NeutralTones {
 
   /// 当前主题那套配色的中性色。
   static NeutralTones current(BuildContext context) =>
-      forAccent(Theme.of(context).extension<DshSurfaces>()?.accent ?? AppAccent.mist);
+      forAccent(Theme.of(context).extension<DshSurfaces>()?.accent ?? AppAccent.paper);
 
   /// 把一个按雾蓝调出来的中性色换到 [accent] 的色调上(零散的灰,比如图表
   /// 里的「其他」)。
