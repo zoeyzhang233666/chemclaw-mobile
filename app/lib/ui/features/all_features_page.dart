@@ -170,7 +170,11 @@ class FeatureTileFor extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
-    final unread = item.id == 'ds-bot' ? ref.watch(dsBotInboxProvider.select((inbox) => inbox.total)) : 0;
+    // Never show a generic DS Bot's inbox as ChemClaw expert notifications.
+    // The current desktop ChemClaw transport exposes roster/chat but no mobile notice feed.
+    final isChemClawHost = item.id == 'chemclaw-team' &&
+        ref.watch(dsBotProvider.select((status) => status.desktopTeam != null));
+    final unread = isChemClawHost ? ref.watch(dsBotInboxProvider.select((inbox) => inbox.total)) : 0;
     return FeatureCard(
       icon: item.icon,
       art: switch (item.tile) {
