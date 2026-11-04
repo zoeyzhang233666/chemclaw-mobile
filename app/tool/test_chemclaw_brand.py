@@ -47,6 +47,8 @@ class ChemClawBrandTest(unittest.TestCase):
         self.assertIn("_chemClawOrangeMatrix", pets)
         self.assertIn('chemclawOrange', overlay)
         self.assertIn("loaded?.pack?.id == \"deepy-whale\"", overlay)
+        bots = source('app/lib/ui/bots/bots_page.dart')
+        self.assertIn('ChemClaw · Bot 与群聊', bots)
         schedule = source('app/lib/ui/features/schedules_page.dart')
         self.assertIn("runScheduleNow", schedule)
         self.assertIn("ScheduleEditorPage", schedule)

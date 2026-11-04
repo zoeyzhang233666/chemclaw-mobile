@@ -18,6 +18,8 @@ assert feature parity with the desktop ChemClaw application.
 - Task list keeps its existing Host-backed schedule creation, editor, history,
   manual run and deletion, with a small-screen advisory about host availability
   and Android battery restrictions.
+- The mobile Bot/group-chat page gets a ChemClaw-facing title; its underlying
+  plugin API remains DS Bot-compatible and must be tested against ChemClaw desktop.
 
 ## Required before public release
 
