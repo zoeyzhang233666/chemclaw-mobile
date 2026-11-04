@@ -5,6 +5,7 @@ import io.github.ccch1mneyyy.dsh_app.R
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.ColorMatrixColorFilter
 import android.graphics.Paint
 import android.graphics.Rect
 import android.graphics.RectF
@@ -43,6 +44,14 @@ internal class PetView(context: Context, private val listener: Listener) : View(
         fun onShownChanged(shown: Boolean)
     }
 
+    // The same RGB blue/red channel swap as Flutter's PetSprite; no new art is bundled.
+    // Preserve transparency and the original luminance range for pixel edges and eyes.
+    private val chemclawOrange = ColorMatrixColorFilter(floatArrayOf(
+        0f, 0f, 1f, 0f, 0f,
+        0f, 1f, 0f, 0f, 0f,
+        1f, 0f, 0f, 0f, 0f,
+        0f, 0f, 0f, 1f, 0f,
+    ))
     private val paint = Paint().apply { isFilterBitmap = false; isAntiAlias = false; isDither = false }
     private val src = Rect()
     private val dst = RectF()
@@ -60,6 +69,7 @@ internal class PetView(context: Context, private val listener: Listener) : View(
     fun setSprites(loaded: PetSprites.Loaded?) {
         sprites = loaded
         paint.isFilterBitmap = loaded?.pack?.crisp == false
+        paint.colorFilter = if (loaded?.pack?.id == "deepy-whale") chemclawOrange else null
         anim = null
         cell = -1
         frame = loaded?.frames?.rest ?: FramePx(0, 0, 0, 0)

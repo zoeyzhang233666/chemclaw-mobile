@@ -32,9 +32,18 @@ def render(size, background, foreground=False, round_icon=False):
             draw.ellipse(boundary, fill=background)
         else:
             draw.rounded_rectangle(boundary, radius=int(size*scale*.21), fill=background)
-    ratio = size/108*72/34 if foreground else .84*size/34
-    offset = size*18/108 if foreground else size*.08
-    def p(x): return ((offset+x[0]*ratio)*scale, (offset+x[1]*ratio)*scale)
+    # Leave an even optical margin like polished launcher icons: ~15% on
+    # legacy raster icons and an extra margin in the adaptive safe zone.
+    # The cloud geometry and brand hue are unchanged.
+    if foreground:
+        ratio = (size / 108) * (64 / 34)
+        offset_x, offset_y = size * 22 / 108, size * 24 / 108
+    else:
+        ratio = .70 * size / 34
+        offset_x, offset_y = size * .15, size * .19
+    def p(point):
+        return ((offset_x + point[0] * ratio) * scale,
+                (offset_y + point[1] * ratio) * scale)
     points = [p((8.5,23.5)),p((23.7,23.5))]
     for curve in BEZIERS:
         points.extend(p(cubic(*curve, t/100)) for t in range(1,101))

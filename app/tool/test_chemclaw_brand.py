@@ -41,6 +41,21 @@ class ChemClawBrandTest(unittest.TestCase):
             self.assertIn('@drawable/ic_chemclaw_foreground',
                 source('app/android/app/src/main/res/mipmap-anydpi-v26/' + name + '.xml'))
 
+    def test_mobile_brand_adaptation_keeps_schedule_and_pet(self):
+        pets = source('app/lib/ui/pets/pet_sprite.dart')
+        overlay = source('app/android/app/src/main/kotlin/io/github/ccch1mneyyy/dsh_app/pet/PetView.kt')
+        self.assertIn("_chemClawOrangeMatrix", pets)
+        self.assertIn('chemclawOrange', overlay)
+        self.assertIn("loaded?.pack?.id == \"deepy-whale\"", overlay)
+        schedule = source('app/lib/ui/features/schedules_page.dart')
+        self.assertIn("runScheduleNow", schedule)
+        self.assertIn("ScheduleEditorPage", schedule)
+        self.assertIn("任务由当前连接的主机执行", schedule)
+        onboarding = source('app/lib/ui/onboarding/connect_page.dart')
+        self.assertIn('FilledButton.icon(', onboarding)
+        self.assertIn("onPressed: onChemClaw", onboarding)
+        self.assertIn("onPressed: onSignIn", onboarding)
+
     def test_default_paper_theme(self):
         self.assertIn('AppAccent accent = AppAccent.paper',
                       source('app/lib/ui/theme/app_theme.dart'))

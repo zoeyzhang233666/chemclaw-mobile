@@ -129,6 +129,7 @@ class _SchedulesPageState extends ConsumerState<SchedulesPage> {
         ],
       );
     }
+    final scheme = Theme.of(context).colorScheme;
     return AppPage.list(
       title: l10n.featuresSchedules,
       subtitle: Text(l10n.featuresSchedulesSubtitle),
@@ -140,6 +141,37 @@ class _SchedulesPageState extends ConsumerState<SchedulesPage> {
         ),
       ],
       children: [
+        // Host-owned schedules already support editing, next-run times and history.
+        // On Android, explain the local background dependency instead of implying
+        // these tasks are alarms that run independently of the DSH Host.
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: scheme.primaryContainer.withValues(alpha: 0.30),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: scheme.outlineVariant.withValues(alpha: 0.60)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(AppIcons.automation, size: 18, color: scheme.primary),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      AppLocale.isEnglish
+                          ? 'Tasks run on the connected Host, not the Android alarm service. Keep the Host available; phone battery restrictions can pause local tasks. Check run history here.'
+                          : '定时任务由当前连接的主机执行，并非手机闹钟。系统省电限制可能暂停本机任务，请保持主机可用，并在这里查看执行记录。',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
         if (list != null && list.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),

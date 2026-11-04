@@ -19,9 +19,8 @@ import 'api_key_page.dart';
 import 'onboarding_scaffold.dart';
 import 'setup_progress.dart';
 
-/// First-run "connect DeepSeek" step: DeepSeek account sign-in first (no API
-/// key needed), the API key as the alternative, another provider (own Base URL
-/// and key), or skip for now.
+/// First-run ChemClaw service setup: APIHub and chemical MCP first; keep
+/// DeepSeek official login and generic providers as secondary alternatives.
 ///
 /// The engine is started as soon as this page shows: the browser callback is
 /// served by the local engine, and both paths need it anyway.
@@ -277,34 +276,38 @@ class _Choose extends StatelessWidget {
         const Spacer(),
         OnboardingHeader(
           icon: AppIcons.account,
-          title: l10n.shellConnectDeepSeek,
-          message: l10n.shellConnectDeepSeekMessage,
+          title: AppLocale.isEnglish ? 'Connect ChemClaw' : '连接 ChemClaw',
+          message: AppLocale.isEnglish
+              ? 'Start with APIHub and the ChemCloud chemical data MCP. Paste your own keys to connect.'
+              : '推荐先连接 APIHub 模型及芯化和云化工数据 MCP，只需粘贴自己的密钥。',
         ),
         const SizedBox(height: 28),
-        const AccountFacts(),
         if (state.failure case final failure?) ...[const SizedBox(height: 16), SignInFailureCard(failure: failure)],
         const Spacer(flex: 2),
         const SizedBox(height: 24),
+        // Primary ChemClaw path: existing preconfigured APIHub / data MCP page.
+        FilledButton.icon(
+          onPressed: onChemClaw,
+          icon: const Icon(Icons.hub_outlined),
+          label: Text(AppLocale.isEnglish ? 'APIHub / Chemical Data MCP' : '连接 APIHub / 化工数据 MCP'),
+        ),
+        const SizedBox(height: 10),
+        OutlinedButton(onPressed: onApiKey, child: Text(l10n.shellUseApiKey)),
         if (unsupported)
           Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.only(top: 8),
             child: Text(
               l10n.shellAccountSignInUnsupported,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodySmall?.copyWith(color: colors.warning),
             ),
           )
-        else ...[
-          FilledButton(onPressed: onSignIn, child: Text(l10n.shellSignInDeepSeek)),
-          const SizedBox(height: 10),
-        ],
-        OutlinedButton.icon(
-          onPressed: onChemClaw,
-          icon: const Icon(Icons.hub_outlined),
-          label: const Text('连接 ChemClaw 服务（APIHub / MCP）'),
-        ),
-        const SizedBox(height: 10),
-        OutlinedButton(onPressed: onApiKey, child: Text(l10n.shellUseApiKey)),
+        else
+          TextButton(
+            onPressed: onSignIn,
+            style: TextButton.styleFrom(foregroundColor: scheme.onSurfaceVariant),
+            child: Text(l10n.shellSignInDeepSeek),
+          ),
         const SizedBox(height: 6),
         // Two equal halves: the quieter ways on.
         Row(
