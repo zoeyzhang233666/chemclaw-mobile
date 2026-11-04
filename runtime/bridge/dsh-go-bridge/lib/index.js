@@ -23,6 +23,7 @@ import { STATUS_CODES, get as httpGet } from "node:http";
 import { get as httpsGet } from "node:https";
 import { createPluginConfig, pluginConfigUnavailable } from "./plugin-config.js";
 import { createSessionDeletion, sessionDeletionUnavailable } from "./session-deletion.js";
+import { createChemClawConnectors } from "./chemclaw-connectors.js";
 import { NativeCore } from "./native/core.js";
 import { effectiveLimits } from "./native/limits.js";
 import { STREAM_PATH, createNativeRoutes } from "./native/routes.js";
@@ -341,6 +342,8 @@ export function apply(ctx, config) {
     const nativeRoutes = createNativeRoutes(native);
     pluginConfig = createPluginConfig(webCtx, { readBody, send });
     const sessionDeletion = createSessionDeletion(webCtx, { readBody, send });
+    const chemclawConnectors = createChemClawConnectors(webCtx, { readBody, send });
+    webCtx.effect(() => () => chemclawConnectors.dispose(), "dsh-go-bridge: ChemClaw MCP services");
     webCtx.effect(() => () => nativeRoutes.dispose(), "dsh-go-bridge: native routes");
     webCtx.effect(() => webCtx.webServer.registerUpgrade({
       path: STREAM_PATH,
@@ -360,6 +363,7 @@ export function apply(ctx, config) {
       const url = new URL(req.url ?? "/", "http://dsh-go.invalid");
       const path = url.pathname;
       if (await sessionDeletion.handle(req, res, path)) return;
+      if (await chemclawConnectors.handle(req, res, path)) return;
       if (await pluginConfig.handle(req, res, path)) return;
       if (path.startsWith(`${PREFIX}/v1/`) && await nativeRoutes.handle(req, res, path, url)) return;
       if (path === `${PREFIX}/v1/inventory`) {
@@ -393,5 +397,6 @@ export function apply(ctx, config) {
     };
 
     webCtx.effect(() => webCtx.webServer.register({ kind: "prefix", path: PREFIX, handler }), "dsh-go-bridge: /dsh-go routes");
+    void chemclawConnectors.restore();
   });
 }

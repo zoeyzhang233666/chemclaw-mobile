@@ -12,6 +12,7 @@
   "files": [
     "lib/index.js",
     "lib/plugin-config.js",
+    "lib/chemclaw-connectors.js",
     "lib/config-source.js",
     "lib/client.js",
     "lib/native/*.js",
