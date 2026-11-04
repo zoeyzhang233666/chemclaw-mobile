@@ -153,7 +153,7 @@ void main() {
           'voice-input',
           'account',
           'community',
-          'ds-bot',
+          'chemclaw-team',
           'share-profile',
         ]),
       );
