@@ -63,7 +63,7 @@ jobs:
       - name: Verify ChemClaw brand, runtime shell and package isolation
         run: |
           bash -n runtime/build-runtime.sh
-          python3 -m unittest app/tool/test_chemclaw_brand.py
+          python3 -m unittest app/tool/test_chemclaw_brand.py tooling/test_audit_test_apk.py
 
       - name: Resolve Flutter packages
         working-directory: app
@@ -84,15 +84,40 @@ jobs:
           # This APK must not be used for production releases/auto-updates.
           bash tooling/build-apk.sh --release --flavor arm64
 
-      - name: Verify APK and stage test files
+      - name: Verify APK signing, manifest permissions and archive integrity
         run: |
           set -euo pipefail
           apk=app/build/app/outputs/flutter-apk/app-arm64-release.apk
           test -s "$apk"
-          unzip -Z1 "$apk" | grep -F 'rootfs-arm64-v8a.tar.xz'
-          mkdir -p dist/test
+          # Verify the actual assembled APK, including certificate schemes,
+          # appId, embedded ARM64 runtime, archive CRC and sensitive permissions.
+          python3 tooling/audit_test_apk.py "$apk" --output dist/test/APK_AUDIT.json
           cp "$apk" dist/test/ChemClaw-Mobile-Android-arm64-TEST.apk
           (cd dist/test && sha256sum ChemClaw-Mobile-Android-arm64-TEST.apk > SHA256SUMS)
+          (cd dist/test && sha256sum -c SHA256SUMS)
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = json.loads(Path("dist/test/APK_AUDIT.json").read_text())
+          lines = [
+              "## ChemClaw Mobile — DEVELOPMENT APK integrity report",
+              f"- Source commit: \`{os.environ['GITHUB_SHA']}\`",
+              f"- SHA-256: \`{report['apk_sha256']}\`",
+              f"- Package: \`{report['package']['application_id']}\`",
+              f"- Signing certificate SHA-256: \`{report['signature']['certificate_sha256']}\`",
+              f"- Debug-signing certificate: \`{report['signature']['temporary_debug_signing']}\`",
+              f"- Android target SDK: \`{report['package']['target_sdk']}\`",
+              f"- Permissions requiring review: {', '.join(report['sensitive_permission_review']) or 'none'}",
+              "",
+              "**This checks integrity, not malware safety.** Chrome Safe Browsing or",
+              "Android security tools can still block this test package.",
+              "Do not bypass browser protection. Public releases require a",
+              "stable private signing key, green CI, verified asset rights and",
+              "independent security review.",
+          ]
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              f.write("\n".join(lines) + "\n")
+          PY
           ls -lh dist/test/
 
       - name: Upload APK as workflow artifact (not a release)
@@ -102,6 +127,7 @@ jobs:
           path: |
             dist/test/ChemClaw-Mobile-Android-arm64-TEST.apk
             dist/test/SHA256SUMS
+            dist/test/APK_AUDIT.json
           if-no-files-found: error
           compression-level: 0
           retention-days: 7
