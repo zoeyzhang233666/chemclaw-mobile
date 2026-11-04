@@ -17,6 +17,7 @@ import '../theme/app_icons.dart';
 import '../theme/theme.dart';
 import 'bot_avatar.dart';
 import 'bot_chat_page.dart';
+import 'chemclaw_expert_chat_page.dart';
 import 'bot_format.dart';
 import 'install_card.dart';
 import 'new_bot_page.dart';
@@ -24,7 +25,10 @@ import 'new_room_sheet.dart';
 import 'room_chat_page.dart';
 
 class BotsPage extends ConsumerWidget {
-  const BotsPage({super.key});
+  const BotsPage({super.key, this.chemclawOnly = false});
+
+  /// The ChemClaw feature entry must never rebrand a generic DS Bot team.
+  final bool chemclawOnly;
 
   static Route<void> route() => MaterialPageRoute<void>(builder: (_) => const BotsPage());
 
@@ -39,10 +43,12 @@ class BotsPage extends ConsumerWidget {
       title: 'ChemClaw · Bot 与群聊',
       subtitle: Text(_summary(status)),
       children: [
-        if (status.ready && team != null)
+        if (status.ready && team != null && !chemclawOnly)
           _Team(status: status, team: team)
         else if (status.desktopTeam case final desktop?)
           _DesktopRoster(status: status, desktop: desktop)
+        else if (chemclawOnly)
+          DsBotInstallCard(status: status)
         else
           switch (status.availability) {
             DsBotAvailability.offline => const FeatureOffline(),
@@ -177,7 +183,10 @@ class _DesktopRosterState extends ConsumerState<_DesktopRoster> {
                       ? (english ? 'Skills: ' : '关联技能：') + expert.skills.join('、')
                       : expert.role.isNotEmpty ? expert.role : null,
                   subtitleMaxLines: 2,
-                  chevron: false,
+                  chevron: expert.id.isNotEmpty,
+                  onTap: expert.id.isEmpty ? null : () => Navigator.of(context).push(
+                    ChemClawExpertChatPage.route(id: expert.id, name: expert.name, role: expert.role),
+                  ),
                 ),
               if (shownExperts.length < experts.length)
                 ListPageRow(
