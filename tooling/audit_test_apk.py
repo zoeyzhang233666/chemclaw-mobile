@@ -6,6 +6,7 @@ actual built APK with Android SDK tools before GitHub makes it downloadable.
 """
 import argparse
 import hashlib
+import ssl
 import json
 import os
 from pathlib import Path
@@ -38,7 +39,9 @@ def run_tool(path, *args):
     proc = subprocess.run([path, *map(str, args)], capture_output=True, text=True, check=False)
     if proc.returncode:
         raise RuntimeError(f"{Path(path).name} exited {proc.returncode}: {proc.stderr[-800:]}")
-    return proc.stdout
+    # Official apksigner can report certificate details on stderr even
+    # after a successful verification; keep the exit-code check above.
+    return "\n".join(part for part in (proc.stdout, proc.stderr) if part)
 
 def parse_badging(raw):
     def required(pattern, field):
@@ -72,7 +75,7 @@ def parse_signature(raw):
     # fields by signer so one certificate's DN never becomes another's digest.
     signers = {}
     for match in re.finditer(
-        r"^Signer[ \t]+(?P<name>#[0-9]+|\([^\r\n]+\))[ \t]+"
+        r"^[ \t]*Signer[ \t]+(?P<name>#[0-9]+|\([^\r\n]+\))[ \t]+"
         r"certificate[ \t]+(?P<field>DN|SHA-256 digest):[ \t]*(?P<value>[^\r\n]*)",
         raw, re.I | re.M,
     ):
@@ -94,11 +97,36 @@ def parse_signature(raw):
             "temporary_debug_signing": ("android debug" in dn.lower()) if dn else None,
         })
     if not certificates:
-        labels = sorted(set(re.findall(r"(?m)^Signer[^:\r\n]*:", raw)))
-        raise RuntimeError(
-            "Cannot read verified APK signing certificate fingerprint; "
-            f"signer field labels: {labels[:12]}"
+        # SDKs may omit textual certificate fields. Ask apksigner for PEM
+        # certificates and derive the fingerprint from its verified X.509 data.
+        pem_blocks = re.findall(
+            r"-----BEGIN CERTIFICATE-----[\s\S]*?-----END CERTIFICATE-----",
+            raw,
         )
+        if not pem_blocks:
+            labels = sorted(set(re.findall(r"(?m)^[ \t]*Signer[^:\r\n]*:", raw)))
+            raise RuntimeError(
+                "Cannot read verified APK signing certificate fingerprint: "
+                f"no signer fields or X.509 PEM available (labels: {labels[:12]})"
+            )
+        seen = set()
+        for index, pem in enumerate(pem_blocks, start=1):
+            try:
+                der = ssl.PEM_cert_to_DER_cert(pem)
+            except (ValueError, ssl.SSLError) as exc:
+                raise RuntimeError(f"Invalid X.509 PEM data for signer {index}") from exc
+            if not der:
+                raise RuntimeError(f"Empty X.509 PEM for signer {index}")
+            fingerprint = hashlib.sha256(der).hexdigest()
+            if fingerprint in seen:
+                continue
+            seen.add(fingerprint)
+            certificates.append({
+                "signer": f"pem-{index}",
+                "certificate_sha256": fingerprint,
+                "certificate_dn": None,
+                "temporary_debug_signing": None,
+            })
 
     # Prefer a numbered signer, then the first ranged signer; preserve every
     # signer in the report and fail closed for unrecognized certificate identity.
@@ -143,7 +171,7 @@ def audit(apk, sdk):
     if int(badging["min_sdk"]) < 26:
         raise RuntimeError("unexpected minSdk, must be Android 8+")
     signed = parse_signature(run_tool(locate_tool(sdk, "apksigner"),
-                                      "verify", "--verbose", "--print-certs", apk))
+                                      "verify", "--verbose", "--print-certs-pem", apk))
     permissions = parse_permissions(run_tool(locate_tool(sdk, "aapt"), "dump", "permissions", apk))
     if "android.permission.READ_PHONE_STATE" in permissions:
         raise RuntimeError("READ_PHONE_STATE reappeared in the merged APK")
