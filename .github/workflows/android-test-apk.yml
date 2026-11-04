@@ -25,7 +25,6 @@ jobs:
     env:
       TZ: Asia/Shanghai
       DSH_MAVEN_MIRRORS: '0'
-      PUB_HOSTED_URL: https://pub.flutter-io.cn
     steps:
       - name: Checkout mobile fork only
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
