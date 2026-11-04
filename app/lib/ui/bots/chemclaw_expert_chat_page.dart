@@ -86,7 +86,9 @@ class _ChemClawExpertChatPageState extends ConsumerState<ChemClawExpertChatPage>
     final status = ref.read(dsBotProvider);
     final api = ref.read(dsBotProvider.notifier).api;
     if (text.isEmpty || _sending || api == null || status.desktopTeam == null ||
-        status.readOnly != null) return;
+        status.readOnly != null) {
+      return;
+    }
     setState(() {
       _sending = true;
       _error = null;
