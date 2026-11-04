@@ -3,6 +3,7 @@
 library;
 
 import 'carrier.dart';
+import 'dsh_go_api.dart';
 import 'errors.dart';
 import 'json.dart';
 import 'session_api.dart';
