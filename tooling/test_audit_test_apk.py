@@ -75,9 +75,9 @@ class AuditTestApkTest(unittest.TestCase):
         # Synthetic DER validates the fingerprint plumbing. APK trust still
         # requires apksigner verify to exit successfully on the actual file.
         der = bytes((0x30, 0x04, 0x02, 0x02, 0x00, 0x01))
-        pem = "-----BEGIN CERTIFICATE-----\\n" + base64.b64encode(der).decode() + "\\n-----END CERTIFICATE-----"
+        pem = "-----BEGIN CERTIFICATE-----\n" + base64.b64encode(der).decode() + "\n-----END CERTIFICATE-----"
         result = parse_signature(
-            "Verified using v2 scheme (APK Signature Scheme v2): true\\n" + pem
+            "Verified using v2 scheme (APK Signature Scheme v2): true\n" + pem
         )
         self.assertEqual(result["certificate_sha256"], hashlib.sha256(der).hexdigest())
         self.assertIsNone(result["temporary_debug_signing"])
@@ -85,7 +85,7 @@ class AuditTestApkTest(unittest.TestCase):
 
     def test_verified_signature_without_any_certificate_still_fails(self):
         with self.assertRaisesRegex(RuntimeError, "no signer fields or X.509 PEM"):
-            parse_signature("Verified using v2 scheme (APK Signature Scheme v2): true\\n")
+            parse_signature("Verified using v2 scheme (APK Signature Scheme v2): true\n")
 
     def test_permissions_are_deduplicated(self):
         data = ("package: com.chemcloud.chemclaw.mobile\n"
