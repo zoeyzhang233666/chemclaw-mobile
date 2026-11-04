@@ -58,7 +58,7 @@ class LauncherManifestTest {
 
     @Test fun thePhoneShowsTheAppAsChemClawMobile() {
         val app = manifest().children("application").single()
-        assertEquals("ChemClaw 手机版", app.getAttribute("android:label"))
+        assertEquals("ChemClaw", app.getAttribute("android:label"))
         // Notification titles say the same name.
         assertEquals(app.getAttribute("android:label"), AppStrings.APP_NAME)
         // Launcher entries, Recents and the share sheet all take the application's label.

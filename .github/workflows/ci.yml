@@ -63,6 +63,7 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - name: Generated files are in sync
         run: |
+          python3 tooling/chemclaw_mobile_brand_sweep.py --check
           python3 app/tool/l10n_merge.py --check
           python3 app/tool/guide_sync.py --check
           node sdk/plugin-kit/scripts/sync-skill.mjs --check
