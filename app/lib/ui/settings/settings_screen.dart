@@ -202,8 +202,7 @@ class SettingsScreen extends ConsumerWidget {
             SettingsTile(
               icon: Icons.hub_outlined,
               tint: SettingsHues.abilities,
-              title: '化工数据 MCP',
-              subtitle: '接入当前主机的化工行业数据服务',
+              spot: Spots.chemMcp,
               onTap: () => _push(context, const ChemClawMcpPage()),
             ),
             // The plugins' own settings sections, when the host has any.

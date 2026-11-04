@@ -591,6 +591,16 @@ abstract final class Spots {
     keywords: (l) => l.searchKwCommunity,
   );
 
+  /// ChemClaw industry MCP guide, indexed as a real hub setting.
+  static final chemMcp = SettingSpot(
+    'chemcloud-mcp',
+    page: SettingsPageId.hub,
+    group: _abilities,
+    title: (_) => '化工数据 MCP',
+    keywords: (_) => 'ChemCloud, MCP, 化工数据, 现货, 行情',
+    freq: Freq.medium,
+  );
+
   // 模型.
   static final addProvider = SettingSpot(
     'add-provider',
@@ -1036,6 +1046,7 @@ final _rows = <SettingSpot>[
   Spots.language,
   Spots.askAi,
   Spots.community,
+  Spots.chemMcp,
   Spots.addProvider,
   Spots.permissionCurrent,
   Spots.permissionDefault,

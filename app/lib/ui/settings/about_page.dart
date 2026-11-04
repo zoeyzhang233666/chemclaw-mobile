@@ -65,9 +65,15 @@ class AboutPage extends ConsumerWidget {
         ),
         SettingsSection(
           title: 'ChemClaw 手机版',
-          children: [
-            const SettingsTile(title: '开发维护：芯化和云（ChemCloud Intelligence）'),
-            const SettingsTile(title: '基于 DSH Go 的独立开源派生项目'),
+          children: const [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text('开发维护：芯化和云（ChemCloud Intelligence）'),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text('基于 DSH Go 的独立开源派生项目'),
+            ),
           ],
         ),
         SettingsSection(
