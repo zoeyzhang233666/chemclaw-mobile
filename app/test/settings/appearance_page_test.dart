@@ -108,7 +108,7 @@ void main() {
     await tester.pumpWidget(
       UncontrolledProviderScope(
         container: container,
-        child: const DshApp(
+        child: DshApp(
           home: Scaffold(
             body: SafeArea(
               child: SingleChildScrollView(
