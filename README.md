@@ -18,6 +18,10 @@
 
 完整的配置方式与测试清单： [docs/CHEMCLOUD_MCP.md](docs/CHEMCLOUD_MCP.md)。
 
+### APK 下载与安全
+
+手机测试包现在使用 GitHub Actions v7 单文件直传，成功构建后在 [Actions](https://github.com/zoeyzhang233666/chemclaw-mobile/actions) 的 Artifacts 下载 `.apk`，无需额外 ZIP 解压。构建同时提供 SHA-256、签名指纹和权限审计；这**不代表 APK 通过恶意软件审查**。Chrome 如仍拦截原始 APK，请停止安装，勿关闭安全浏览，详见 [Android APK 测试指南](docs/ANDROID_APK_TEST.md)。正式分发仍需固定私有签名、权限审查、素材授权及 CI 全绿。
+
 ### 构建
 
 本项目仍沿用 DSH Go 的 Flutter／Android 构建流程与 rootfs 运行时打包方式。第一次构建前须核对 `runtime/out` 所需产物、Flutter SDK、Android SDK 与 Java 版本。**不要直接把原项目的安装包当成 ChemClaw 手机版发布。**

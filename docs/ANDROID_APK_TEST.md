@@ -10,7 +10,8 @@
 2. 运行品牌和包名的源码检查。
 3. `bash runtime/build-runtime.sh arm64-v8a`：制作手机侧 DSH Linux rootfs。
 4. `bash tooling/build-apk.sh --release --flavor arm64`：构建带 rootfs 的 ARM64 APK。
-5. 验证 rootfs 在包内，上传 GitHub Actions 工件（Artifact）。
+5. 验证 APK 的 Android 签名（v2/v3）、包名、ARM64 运行时、ZIP CRC 和权限；计算 SHA-256。核验失败则不提供 APK 下载。
+6. 使用 GitHub Actions v7 的 `archive: false` **直接上传 APK 文件，不再额外封装为 ZIP**；另外上传校验和与审计报告。
 
 ### 第一次启用 Fork 的 GitHub Actions
 
@@ -18,14 +19,32 @@
 
 请注意：这个工作流目前**只在开发分支**，尚未加入 `main`，GitHub 的 **Run workflow** 手动按钮通常要求工作流先存在于默认分支。不要为看到按钮而提前合并尚未验收的 PR。
 
-### 成功后怎么下载
+### 成功后怎么下载（现在无需 ZIP 解压）
 
-在 **Actions** 中打开 **ChemClaw Mobile · Android test APK** 的成功运行 → 页面底部 **Artifacts** → **ChemClaw-Mobile-Android-arm64-TEST**。下载得到 ZIP，解压找到：
+打开 [手机版 Actions](https://github.com/zoeyzhang233666/chemclaw-mobile/actions) 中最新的 **ChemClaw Mobile · Android test APK** 成功运行：
 
-- `ChemClaw-Mobile-Android-arm64-TEST.apk`
-- `SHA256SUMS`
+1. 在运行页面底部 **Artifacts** 点击 **ChemClaw-Mobile-Android-arm64-TEST.apk**。现在下载的是原始 APK，**不再是 `.zip`**，也无需解压（依赖 GitHub Actions upload-artifact v7）。
+2. 构建页面 **Summary** 会显示 APK SHA-256、签名证书指纹、敏感权限清单和源码提交 SHA。
+3. 单独的 **ChemClaw-Mobile-Android-arm64-AUDIT** 工件包含 `SHA256SUMS` 和 `APK_AUDIT.json`（此报告工件可仍为 ZIP）。
+4. 在 Windows PowerShell 中检查下载的 APK：
+   ```powershell
+   Get-FileHash -Algorithm SHA256 -Path .\ChemClaw-Mobile-Android-arm64-TEST.apk
+   ```
+   将结果与构建 Summary 或 `SHA256SUMS` 中的十六进制哈希逐字比对。不一致就丢弃文件。
 
-将 APK 传到 Android 手机，点击文件安装；手机可能需要给文件管理器授权“安装未知应用”。这只是用于功能验证的测试包，**不在 GitHub Releases 公开发布**。需要 Android 8.0+ 且 CPU 支持 ARM64。
+### Chrome 提示「已屏蔽危险的下载内容」怎么办？
+
+原来是 Actions 额外压缩产生的 ZIP（内含可执行 APK）；直接下载 APK 可以去掉 ZIP 检测层，但**不会绕过 Chrome 对 APK 自身的安全评估**。
+
+- **不要关闭 Chrome 安全浏览、强制保留、改扩展名或给 ZIP 加密码。**
+- 先检查本次构建的 `APK_AUDIT.json`：签名方案、包名、权限、SDK 版本、证书哈希；它证明文件完整且由对应构建签名，**不等于杀毒扫描通过**。
+- APK 包含可执行 Linux DSH rootfs，而且当前测试包仍使用 CI 的**临时 Android debug 证书**（每次构建的证书可能不同）；部分敏感权限来自手机操控、悬浮窗、文件系统和应用更新。这些都需要独立审查。
+- 如 Chrome **直接拦截 APK**，记录安全提示详细分类和文件哈希，暂停安装；排查第三方检测结果和应用权限后，再通过软件发行商纠错渠道申请复核。
+- 安卓 ARM64、Android 8.0+ 为当前目标；个人测试也不要把测试包当成已通过安全审计的正式版本。
+
+### 日后可信直接下载
+
+已增加手动的 `prepare-verified-android-apk.yml` 工作流。仅在 **main 全量 CI 通过、确认素材授权和权限风险、配置稳定的私有 Android 签名密钥、APK 签名/校验通过、独立 ClamAV 检测成功**后，才能生成一个包含直接 `.apk` 文件的 **GitHub Release 草稿**。草稿还须经过人工复核才能公开发布。它不是目前测试工件的自动镜像，也不保证 Chrome 一定信任发布的 APK。
 
 ### 失败怎么办
 

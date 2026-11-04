@@ -13,3 +13,5 @@ ChemClaw Mobile uses DSH's native **Agent Teams** feature. The separate chemical
 **Redistribution warning:** The upstream project is [AGPL-3.0](LICENSE), with third-party notices in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Upstream [ASSETS.md](ASSETS.md) explicitly excludes certain mascot, branding and promotional assets from the open-source license. Those must be removed or replaced before public builds.
 
 Upstream author: [ccch1mneyyy](https://github.com/ccch1mneyyy). ChemClaw desktop reference: [chemclaw-bot](https://github.com/zoeyzhang233666/chemclaw-bot) (read-only reference; this fork is separate). Not an official DeepSeek Android app.
+
+**APK downloads:** Development artifacts now use GitHub Actions upload-artifact v7 with `archive: false` to offer a direct `.apk` download rather than a ZIP. A separate audit artifact and SHA-256 report are provided. This is an integrity check, **not a malware clearance or public-release approval**. Never disable Chrome Safe Browsing to force an installation. See [Android APK testing](docs/ANDROID_APK_TEST.md).
