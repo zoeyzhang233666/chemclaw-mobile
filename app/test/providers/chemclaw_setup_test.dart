@@ -13,6 +13,8 @@ void main() {
     expect(huagongsheMcpUrl, 'https://huagongshe.com/mcp');
     expect(apiHubKeyRef, 'APIHUB_API_KEY');
     expect(chemDataHubKeyRef, 'CHEM_DATA_HUB');
+    expect(qccKeyRef, 'QCC');
+    expect(qccMcpIds, ['qcc-company', 'qcc-ipr', 'qcc-operation', 'qcc-risk']);
   });
 
   test('dynamic model discovery omits obvious auxiliary models and duplicate ids', () {

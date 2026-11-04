@@ -11,6 +11,21 @@ export const CHEMCLOUD_MCP_PRESETS = Object.freeze([
     tokenUrl: "https://mcp.chem-cloud.cn/",
     anonymous: false,
   }),
+  // Optional enterprise services; one QCC credential authorizes four
+  // independent HTTPS-only MCP clients. Nothing connects before a key exists.
+  ...[
+    ["qcc-company", "企查查企业基座", "company"],
+    ["qcc-ipr", "企查查知识产权", "ipr"],
+    ["qcc-operation", "企查查经营信息", "operation"],
+    ["qcc-risk", "企查查风险信息", "risk"],
+  ].map(([id, name, resource]) => Object.freeze({
+    id,
+    name,
+    url: `https://agent.qcc.com/mcp/${resource}/stream`,
+    credential: "QCC",
+    tokenUrl: "https://agent.qcc.com/",
+    anonymous: false,
+  })),
   Object.freeze({
     id: "huagongshe",
     name: "化工社公开化学检索",

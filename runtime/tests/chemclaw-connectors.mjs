@@ -8,7 +8,7 @@ function fake({ key = "" } = {}) {
   const ctx = {
     get(name) {
       if (name === "credentials") return { async resolve(ref) {
-        assert.equal(ref, "CHEM_DATA_HUB");
+        assert.ok(["CHEM_DATA_HUB", "QCC"].includes(ref));
         return key ? { value: key } : undefined;
       }};
       if (name === "loader") return { async import(name) {
@@ -36,10 +36,35 @@ function fake({ key = "" } = {}) {
 }
 
 test("preset endpoints and key references are fixed by ChemClaw desktop contract", () => {
-  assert.deepEqual(CHEMCLOUD_MCP_PRESETS.map(x => x.id), ["chem-data-hub", "huagongshe"]);
+  assert.deepEqual(CHEMCLOUD_MCP_PRESETS.map(x => x.id), ["chem-data-hub", "qcc-company", "qcc-ipr", "qcc-operation", "qcc-risk", "huagongshe"]);
   assert.equal(CHEMCLOUD_MCP_PRESETS[0].url, "https://datahub.chem-cloud.cn/mcp");
   assert.equal(CHEMCLOUD_MCP_PRESETS[0].credential, "CHEM_DATA_HUB");
   assert.equal(CHEMCLOUD_MCP_PRESETS[1].anonymous, true);
+});
+
+test("QCC uses one secret for four HTTPS MCP connectors", async () => {
+  const f = fake({ key: "test-only-qcc-key" });
+  for (const id of ["qcc-company", "qcc-ipr", "qcc-operation", "qcc-risk"]) {
+    const r = await f.action(id);
+    assert.equal(r.data.service.state, "ready");
+    assert.equal(JSON.stringify(r).includes("test-only-qcc-key"), false);
+  }
+  assert.deepEqual(f.mounted.map(x => x.url), [
+    "https://agent.qcc.com/mcp/company/stream",
+    "https://agent.qcc.com/mcp/ipr/stream",
+    "https://agent.qcc.com/mcp/operation/stream",
+    "https://agent.qcc.com/mcp/risk/stream",
+  ]);
+  assert.ok(f.mounted.every(x => x.headers.Authorization === "Bearer test-only-qcc-key"));
+  await f.routes.dispose();
+});
+
+test("missing QCC key never contacts its MCP services", async () => {
+  const f = fake();
+  const r = await f.action("qcc-company");
+  assert.equal(r.data.service.state, "needs-key");
+  assert.equal(f.mounted.length, 0);
+  await f.routes.dispose();
 });
 
 test("missing credential does not call the private MCP endpoint", async () => {

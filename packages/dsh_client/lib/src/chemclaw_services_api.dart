@@ -12,6 +12,8 @@ const chemclawMcpPath = '/dsh-go/v1/chemclaw/connectors';
 const chemDataHubId = 'chem-data-hub';
 const huagongsheId = 'huagongshe';
 const chemDataHubKeyRef = 'CHEM_DATA_HUB';
+const qccKeyRef = 'QCC';
+const qccMcpIds = ['qcc-company', 'qcc-ipr', 'qcc-operation', 'qcc-risk'];
 
 class ChemClawConnectorStatus {
   const ChemClawConnectorStatus({
@@ -61,7 +63,7 @@ extension ChemClawConnectorsApi on DshClient {
     String serviceId, {
     Duration timeout = const Duration(seconds: 45),
   }) async {
-    if (serviceId != chemDataHubId && serviceId != huagongsheId) {
+    if (serviceId != chemDataHubId && serviceId != huagongsheId && !qccMcpIds.contains(serviceId)) {
       throw ArgumentError.value(serviceId, 'serviceId', 'unsupported service');
     }
     final transport = carrier;
