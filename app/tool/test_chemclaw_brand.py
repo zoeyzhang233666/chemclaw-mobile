@@ -69,8 +69,11 @@ class ChemClawBrandTest(unittest.TestCase):
         ]:
             self.assertNotIn('Icons.hub_outlined', source(page))
         self.assertIn('BackgroundGuidePage', source('app/lib/ui/features/schedules_page.dart'))
-        self.assertIn('Desktop ChemClaw uses a separate Bot plugin',
-                      source('app/lib/ui/bots/install_card.dart'))
+        setup = source('app/lib/ui/bots/install_card.dart')
+        self.assertIn('连接 ChemClaw 专家团队', setup)
+        self.assertNotIn('PluginInstallRequest(', setup)
+        self.assertNotIn('dsh plugin --profile web add ds-bot', setup)
+        self.assertIn("id: 'chemclaw-team'", source('app/lib/ui/features/feature_catalog.dart'))
         self.assertIn('ChemClaw · 经典模式', source('app/lib/ui/web/local_web_screen.dart'))
 
     def test_runtime_ubuntu_fallback_keeps_pinned_hash_verification(self):
