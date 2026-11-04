@@ -7,6 +7,8 @@ import 'package:dsh_app/state/models_state.dart';
 import 'package:dsh_app/ui/bots/bot_chat_page.dart';
 import 'package:dsh_app/ui/bots/bot_details_page.dart';
 import 'package:dsh_app/ui/bots/bots_page.dart';
+import 'package:dsh_app/ui/bots/chemclaw_expert_chat_page.dart';
+import 'package:dsh_app/ui/features/feature_catalog.dart';
 import 'package:dsh_app/ui/bots/drawer_row.dart';
 import 'package:dsh_app/ui/bots/new_bot_page.dart';
 import 'package:dsh_app/ui/bots/new_room_sheet.dart';
@@ -264,12 +266,48 @@ void main() {
     expect(fake.calls.lastWhere((c) => c.$1 == 'stop-member-work').$2, {'roomId': 'r1', 'botId': 'b3'});
   });
 
-  testWidgets('a host without DS Bot offers to install it', (tester) async {
+  testWidgets('without ChemClaw, the feature never offers to install generic DS Bot', (tester) async {
     final fake = FakeDsBotTransport();
     fake.handlers['hello'] = (_) => throw const DshHttpException(404, 'missing');
-    await open(tester, const BotsPage(), transport: fake);
-    expect(find.text('安装 DS Bot'), findsOneWidget);
-    expect(find.widgetWithText(FilledButton, '安装'), findsOneWidget);
+    await open(tester, const BotsPage(chemclawOnly: true), transport: fake);
+    expect(find.text('连接 ChemClaw 专家团队'), findsOneWidget);
+    expect(find.text('安装 DS Bot'), findsNothing);
+    expect(find.widgetWithText(FilledButton, '安装'), findsNothing);
+    expect(find.byKey(const ValueKey('dsbot-recheck-mobile')), findsOneWidget);
+  });
+
+  test('ChemClaw has its own top-level feature, not a community DS Bot add-on', () {
+    final items = featureSections.expand((section) => section.items).toList();
+    expect(items.where((item) => item.id == 'chemclaw-team').length, 1);
+    expect(items.where((item) => item.id == 'ds-bot'), isEmpty);
+    expect(featureSections.first.title, 'ChemClaw');
+  });
+
+  testWidgets('a real ChemClaw expert opens its original chat and sends via its Host', (tester) async {
+    final fake = FakeDsBotTransport()..handlers.remove('hello');
+    fake.handlers['state'] = (_) => {
+      'workspaceId': 'desktop',
+      'mainBotIds': ['main'],
+      'bots': [
+        {'id': 'main', 'name': 'ChemClaw'},
+        {'id': 'spot', 'name': '现货行情分析师', 'role': '现货分析师'},
+      ],
+      'rooms': [{'id': 'r', 'name': '现货采购专家群', 'members': ['main', 'spot']}],
+      'capabilities': [{'kind': 'skill', 'name': 'chem-market-brief'}],
+    };
+    await open(tester, const BotsPage(chemclawOnly: true), transport: fake);
+    await tester.tap(find.text('现货行情分析师'));
+    await frames(tester);
+    expect(find.byType(ChemClawExpertChatPage), findsOneWidget);
+    expect(find.text('帮我看看发布会的准备进度'), findsOneWidget);
+    await tester.enterText(find.byKey(const ValueKey('chemclaw-expert-input')), '查询甲醇现货报价');
+    await tester.tap(find.byKey(const ValueKey('chemclaw-expert-send')));
+    await frames(tester);
+    expect(fake.calls.lastWhere((call) => call.$1 == 'send').$2, {
+      'sessionId': 'spot', 'text': '查询甲醇现货报价',
+    });
+    expect(fake.feedOpens, 0);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('the drawer folds the team into one 「DS Bot」 row that opens the Bots home', (tester) async {
