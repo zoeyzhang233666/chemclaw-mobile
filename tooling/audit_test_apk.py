@@ -108,8 +108,10 @@ def parse_signature(raw):
         "certificate_sha256": primary["certificate_sha256"],
         "certificate_dn": primary["certificate_dn"],
         "temporary_debug_signing": (
-            True if any(cert["temporary_debug_signing"] is True for cert in certificates)
-            else None if any(cert["temporary_debug_signing"] is None for cert in certificates)
+            # If ANY signer has no DN, its debug/release identity is unknown.
+            # Never interpret another signer's known DN as clearing that risk.
+            None if any(cert["temporary_debug_signing"] is None for cert in certificates)
+            else True if any(cert["temporary_debug_signing"] is True for cert in certificates)
             else False
         ),
         "signers": certificates,
