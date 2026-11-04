@@ -1,4 +1,6 @@
 """Deterministic tests for the APK security diagnostics parser."""
+import base64
+import hashlib
 import sys
 from pathlib import Path
 import unittest
@@ -68,6 +70,22 @@ class AuditTestApkTest(unittest.TestCase):
                "Signer #1 certificate SHA-256 digest: ff00\n")
         with self.assertRaisesRegex(RuntimeError, "invalid SHA-256"):
             parse_signature(raw)
+
+    def test_verified_pem_fallback_without_signer_labels(self):
+        # Synthetic DER validates the fingerprint plumbing. APK trust still
+        # requires apksigner verify to exit successfully on the actual file.
+        der = bytes((0x30, 0x04, 0x02, 0x02, 0x00, 0x01))
+        pem = "-----BEGIN CERTIFICATE-----\\n" + base64.b64encode(der).decode() + "\\n-----END CERTIFICATE-----"
+        result = parse_signature(
+            "Verified using v2 scheme (APK Signature Scheme v2): true\\n" + pem
+        )
+        self.assertEqual(result["certificate_sha256"], hashlib.sha256(der).hexdigest())
+        self.assertIsNone(result["temporary_debug_signing"])
+        self.assertEqual(result["signers"][0]["signer"], "pem-1")
+
+    def test_verified_signature_without_any_certificate_still_fails(self):
+        with self.assertRaisesRegex(RuntimeError, "no signer fields or X.509 PEM"):
+            parse_signature("Verified using v2 scheme (APK Signature Scheme v2): true\\n")
 
     def test_permissions_are_deduplicated(self):
         data = ("package: com.chemcloud.chemclaw.mobile\n"
