@@ -203,6 +203,7 @@ class SettingsScreen extends ConsumerWidget {
               icon: Icons.hub_outlined,
               tint: SettingsHues.abilities,
               spot: Spots.chemMcp,
+              subtitle: 'APIHub 模型 · 芯化和云数据 MCP',
               onTap: () => _push(context, const ChemClawMcpPage()),
             ),
             // The plugins' own settings sections, when the host has any.

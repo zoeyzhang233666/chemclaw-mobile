@@ -104,7 +104,8 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
       if (services == null || !services.any((s) => s.id == chemDataHubId)) {
         throw StateError('当前主机不支持 ChemClaw MCP 预置接口；本机模式请更新安装包');
       }
-      final key = _hubKey.text.replaceAll(RegExp(r'\s'), '');
+      // Do not concatenate embedded spaces or multiple lines of pasted secrets.
+      final key = _hubKey.text.trim();
       if (key.isNotEmpty) {
         if (!RegExp(r'^[\x21-\x7E]+$').hasMatch(key) ||
             RegExp(r'^[A-Z][A-Z0-9_]*=').hasMatch(key)) {

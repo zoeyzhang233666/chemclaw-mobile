@@ -99,6 +99,38 @@ Widget _goldenApp(Widget home, Brightness brightness, AppAccent accent, List<Ove
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
+  testWidgets('settings theme entry shows Paper and mode without squeezing the title', (tester) async {
+    tester.view.devicePixelRatio = 2;
+    tester.view.physicalSize = const Size(320 * 2, 640 * 2);
+    addTearDown(tester.view.reset);
+    final container = ProviderContainer(overrides: _overrides());
+    addTearDown(container.dispose);
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: const DshApp(
+          home: Scaffold(
+            body: SafeArea(
+              child: SingleChildScrollView(
+                child: MediaQuery.withClampedTextScaling(
+                  minScaleFactor: 1.5,
+                  maxScaleFactor: 1.5,
+                  child: AppearanceEntryTile(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Paper · ChemClaw · 跟随系统'), findsOneWidget);
+    expect(find.text('主题'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    // This screenshot's failure was the title wrapping vertically to two lines.
+    expect(tester.getSize(find.text('主题')).height, lessThan(45));
+  });
+
   testWidgets('a preset swatch switches the whole app and is stored', (tester) async {
     final container = await _pumpApp(tester);
     expect(_scheme(tester).primary, AppAccent.mist.seed);

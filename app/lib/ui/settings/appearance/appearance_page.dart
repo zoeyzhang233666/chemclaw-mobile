@@ -26,7 +26,8 @@ import 'launch_screen_section.dart';
 import 'tile_style_picker.dart';
 import 'wallpaper_section.dart';
 
-/// 设置首页「外观」组的第一行:当前配色的色点 + 名字 · 明暗,点开 [AppearancePage]。
+/// 设置首页「外观」组的第一行:左侧标题与说明，右侧只放色点。
+/// 避免「Paper · ChemClaw · 跟随系统」在小屏幕上挤压标题。
 class AppearanceEntryTile extends ConsumerWidget {
   const AppearanceEntryTile({super.key, this.tint = 0});
 
@@ -47,14 +48,10 @@ class AppearanceEntryTile extends ConsumerWidget {
       icon: AppIcons.theme,
       tint: tint,
       spot: SettingsIndex.entry(SettingsPageId.appearance),
-      value: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AccentDot(color: seed, size: 10),
-          const SizedBox(width: 6),
-          Text('${accent.label} · $mode'),
-        ],
-      ),
+      // Show the longer brand + mode beneath the title. A non-flexible
+      // trailing Row would squeeze the title into two characters vertically.
+      subtitle: '${accent.label} · $mode',
+      value: AccentDot(color: seed, size: 10),
       onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const AppearancePage())),
     );
   }

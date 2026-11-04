@@ -49,6 +49,8 @@ void main() {
   test('invalid key or no discovered chat models makes no writes', () async {
     final backend = FakeProviderBackend();
     await expectLater(configureApiHub(backend, 'APIHUB_API_KEY=sk-wrong'), throwsFormatException);
+    await expectLater(configureApiHub(backend, 'sk-one sk-two'), throwsFormatException);
+    await expectLater(configureApiHub(backend, 'sk-one\nother'), throwsFormatException);
     expect(backend.calls, isEmpty);
     await expectLater(configureApiHub(backend, 'sk-any'), throwsStateError);
     expect(backend.callNames, ['read', 'discover']);

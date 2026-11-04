@@ -48,7 +48,9 @@ Future<ApiHubSetupResult> configureApiHub(
   String suppliedKey, {
   ProviderKeyVault? vault,
 }) async {
-  final key = suppliedKey.replaceAll(RegExp(r'\s'), '');
+  // Only trim the pasted key's edges; silently joining interior whitespace
+  // would turn an invalid or multi-line paste into a different credential.
+  final key = suppliedKey.trim();
   if (key.isEmpty || !RegExp(r'^[\x21-\x7E]+$').hasMatch(key) ||
       RegExp(r'^[A-Z][A-Z0-9_]*=').hasMatch(key)) {
     throw const FormatException('请粘贴 APIHub 密钥，不要包含空格、引号或环境变量名称');
