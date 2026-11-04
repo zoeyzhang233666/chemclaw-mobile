@@ -207,7 +207,35 @@ class _DesktopRosterState extends ConsumerState<_DesktopRoster> {
                   title: group.name,
                   subtitle: group.members.join('、'),
                   subtitleMaxLines: 2,
-                  chevron: false,
+                  chevron: true,
+                  onTap: () => showModalBottomSheet<void>(
+                    context: context,
+                    showDragHandle: true,
+                    builder: (sheetContext) => SafeArea(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+                        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(group.name, style: Theme.of(sheetContext).textTheme.titleLarge),
+                          const SizedBox(height: 12),
+                          if (group.admin != null) Text(english ? 'Admin: ${group.admin}' : '管理员：${group.admin}'),
+                          Text(english ? 'Members: ${group.members.join(', ')}' : '成员：${group.members.join('、')}'),
+                          const SizedBox(height: 12),
+                          Text(english
+                              ? 'This is the live ChemClaw group roster. Full group turns and rich tool cards remain in the connected ChemClaw Host.'
+                              : '这里展示当前 ChemClaw 主机真实的专家群。完整群聊消息、任务过程与交互卡片仍由原主机提供。'),
+                          const SizedBox(height: 16),
+                          SizedBox(width: double.infinity, child: FilledButton.icon(
+                            onPressed: () {
+                              Navigator.of(sheetContext).pop();
+                              ref.read(dsBotWebOpenerProvider)(context, ref);
+                            },
+                            icon: const Icon(AppIcons.webApp),
+                            label: Text(english ? 'Open ChemClaw group in Web' : '在 ChemClaw 网页版查看群聊'),
+                          )),
+                        ]),
+                      ),
+                    ),
+                  ),
                 ),
             ],
           ),
