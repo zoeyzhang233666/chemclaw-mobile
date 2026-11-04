@@ -174,9 +174,11 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
         setState(() => _qccMessage = '企查查 $ready/4 个 MCP 已挂载。实际查询权限取决于企查查账号授权。');
       }
     } catch (error) {
-      if (mounted) setState(() => _qccMessage = error is FormatException || error is StateError
-          ? error.toString().replaceFirst(RegExp(r'^(Bad state: |FormatException: )'), '')
-          : '企查查连接未确认成功，请检查授权和当前主机');
+      if (mounted) {
+        setState(() => _qccMessage = error is FormatException || error is StateError
+            ? error.toString().replaceFirst(RegExp(r'^(Bad state: |FormatException: )'), '')
+            : '企查查连接未确认成功，请检查授权和当前主机');
+      }
     } finally {
       if (mounted) setState(() => _busyQcc = false);
     }
