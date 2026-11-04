@@ -12,7 +12,7 @@ assert feature parity with the desktop ChemClaw application.
   creates a warm orange appearance in Flutter chat **and** native Android pet
   overlay. Other pet packs retain their original appearance and animations.
   Do not strip upstream author/source/license information.
-- First connection screen recommends APIHub and ChemCloud data MCP through the
+- First connection and model-provider screens recommend APIHub and ChemCloud data MCP through the
   existing configured-credentials flow. Official DeepSeek sign-in and generic
   API-key connection remain available.
 - Task list keeps its existing Host-backed schedule creation, editor, history,
