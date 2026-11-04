@@ -56,10 +56,10 @@ class ChemClawBrandTest(unittest.TestCase):
         self.assertIn('android:name="io.github.ccch1mneyyy.dsh_app.MainActivity"', manifest)
         self.assertIn('android:name="io.github.ccch1mneyyy.dsh_app.LauncherMist"', manifest)
 
-    def test_mcp_not_hardcoded_to_a_real_host(self):
+    def test_mcp_uses_verified_endpoint_without_credentials(self):
         config = source('config/chemcloud-mcp.example.yml')
         self.assertIn('transport: streamable-http', config)
-        self.assertIn('.invalid/mcp', config)
+        self.assertIn('url: https://datahub.chem-cloud.cn/mcp', config)
         self.assertNotIn('Bearer sk-', config)
 
 if __name__ == '__main__':

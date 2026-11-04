@@ -78,13 +78,17 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
       );
       _apiKey.clear();
       ref..invalidate(customProvidersProvider)..invalidate(modelCatalogProvider);
-      if (mounted) setState(() => _apiMessage =
-          '已安全保存 APIHub，自动发现并导入 ${result.models} 个聊天模型。'
-          '请在聊天中选择 APIHub 模型并发送一次消息验证。');
+      if (mounted) {
+        setState(() => _apiMessage =
+            '已安全保存 APIHub，自动发现并导入 ${result.models} 个聊天模型。'
+            '请在聊天中选择 APIHub 模型并发送一次消息验证。');
+      }
     } catch (error) {
-      if (mounted) setState(() => _apiMessage = error is FormatException || error is StateError
-          ? error.toString().replaceFirst(RegExp(r'^(Bad state: |FormatException: )'), '')
-          : 'APIHub 验证失败，请检查密钥、网络和服务状态');
+      if (mounted) {
+        setState(() => _apiMessage = error is FormatException || error is StateError
+            ? error.toString().replaceFirst(RegExp(r'^(Bad state: |FormatException: )'), '')
+            : 'APIHub 验证失败，请检查密钥、网络和服务状态');
+      }
     } finally {
       if (mounted) setState(() => _busyApi = false);
     }
@@ -122,9 +126,11 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
             : '凭据已保存，但 MCP 尚未就绪（${result.state}）。请检查密钥及网络并重试。');
       }
     } catch (error) {
-      if (mounted) setState(() => _hubMessage = error is FormatException || error is StateError
-          ? error.toString().replaceFirst(RegExp(r'^(Bad state: |FormatException: )'), '')
-          : 'MCP 连接未确认成功，请检查当前主机、密钥和网络后重试');
+      if (mounted) {
+        setState(() => _hubMessage = error is FormatException || error is StateError
+            ? error.toString().replaceFirst(RegExp(r'^(Bad state: |FormatException: )'), '')
+            : 'MCP 连接未确认成功，请检查当前主机、密钥和网络后重试');
+      }
     } finally {
       if (mounted) setState(() => _busyHub = false);
     }

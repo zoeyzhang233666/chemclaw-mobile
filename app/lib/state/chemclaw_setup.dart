@@ -1,5 +1,7 @@
 /// ChemClaw official service presets, checked against the desktop plugin.
 /// All endpoints are fixed and HTTPS; no user credentials are bundled.
+library;
+
 import 'package:dsh_client/dsh_client.dart';
 
 import 'provider_backend.dart';
