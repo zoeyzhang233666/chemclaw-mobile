@@ -61,10 +61,10 @@ void main() {
     near(d.bubbleDark, m.bubbleDark, 'bubbleDark');
   });
 
-  test('presets: unique ids and names, mist first', () {
-    expect(AppAccent.presets.first, AppAccent.mist);
-    expect(AppAccent.presets.map((p) => p.id).toSet(), hasLength(6));
-    expect(AppAccent.presets.map((p) => p.label), ['雾蓝', '黛青', '暮紫', '松石', '琥珀', '石墨']);
+  test('presets: ChemClaw Paper leads and legacy Mist remains available', () {
+    expect(AppAccent.presets.first, AppAccent.paper);
+    expect(AppAccent.presets.map((p) => p.id).toSet(), hasLength(7));
+    expect(AppAccent.presets.map((p) => p.label), ['Paper · ChemClaw', '雾蓝', '黛青', '暮紫', '松石', '琥珀', '石墨']);
     expect(AppAccent.preset('nope'), AppAccent.mist);
     expect(AppAccent.preset('amber'), AppAccent.amber);
   });
@@ -115,8 +115,17 @@ void main() {
     }
   }
 
+  test('Paper neutrals match the desktop ChemClaw palette', () {
+    final n = NeutralTones.forAccent(AppAccent.paper);
+    expect(n.mist, const Color(0xFFFAF9F5));
+    expect(n.ink, const Color(0xFF1F1E1B));
+    expect(n.night, const Color(0xFF1F1E1B));
+    expect(n.paper, const Color(0xFFF3F0E8));
+  });
+
   test('neutrals keep their lightness when re-tinted', () {
-    for (final accent in AppAccent.presets) {
+    // Paper uses intentionally different warm neutrals, not a retint of Mist.
+    for (final accent in AppAccent.presets.where((p) => p.id != 'paper')) {
       final n = NeutralTones.forAccent(accent);
       const m = NeutralTones.defaults;
       for (final (a, b) in [

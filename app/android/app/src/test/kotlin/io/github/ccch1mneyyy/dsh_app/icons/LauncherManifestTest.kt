@@ -51,14 +51,14 @@ class LauncherManifestTest {
         }
         val activities = app.children("activity")
         assertTrue(activities.none { it.isLauncher() })
-        val mainActivity = activities.single { it.getAttribute("android:name") == ".MainActivity" }
+        val mainActivity = activities.single { full(it.getAttribute("android:name")) == "$ns.MainActivity" }
         // Read by MainActivity.getMetaData for every alias.
         assertTrue(mainActivity.children("meta-data").any { it.getAttribute("android:name") == "flutter_deeplinking_enabled" })
     }
 
-    @Test fun thePhoneShowsTheAppAsDshGo() {
+    @Test fun thePhoneShowsTheAppAsChemClawMobile() {
         val app = manifest().children("application").single()
-        assertEquals("DSH Go", app.getAttribute("android:label"))
+        assertEquals("ChemClaw 手机版", app.getAttribute("android:label"))
         // Notification titles say the same name.
         assertEquals(app.getAttribute("android:label"), AppStrings.APP_NAME)
         // Launcher entries, Recents and the share sheet all take the application's label.
@@ -81,7 +81,9 @@ class LauncherManifestTest {
                     if (type == "drawable") assertTrue(res, File(main, "res/drawable/$res.xml").exists())
                     else for (d in DENSITIES) assertTrue("$d/$res", File(main, "res/mipmap-$d/$res.png").exists())
                 }
-                for (d in DENSITIES) assertTrue("$d/$name", File(main, "res/mipmap-$d/$name.png").exists())
+                // Android 8+ adaptive icons use a vector foreground; no legacy raster fish tail.
+                assertTrue(name, layers["foreground"] == ("drawable" to "ic_chemclaw_foreground"))
+                for (d in DENSITIES) assertFalse("$d/$name must not carry restricted upstream art", File(main, "res/mipmap-$d/$name.png").exists())
             }
         }
     }

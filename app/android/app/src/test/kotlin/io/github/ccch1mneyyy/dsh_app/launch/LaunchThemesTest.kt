@@ -104,10 +104,10 @@ class LaunchThemesTest {
         // 取自图片: whichever of page, white and black is nearest the picture's edge.
         assertEquals(LaunchThemes.BLACK, next("edge", 0xFF050608.toInt()))
         assertEquals(LaunchThemes.WHITE, next("edge", 0xFFFCFCFC.toInt()))
-        assertEquals(LaunchThemes.BLANK, next("edge", 0xFFE8EEFB.toInt()))
-        assertEquals(LaunchThemes.BLANK, next("edge", 0xFF1E232D.toInt(), dark = true))
+        assertEquals(LaunchThemes.BLANK, next("edge", 0xFFFAF9F5.toInt()))
+        assertEquals(LaunchThemes.BLANK, next("edge", 0xFF1F1E1B.toInt(), dark = true))
         // A sky blue is nearer the light page than white or black.
-        assertEquals(LaunchThemes.BLANK, next("edge", 0xFF8DB3E2.toInt()))
+        assertEquals(LaunchThemes.BLANK, next("edge", 0xFFF3F0E8.toInt()))
         // No colour to take: the page.
         assertEquals(LaunchThemes.BLANK, next("edge", null))
     }
