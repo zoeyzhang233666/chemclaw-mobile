@@ -64,17 +64,17 @@ void main() {
         ),
       );
       await frames(tester);
-      expect(find.text(appL10n.botsMobileUnsupportedTitle), findsOneWidget);
-      expect(find.text(appL10n.botsMobileApiRequired), findsOneWidget);
+      expect(find.text('连接 ChemClaw 专家团队'), findsOneWidget);
+      expect(find.text('安装 DS Bot'), findsNothing);
       // The copy names no release: none with the mobile API has shipped yet.
       expect(find.textContaining(RegExp(r'v\d+\.\d+')), findsNothing);
       expect(fake.feedOpens, 0);
       // Check desktop ChemClaw's read-only state after a missing hello;
       // the official older DS Bot has no ChemClaw capability library.
       expect(fake.endpoints, ['hello', 'state']);
-      await tester.ensureVisible(find.byKey(const ValueKey('dsbot-open-web')));
-      await tester.tap(find.byKey(const ValueKey('dsbot-open-web')));
-      expect(webOpens, 1);
+      expect(find.byKey(const ValueKey('dsbot-open-web')), findsNothing);
+      expect(find.byKey(const ValueKey('dsbot-recheck-mobile')), findsOneWidget);
+      expect(webOpens, 0);
       expect(tester.takeException(), isNull);
     });
   }
@@ -163,9 +163,9 @@ void main() {
         ),
       );
       await frames(tester);
-      expect(find.text(appL10n.botsMobileApiMissing), findsOneWidget);
-      await tester.ensureVisible(find.byKey(const ValueKey('dsbot-open-web')));
-      expect(tester.widget<FilledButton>(find.byKey(const ValueKey('dsbot-open-web'))).onPressed, isNotNull);
+      expect(find.text('连接 ChemClaw 专家团队'), findsOneWidget);
+      expect(find.byKey(const ValueKey('dsbot-open-web')), findsNothing);
+      expect(tester.widget<TextButton>(find.byKey(const ValueKey('dsbot-recheck-mobile'))).onPressed, isNotNull);
       expect(tester.takeException(), isNull);
     });
   }
@@ -190,7 +190,7 @@ void main() {
     expect(find.byType(TextField), findsOneWidget);
     fake.stream.addError(const DshHttpException(404, 'controlled missing feed'));
     await frames(tester);
-    expect(find.text(appL10n.botsMobileUnsupportedTitle), findsOneWidget);
+    expect(find.text('连接 ChemClaw 专家团队'), findsOneWidget);
     expect(find.byType(TextField), findsNothing);
     expect(fake.feedOpens, 1);
     await tester.ensureVisible(find.byKey(const ValueKey('dsbot-recheck-mobile')));
