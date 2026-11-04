@@ -42,8 +42,7 @@ enum DsBotAvailability {
   /// The host has no DS Bot (or has it turned off).
   missing,
 
-  /// A DS Bot from before the mobile API, a desktop ChemClaw team without
-  /// the native mobile protocol, or one with no version in common.
+  /// A DS Bot from before the mobile API, or one with no common version.
   outdated,
 
   /// Talking to DS Bot.
@@ -51,141 +50,6 @@ enum DsBotAvailability {
 
   /// DS Bot answered with something unexpected.
   failed,
-}
-
-/// Minimal, read-only metadata from desktop ChemClaw, bound to the active
-/// Host. Intentionally excludes MCP headers, environment and skill instructions.
-@immutable
-class ChemClawExpertSummary {
-  const ChemClawExpertSummary({this.id = '', required this.name, required this.role, required this.skills});
-  final String id;
-  final String name;
-  final String role;
-  final List<String> skills;
-}
-
-@immutable
-class ChemClawGroupSummary {
-  const ChemClawGroupSummary({this.id = '', required this.name, required this.members, required this.admin});
-  final String id;
-  final String name;
-  final List<String> members;
-  final String? admin;
-}
-
-/// Desktop ChemClaw has /api/bot 'state' but no DS Bot mobile v1 'hello'.
-/// This data powers an informative native roster; conversations continue in
-/// the same Host's authenticated web client until a versioned mobile protocol
-/// is verified. No state, capability content or secret is copied to the phone.
-@immutable
-class ChemClawDesktopTeam {
-  const ChemClawDesktopTeam._({
-    required this.expertItems,
-    required this.groupItems,
-    required this.skillItems,
-    this.readOnly,
-  });
-
-  final List<ChemClawExpertSummary> expertItems;
-  final List<ChemClawGroupSummary> groupItems;
-  final List<String> skillItems;
-  final String? readOnly;
-  int get bots => expertItems.length;
-  int get rooms => groupItems.length;
-  int get skills => skillItems.length;
-
-  static ChemClawDesktopTeam? fromState(Object? answer) {
-    if (answer is! Map ||
-        answer['bots'] is! List ||
-        answer['rooms'] is! List ||
-        answer['mainBotIds'] is! List ||
-        !answer.containsKey('workspaceId') ||
-        answer['capabilities'] is! List) {
-      return null;
-    }
-
-    String safeText(Object? value) => value is String ? value.trim() : '';
-    final library = <String, Map>{};
-    final skillLabels = <String, String>{};
-    for (final raw in answer['capabilities'] as List) {
-      if (raw is! Map) continue;
-      final name = safeText(raw['name']);
-      if (name.isEmpty) continue;
-      library[name] = raw;
-      if (raw['kind'] != 'skill') continue;
-      final labels = raw['labels'];
-      final display = safeText(labels is Map ? labels['zh'] : null);
-      final fallback = safeText(raw['displayName']);
-      skillLabels[name] = display.isNotEmpty ? display : fallback.isNotEmpty ? fallback : name;
-    }
-
-    // A generic older DS Bot may expose a structurally similar state route.
-    // Requiring ChemClaw identity prevents a second team being rebranded as ours.
-    final names = (answer['bots'] as List)
-        .whereType<Map>()
-        .map((bot) => safeText(bot['name']).toLowerCase());
-    final hasChemClawIdentity = names.contains('chemclaw') ||
-        library.keys.any((name) => name.startsWith('chem-') || name.startsWith('chemical-'));
-    if (!hasChemClawIdentity) return null;
-
-    final botNames = <String, String>{};
-    final experts = <ChemClawExpertSummary>[];
-    for (final raw in answer['bots'] as List) {
-      if (raw is! Map) continue;
-      final id = safeText(raw['id']);
-      final name = safeText(raw['name']);
-      if (id.isEmpty || name.isEmpty) continue;
-      botNames[id] = name;
-      final attached = <String>{};
-      // A Bot normally receives packs, not individual skills. Expand only one
-      // pack level, exactly as the desktop capability library does.
-      final assigned = raw['capabilities'];
-      if (assigned is List) {
-        for (final value in assigned) {
-          final key = safeText(value);
-          final item = library[key];
-          if (item?['kind'] == 'skill') attached.add(key);
-          if (item?['kind'] == 'pack' && item?['items'] is List) {
-            for (final child in item!['items'] as List) {
-              final childKey = safeText(child);
-              if (library[childKey]?['kind'] == 'skill') attached.add(childKey);
-            }
-          }
-        }
-      }
-      experts.add(ChemClawExpertSummary(
-        id: id,
-        name: name,
-        role: safeText(raw['role']),
-        skills: List.unmodifiable(attached.map((id) => skillLabels[id] ?? id)),
-      ));
-    }
-
-    final groups = <ChemClawGroupSummary>[];
-    for (final raw in answer['rooms'] as List) {
-      if (raw is! Map) continue;
-      final name = safeText(raw['name']);
-      if (name.isEmpty) continue;
-      final members = raw['members'];
-      final groupMembers = members is List
-          ? List<String>.unmodifiable(
-              members.map((id) => botNames[safeText(id)]).whereType<String>(),
-            )
-          : const <String>[];
-      groups.add(ChemClawGroupSummary(
-        id: safeText(raw['id']),
-        name: name,
-        members: groupMembers,
-        admin: botNames[safeText(raw['admin'])],
-      ));
-    }
-    return ChemClawDesktopTeam._(
-      expertItems: List.unmodifiable(experts),
-      groupItems: List.unmodifiable(groups),
-      skillItems: List.unmodifiable(skillLabels.values),
-      readOnly: safeText(answer['readOnly']).isEmpty ? null : safeText(answer['readOnly']),
-    );
-  }
 }
 
 @immutable
@@ -196,7 +60,6 @@ class DsBotStatus {
     this._hostLabel,
     this.isLocal = true,
     this.hello,
-    this.desktopTeam,
     this.team,
     this.live = const DsBotLive(),
     this.error,
@@ -210,9 +73,6 @@ class DsBotStatus {
   final bool isLocal;
   final DsBotHello? hello;
 
-  /// Desktop ChemClaw is installed but doesn't implement DS Bot mobile API v1.
-  final ChemClawDesktopTeam? desktopTeam;
-
   /// Null until the first `state` answer.
   final DsBotTeam? team;
   final DsBotLive live;
@@ -222,14 +82,13 @@ class DsBotStatus {
   bool get ready => availability == DsBotAvailability.ready && team != null;
 
   /// Another DSH holds the team: it shows but cannot change.
-  String? get readOnly => team?.readOnly ?? hello?.readOnly ?? desktopTeam?.readOnly;
+  String? get readOnly => team?.readOnly ?? hello?.readOnly;
 
   bool supports(String capability) => hello?.supports(capability) ?? false;
 
   DsBotStatus copyWith({
     DsBotAvailability? availability,
     DsBotHello? hello,
-    ChemClawDesktopTeam? desktopTeam,
     DsBotTeam? team,
     DsBotLive? live,
     String? Function()? error,
@@ -240,7 +99,6 @@ class DsBotStatus {
     hostLabel: _hostLabel,
     isLocal: isLocal,
     hello: hello ?? this.hello,
-    desktopTeam: desktopTeam ?? this.desktopTeam,
     team: team ?? this.team,
     live: live ?? this.live,
     error: error == null ? this.error : error(),
@@ -377,28 +235,6 @@ class DsBotController extends Notifier<DsBotStatus> {
       hello = await api.hello(version: AppInfo.version);
     } catch (error) {
       if (!_current(generation)) return;
-      // Desktop ChemClaw shares the route but intentionally has no DS Bot
-      // mobile 'hello'. Probe only for a missing endpoint, using the same
-      // authenticated Host transport. A legacy DS Bot has no capability
-      // library and is not misidentified as ChemClaw.
-      if (error is DshRemoteException && error.code == 'bot/not-found') {
-        try {
-          final answer = await api.call('state', const {}, const Duration(seconds: 6));
-          if (!_current(generation)) return;
-          final desktop = ChemClawDesktopTeam.fromState(answer);
-          if (desktop != null) {
-            state = state.copyWith(
-              availability: DsBotAvailability.outdated,
-              desktopTeam: desktop,
-              error: () => null,
-            );
-            return;
-          }
-        } catch (_) {
-          if (!_current(generation)) return;
-          // Preserve the original hello error; this detection is best-effort.
-        }
-      }
       final availability = switch (error) {
         DshHttpException(:final statusCode) when statusCode == 404 => DsBotAvailability.missing,
         DshRemoteException(:final code) when code == 'bot/not-found' || code == 'bot/read-only' =>

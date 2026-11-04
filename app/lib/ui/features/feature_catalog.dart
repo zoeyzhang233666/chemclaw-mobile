@@ -16,7 +16,6 @@ import '../../plugins/seams/seams.dart';
 import '../../state/plugins_state.dart';
 import '../common/feature_tile.dart';
 import '../agents/team_page.dart';
-import '../bots/bots_page.dart';
 import '../community/community_page.dart';
 import '../cordis/cordis_page.dart';
 import '../files/files_page.dart';
@@ -186,19 +185,6 @@ const settingsFeatureSection = 'settings';
 /// What 全部功能 holds: things to do now. Settings live in 设置; the last
 /// group is a few shortcuts there (docs/design/settings-ia.md §4.6).
 final featureSections = <FeatureSection>[
-  // ChemClaw experts are the product's primary workflow, never a DS Bot
-  // marketplace item or an install prompt for another team's package.
-  FeatureSection('ChemClaw', [
-    FeatureItem.localized(
-      id: 'chemclaw-team',
-      title: (_) => AppLocale.isEnglish ? 'ChemClaw Experts & Groups' : '化工专家与专家群',
-      summary: (_) => AppLocale.isEnglish
-          ? 'Work with industry specialists, expert groups and skills on your connected ChemClaw host'
-          : '使用当前 ChemClaw 主机的行业专家、协作群和专业技能',
-      icon: AppIcons.bot,
-      native: (_) => const BotsPage(chemclawOnly: true),
-    ),
-  ]),
   FeatureSection.localized((l10n) => l10n.catalogCurrentChat, [
     FeatureItem.localized(
       id: 'session-detail',

@@ -13,7 +13,6 @@ import '../phone/phone_channel.dart';
 import '../phone/phone_approval.dart';
 import '../pets/pet_signals.dart' show petHearAlert, petOnScreenProvider;
 import 'app_info.dart';
-import 'bots_state.dart';
 import 'chat_state.dart';
 import 'connection_state.dart';
 import 'hosts_state.dart';
@@ -533,8 +532,7 @@ class ChatAlertsController extends Notifier<ChatAlert?> {
         !alert.kind.attention ||
         alert.eventId == null ||
         ref.read(appForegroundProvider) ||
-        _phonePrompt != null ||
-        ref.read(dsBotSessionFilterProvider)(alert.host, alert.sessionId)) {
+        _phonePrompt != null) {
       return false;
     }
     final attached = _trackers[alert.host];
@@ -667,8 +665,6 @@ class ChatAlertsController extends Notifier<ChatAlert?> {
   }
 
   void _deliver(ChatAlert alert) {
-    // DS Bot's own conversations: it sends its own notifications.
-    if (ref.read(dsBotSessionFilterProvider)(alert.host, alert.sessionId)) return;
     final prefs = ref.read(notifyPrefsProvider);
     final foreground = ref.read(appForegroundProvider);
     final delivery = deliveryFor(
