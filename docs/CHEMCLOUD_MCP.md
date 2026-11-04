@@ -1,33 +1,31 @@
-# ChemClaw 手机版：化工数据 MCP 接入与验收
+# ChemClaw 手机版：APIHub 与行业 MCP 预置
 
-## 如何工作
+本功能只在 zoeyzhang233666/chemclaw-mobile 中实现；电脑版 chemclaw-bot 是独立项目。
 
-MCP 工具属于实际运行 DeepSeek Harness 的 **Host**。Flutter 客户端呈现工具调用结果；它本身不会自动变成 MCP Server。
+## 手机首次使用
 
-| 连接模式 | 配置位置 | 状态 |
-|---|---|---|
-| Android 本机 DSH | 手机内 DSH profile | 底层支持 MCP，行业服务器仍需配置和实测 |
-| SSH 连接 Windows／Linux | 远端 DSH profile | 复用远程主机 MCP；需核实远端插件与 Bot |
-| DSH Remote | 服务端 DSH profile | MCP 执行依赖服务端；Bot／群聊不保证 |
+首次打开可选「连接 ChemClaw 服务（APIHub / MCP）」。随后在「设置 → ChemClaw 服务连接」也能修改。必须先连接本机 DSH 运行环境，才能安全写入本机密钥。
 
-底层 DSH 已有 `@deepseek-ai/dsh-mcp-client`，支持 stdio 及 Streamable HTTP。不是在手机上另造一个数据源代理。
+| 服务 | 预设 HTTPS 地址 | 获取密钥 | 使用步骤 |
+|---|---|---|---|
+| APIHub 模型 | https://apihub.chem-cloud.cn/v1 | https://apihub.chem-cloud.cn/keys | 粘贴 Key → 用真实模型列表验证 → 建立 apihub 渠道 → 保存到 DSH 凭据库 |
+| 芯化和云数据中台 | https://datahub.chem-cloud.cn/mcp | https://mcp.chem-cloud.cn/ | 粘贴 MCP Key → 保存到 DSH 凭据库 → 当前 Host 尝试加载 HTTP MCP |
+| 化工社公开查询 | https://huagongshe.com/mcp | https://huagongshe.com/zh-CN/mcp-guide | 公开只读工具无需密钥，私有/写操作禁止 |
 
-## 配置流程
+**APIHub 与数据中台需要两份各自授权的密钥**，二者不能随意互换。服务是否可用取决于密钥账号与实时网络、后端状态。一个 Key 不保证可以调用任何模型或查询所有数据。
 
-1. 请数据中台负责人提供 **实际 MCP URL**、协议和访问凭据。平台首页网址不等于 MCP 协议地址。
-2. 查看 [配置模板](../config/chemcloud-mcp.example.yml)。模板使用不可路由的 `.invalid` 域名，绝不是可用服务。
-3. 仅在当前活动 Host 上合并适当的插件条目，**不得覆盖整个 profile**。按该主机支持的安全凭据机制注入 Token，不在公开仓库、APK、日志或聊天记录中明文保存。
-4. 重启当前 Host；确认工具初始化、`tools/list` 返回真实结果。旧版 SSH／relay 模式不应据此推断全部功能可写。
-5. 使用手机「设置 → 化工数据 MCP」复制验证问题，在对应主机的 Agent 会话中执行。
+## 技术实现
 
-## 业务验收（全部需要真实数据）
+- APIHub：OpenAI Completions 协议，使用真实模型发现；凭据引用 APIHUB_API_KEY，用户配置文件只存引用，不存密钥值。本机 Android Keystore 可备份供 DSH 恢复。
+- 数据中台：Streamable HTTP + Bearer，凭据引用 CHEM_DATA_HUB。HTTP 地址与源码均不包含客户密钥。
+- 宿主桥接：runtime/bridge/dsh-go-bridge/lib/chemclaw-connectors.js 使用 DSH 原有的 MCP 客户端和工具调用路径；Flutter 只负责配置与展示真实 Host 状态。
+- 预置的 MCP 连接在实际 MCP 初始化通过后才会显示已挂载；仍须用真实工具查询验证数据。401、403、DNS、超时、未装旧版 Bridge 都不得假报可用。
+- Android 本机和 SSH/Relay 远端 Host 配置彼此独立。远端未装 ChemClaw Bridge 时，无法直接使用新版一键 MCP 设置；可另行配置远端 Host。
 
-- 甲醇、纯碱、SBS 等**现货**查询：明确市场、规格、单位、时间、价税及交货口径；MCP 优先，不能用期货冒充现货。
-- 甲醇、乙二醇**期现基差**：现货和期货分别有来源、频率、合约及时间戳；必要时区分主力、主连。
-- 无 MCP、HTTP 401/403、超时、Host 切换、断线：不能显示虚假的「已连接」状态，也不能伪造工具结果。
-- Bot／群聊和经典模式分别测试工具调用；确保模型能引用证据。
-- 手机打开历史价格图、GenUI 卡片、下载文件及公告链接，必须真机验收。
+## 业务与发布验收
 
-## 边界
+数据中台需在真实 Android 手机上查询甲醇华东现货，输出市场、日期、单位、规格与来源；没有现货价格时明确回答缺失，绝不使用期货冒充。需要进一步检验上下文模型切换、断线重连、秘钥更新、远端 Host 切换、真机工具调用与授权撤销。
 
-目前仓库只有 MCP 配置模板、Host 感知的配置说明页和测试问题；**没有实装数据中台正式 endpoint，也没有完成在线连通性验收**。连接不等于已经迁移桌面版 ChemClaw 的全部功能。
+以上只是 **APIHub、芯化和云数据中台、公开化工社** 三项预置接入；不会自动迁移桌面版的全部 Bots、群聊、100+ 行业 Skills、Office、GenUI 或私有服务。仍需分别做功能适配与真实验收。
+
+保留上游作者署名，受限素材需在公开发布前完成许可审计。PR #1 保持 Draft，所有测试及 APK 真机验收通过后才决定发布。

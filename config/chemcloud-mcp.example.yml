@@ -1,13 +1,14 @@
-# Example only. DO NOT deploy until service owner confirms exact MCP endpoint.
-# Place the row into the ACTIVE HOST's DSH profile overlay. Do not overwrite
-# existing entries, and NEVER commit real customer tokens.
+# ADVANCED ONLY: example for a remote DSH Host WITHOUT ChemClaw bundled bridge.
+# The Android LOCAL Host already has ChemClaw built-in MCP presets.
+# Never duplicate the same MCP server in one Host and never commit a token.
 - insert:
     - id: chemcloud-industry-mcp
       name: '@deepseek-ai/dsh-mcp-client'
       config:
         transport: streamable-http
         serverName: chem-data-hub
-        url: https://replace-with-verified-mcp-endpoint.invalid/mcp
+        url: https://datahub.chem-cloud.cn/mcp
         failOnStartupError: false
-# Auth: configure credentials outside the repository through the DSH host's
-# supported secret/credential mechanism. Consult the server operator.
+# The template does not auto-inject the HTTP Bearer token.
+# Store the customer's CHEM_DATA_HUB key with the remote Host's own secrets
+# system and bind Authorization securely in that Host. Do not paste it here.
