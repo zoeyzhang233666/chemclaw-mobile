@@ -10,7 +10,7 @@
 - **远程工作**：通过 SSH 连接已有的 DSH/ChemClaw 主机，由该主机执行工具、MCP 和耗时任务。
 - **行业数据**：计划接入芯化和云数据中台的 MCP（实际地址、权限必须由服务方提供），优先使用可靠现货数据，明确区分期货与现货。
 - **ChemClaw 品牌**：使用 ChemClaw 的云朵标识、Paper 主题及独立 Android Application ID。
-- **待适配的桌面能力**：ChemClaw Bot／群聊、ChemClaw Skills、GenUI 交互图表、Office 文件交付与预览。它们**不能因 Fork 自动继承**。
+- **多智能体协作**：保留 DSH 原生「智能体团队」插件；手机版不再开发独立的化工专家／专家群／ChemClaw Bot 页面。行业 Skills、GenUI 交互图表、Office 文件交付与预览仍需单独测试。
 
 ## 当前进度
 
@@ -29,7 +29,7 @@
 - 清理原 DSH Go 非自由授权的品牌、吉祥物、鲸鱼、桌宠与宣传素材（不仅是启动图标）；见上游 [ASSETS.md](ASSETS.md)。
 - Android 真机 UI 回归、更新分享域名检查、权限审计、Golden 视觉快照更新。
 - 使用真实 MCP 服务端验证 `initialize`／`tools/list` 和行情工具调用。
-- 验证本机／SSH／DSH Remote 下的 Bot、群聊、GenUI 兼容性。
+- 验证本机／SSH／DSH Remote 下的 DSH 原生智能体团队、GenUI、Skills 及文件交付兼容性。
 - APK 构建、签名与自动更新发布流程。
 
 **当前代码禁止作为已经验收的正式客户端对外宣传。**

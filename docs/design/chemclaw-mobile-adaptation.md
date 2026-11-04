@@ -18,8 +18,7 @@ assert feature parity with the desktop ChemClaw application.
 - Task list keeps its existing Host-backed schedule creation, editor, history,
   manual run and deletion, with a small-screen advisory about host availability
   and Android battery restrictions.
-- The mobile Bot/group-chat page gets a ChemClaw-facing title; its underlying
-  plugin API remains DS Bot-compatible and must be tested against ChemClaw desktop.
+- DSH's native **Agent Teams** remains accessible under All Features → Agent Teams. The separate mobile ChemClaw expert/group roster has been retired.
 
 ## Required before public release
 
@@ -36,68 +35,34 @@ assert feature parity with the desktop ChemClaw application.
   next run display and history without changing schedule IDs or Host storage.
 - **Connection:** validate live APIHub model discovery, credential isolation
   per Host, ChemCloud MCP authorization and spot-vs-futures attribution.
-- **Desktop parity:** inventory ChemClaw desktop Skills, Bots, group chats,
-  GenUI and Office with explicit compatibility checks. A Fork of DSH Go does
-  not automatically inherit the desktop Bot/group-chat architecture.
+- **Desktop parity:** audit industry Skills, GenUI and Office support on Android.
+  Do not attempt to recreate desktop ChemClaw's Bot/group-chat architecture
+  in this mobile project; DSH Agent Teams is the supported mobile workflow.
 - **UI:** visually inspect Paper contrast, smaller screen layouts, icon and
   pet pose quality; compare expected screenshots before updating goldens.
 
 This remains a development test APK; CI and legal/visual acceptance are required
 before a branded public release.
 
-## Verified compatibility and CI audit · November 4, 2026
+## Product decision · November 4, 2026
 
-- The mobile native Bot client expects DS Bot mobile protocol v1: POST
-  `/api/bot` with `hello` and `room-chat`, plus an SSE feed. Desktop
-  `chemclaw-bot` uses the same HTTP route but lacks those mobile endpoints;
-  sharing the URL alone does not provide native compatibility. Do not install
-  upstream `ds-bot` to access existing ChemClaw desktop Bot/group data: it
-  uses a separate state store. Until a verified adapter exists, open the
-  active Host's DSH web client as a fallback, without claiming native sync.
-- Android JVM launcher test now checks generated ChemClaw PNG fallback assets
-  and their signatures instead of prohibiting the intended new rasters.
-- The launch test renderer accepts Paper's flat colour background (previous
-  two-stop-only gradient construction crashed).
-- Rebranded native entry points use the project's AppIcons roles, while the
-  renderer still uses the original Pet animation frames and tests RGB channel
-  conversion without removing nearest-neighbour integrity assertions.
-- Schedule list offers a direct path to the Android background settings on
-  a local Host; no new scheduler is created. A remote Host remains responsible
-  for tasks hosted remotely.
-- Classic web container titles are rebranded; its embedded upstream web client
-  still needs separate, tested Paper/brand styling. This commit does not claim
-  that the entire embedded DSH user interface has been reskinned.
-- Multiple legacy Flutter update tests and other UI assertions remain outside
-  this patch. Do not turn them off or release publicly without triage.
+The separate mobile **chemical experts, expert groups, and ChemClaw Bot**
+feature has been removed at the user's request. Mobile users should use
+DSH's already available **Agent Teams** plugin instead.
 
-## Desktop ChemClaw team detection (no data duplication)
+Implementation:
+- Removed the `chemclaw-team` card from All Features and its custom
+  native expert chat page, ChemClaw roster mapping, and group listing.
+- Removed the separate Bot drawer entry and the always-on Bot feed/notification
+  bridge. Previously owned DSH sessions remain visible in the ordinary
+  session list; user data and desktop ChemClaw are left unchanged.
+- Kept the DSH `agent-team` feature and `TeamPage`, along with MCP,
+  schedules, models, Paper theme, launcher, and pet customizations.
+- Some upstream generic Bot compatibility source remains unexposed to avoid
+  destabilizing the underlying DSH Go libraries and tests; it is **not** a
+  ChemClaw Mobile product feature and does not create or install another team.
+- ARM64 rootfs downloads still require pinned SHA256 checks and trusted
+  signed package-index verification.
 
-The mobile DS Bot client requires the v1 native hello/room-chat API, but
-ChemClaw desktop v0.3.0 ships the older `/api/bot` state endpoint without
-that handshake. When hello returns `bot/not-found`, the mobile app performs
-one authenticated, read-only `state` probe. A ChemClaw-specific state shape
-(bots, rooms, mainBotIds, workspaceId and capability library array) is used
-to show real Bot, group and skill counts with a Web fallback on the **same
-active Host**. It does **not** install `ds-bot`, copy secrets or create a
-new team. Legacy DS Bot without a capability library stays on its existing
-update/install path. All network errors remain best-effort fallback and
-reconnect resets the state. Native desktop parity requires an explicit
-versioned compatibility adapter; this read-only probe does not provide it.
-
-## Native read-only ChemClaw roster and reproducible APK downloads
-
-- The mobile Bot page now lists actual expert names, assigned Skill labels
-  (including one-level capability-pack expansion), member names in groups,
-  and the native skill catalog from the active desktop ChemClaw Host. This is
-  read-only. A named Web action opens the existing authenticated Host client.
-- The state mapper whitelists **only** names, roles, group membership and
-  Skill labels: it explicitly does not store or display MCP env/headers,
-  credential values, skill bodies, or Bot instructions on the phone.
-- A desktop Host's first 'state' read may initialize its own ChemClaw roster
-  if it has never been bootstrapped; the mobile app does not create a separate
-  DS Bot team, copy Bot records or install upstream DS Bot.
-- ARM64 runtime downloads from the Ubuntu archive mirror fall back to the
-  official Ubuntu archive when unreachable. Existing sha256 pins, signed
-  InRelease checks and the package-index hash chain remain mandatory.
-- CI must still prove proper UI layout, artifact goldens, real-run task
-  safety, and updates before public distribution.
+This is a development branch. Flutter/Android CI, phone acceptance, licence
+checks and visual references must pass before public distribution.

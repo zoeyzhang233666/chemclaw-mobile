@@ -8,7 +8,7 @@ The first-stage changes provide ChemClaw identity, a separate Android applicatio
 
 **MCP**: DSH's local runtime and SSH-connected remote hosts can execute MCP tools configured on the *active host*. A real ChemCloud MCP endpoint and credentials must be provided by the data service operator. No URL or token is bundled and no live connection has been verified. See [MCP setup and acceptance](docs/CHEMCLOUD_MCP.md).
 
-ChemClaw desktop Bot/group sessions, interactive GenUI charts, Office output and full Skills integration **still require mobile adaptation and testing**. DSH Remote compatibility must be tested separately.
+ChemClaw Mobile uses DSH's native **Agent Teams** feature. The separate chemical expert/room and ChemClaw Bot client has been removed from this mobile fork; desktop ChemClaw is unaffected. Interactive GenUI charts, Office output and full Skills integration **still require mobile testing**. DSH Remote compatibility must be tested separately.
 
 **Redistribution warning:** The upstream project is [AGPL-3.0](LICENSE), with third-party notices in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). Upstream [ASSETS.md](ASSETS.md) explicitly excludes certain mascot, branding and promotional assets from the open-source license. Those must be removed or replaced before public builds.
 
