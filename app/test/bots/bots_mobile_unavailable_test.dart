@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dsh_app/l10n/l10n.dart';
 import 'package:dsh_app/state/bots_state.dart';
 import 'package:dsh_app/ui/bots/bot_chat_page.dart';
 import 'package:dsh_app/ui/bots/bot_details_page.dart';

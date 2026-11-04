@@ -28,6 +28,7 @@ import '../common/empty_view.dart';
 import '../common/pressable.dart';
 import '../common/smooth_size.dart';
 import '../common/read_list_status.dart';
+import '../common/status_dot.dart';
 import '../onboarding/local_install.dart';
 import '../remote/host_status.dart';
 import '../remote/host_switcher.dart' show showHostSheet;
