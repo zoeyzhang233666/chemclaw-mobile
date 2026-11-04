@@ -57,7 +57,8 @@ enum DsBotAvailability {
 /// Host. Intentionally excludes MCP headers, environment and skill instructions.
 @immutable
 class ChemClawExpertSummary {
-  const ChemClawExpertSummary({required this.name, required this.role, required this.skills});
+  const ChemClawExpertSummary({this.id = '', required this.name, required this.role, required this.skills});
+  final String id;
   final String name;
   final String role;
   final List<String> skills;
@@ -65,7 +66,8 @@ class ChemClawExpertSummary {
 
 @immutable
 class ChemClawGroupSummary {
-  const ChemClawGroupSummary({required this.name, required this.members, required this.admin});
+  const ChemClawGroupSummary({this.id = '', required this.name, required this.members, required this.admin});
+  final String id;
   final String name;
   final List<String> members;
   final String? admin;
@@ -141,6 +143,7 @@ class ChemClawDesktopTeam {
         }
       }
       experts.add(ChemClawExpertSummary(
+        id: id,
         name: name,
         role: safeText(raw['role']),
         skills: List.unmodifiable(attached.map((id) => skillLabels[id] ?? id)),
@@ -159,6 +162,7 @@ class ChemClawDesktopTeam {
             )
           : const <String>[];
       groups.add(ChemClawGroupSummary(
+        id: safeText(raw['id']),
         name: name,
         members: groupMembers,
         admin: botNames[safeText(raw['admin'])],
