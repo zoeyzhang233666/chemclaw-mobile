@@ -39,7 +39,8 @@ test("preset endpoints and key references are fixed by ChemClaw desktop contract
   assert.deepEqual(CHEMCLOUD_MCP_PRESETS.map(x => x.id), ["chem-data-hub", "qcc-company", "qcc-ipr", "qcc-operation", "qcc-risk", "huagongshe"]);
   assert.equal(CHEMCLOUD_MCP_PRESETS[0].url, "https://datahub.chem-cloud.cn/mcp");
   assert.equal(CHEMCLOUD_MCP_PRESETS[0].credential, "CHEM_DATA_HUB");
-  assert.equal(CHEMCLOUD_MCP_PRESETS[1].anonymous, true);
+  assert.equal(CHEMCLOUD_MCP_PRESETS.find(x => x.id === "huagongshe").anonymous, true);
+  assert.equal(CHEMCLOUD_MCP_PRESETS.filter(x => x.credential === "QCC").length, 4);
 });
 
 test("QCC uses one secret for four HTTPS MCP connectors", async () => {
