@@ -59,8 +59,8 @@ jobs:
       - name: Render refreshed UI golden images
         working-directory: app
         run: |
-          # Non-golden functional tests can still fail. Record their exit code:
-          # never report that the full test suite passed.
+          # An image refresh must not silently pass when widget tests fail.
+          # Abort before staging files if any selected test returns nonzero.
           set +e
           # Only files that actually assert screenshots: avoid executing hundreds of
           # unrelated functional/update tests during image regeneration. Main CI
@@ -68,7 +68,7 @@ jobs:
           if [[ "$GOLDEN_FOCUS" == 'star-team' ]]; then
             golden_tests=(test/star/star_prompt_test.dart test/agents/team_page_test.dart)
           else
-          mapfile -t golden_tests < <(grep -rlE 'matchesGoldenFile|goldenBoth\(' test --include='*_test.dart' | sort)
+            mapfile -t golden_tests < <(grep -rlE 'matchesGoldenFile|goldenBoth\(' test --include='*_test.dart' | sort)
           fi
           printf 'Golden test files: %s\n' "${#golden_tests[@]}"
           test "${#golden_tests[@]}" -gt 0
@@ -77,7 +77,10 @@ jobs:
           set -e
           echo "Flutter test exit status during rebaseline: $status" | tee "$RUNNER_TEMP/rebaseline-status.txt"
           tail -n 110 "$RUNNER_TEMP/rebaseline.log"
-          test "$status" -eq 0 || echo 'Functional failures remain; check main CI. Golden files may still be generated.'
+          if [[ "$status" -ne 0 ]]; then
+            echo '::error::Golden tests failed; refusing to push partial baselines.'
+            exit "$status"
+          fi
       - name: Stage only cloud icon PNGs and test golden PNGs
         run: |
           git add --all -- app/android/app/src/main/res/mipmap-mdpi app/android/app/src/main/res/mipmap-hdpi app/android/app/src/main/res/mipmap-xhdpi app/android/app/src/main/res/mipmap-xxhdpi app/android/app/src/main/res/mipmap-xxxhdpi
