@@ -305,9 +305,9 @@ void main() {
       expect(zh.starPromptTitle(0), '你已使用 ChemClaw 半小时');
       expect(zh.starPromptTitle(1), '你已使用 ChemClaw 一小时');
       expect(zh.starPromptTitle(5), '你已使用 ChemClaw 5 小时');
-      expect(en.starPromptTitle(0), 'You've used ChemClaw for half an hour');
-      expect(en.starPromptTitle(1), 'You've used ChemClaw for an hour');
-      expect(en.starPromptTitle(6), 'You've used ChemClaw for 6 hours');
+      expect(en.starPromptTitle(0), "You've used ChemClaw for half an hour");
+      expect(en.starPromptTitle(1), "You've used ChemClaw for an hour");
+      expect(en.starPromptTitle(6), "You've used ChemClaw for 6 hours");
     });
 
     test('keeps through JSON; the earlier prompt’s record keeps only whether it was finished', () {
@@ -804,7 +804,7 @@ void main() {
       await _pumpDialog(tester, width: 360, height: 780, scale: 1.3, locale: const Locale('en'), hours: 6);
       await tester.pumpAndSettle();
       fits(tester);
-      expect(find.text('You've used ChemClaw for 6 hours'), findsOneWidget);
+      expect(find.text("You've used ChemClaw for 6 hours"), findsOneWidget);
     });
 
     testWidgets('animations on: the whale bobs in and comes to rest at full size', (tester) async {
