@@ -26,7 +26,7 @@ const pageLinkHost = 'open';
 /// [FeatureItem.id]: each is a native page that needs no open conversation.
 /// Settings pages and rows answer through the settings index
 /// ([SettingsIndex.linkIds]).
-const catalogPageLinks = <String>{'schedules', 'cordis', 'agent-team', 'forum', 'community', 'ds-bot', 'workspaces'};
+const catalogPageLinks = <String>{'schedules', 'cordis', 'agent-team', 'workspaces'};
 
 /// Every page a link may name.
 Set<String> get pageLinkIds => {...SettingsIndex.linkIds, ...catalogPageLinks};

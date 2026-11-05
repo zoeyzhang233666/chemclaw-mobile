@@ -37,6 +37,9 @@ void main() {
         // 全部功能 entries that are actions, web pages or need a conversation.
         'dshgo://open/search',
         'dshgo://open/share-profile',
+        'dshgo://open/forum',
+        'dshgo://open/community',
+        'dshgo://open/ds-bot',
         'dshgo://open/cot-translation',
         'dshgo://open/reference',
         'dshgo://open/voice-input',
@@ -73,12 +76,14 @@ void main() {
     // The ids before the settings index (0.9.6): none may stop working.
     const before = {
       'schedules', 'permission', 'agent-presets', 'models', 'subagent-settings', 'agent-loop', //
-      'shell-settings', 'web-search', 'plugins', 'plugin-inventory', 'cordis', 'agent-team', 'forum', //
-      'community', 'ds-bot', 'notifications', 'workspaces', 'general', 'account', 'remote', 'phone', //
+      'shell-settings', 'web-search', 'plugins', 'plugin-inventory', 'cordis', 'agent-team', //
+      'notifications', 'workspaces', 'general', 'account', 'remote', 'phone', //
       'engine', 'diagnostics', 'settings', 'appearance', 'pets', 'shared-links', 'engine-settings', //
       'all-features', 'background',
     };
     expect(pageLinkIds, containsAll(before));
+    expect(pageLinkIds.intersection({'forum', 'community', 'ds-bot', 'share-profile'}), isEmpty,
+        reason: 'Removed community, sharing and legacy Bot pages must not remain routable');
   });
 
   test('a row link opens the page the row is on, at the row', () {
