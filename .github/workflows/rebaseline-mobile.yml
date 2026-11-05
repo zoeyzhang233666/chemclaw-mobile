@@ -82,6 +82,9 @@ jobs:
         run: |
           if git diff --cached --quiet; then exit 0; fi
           git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'test(mobile): update ChemClaw cloud icon and screenshot baselines'
+          # Functional golden tests may modify tracked fixture files. Discard only
+          # these uncommitted runner changes before rebasing committed PNGs.
+          git reset --hard HEAD
           # A long golden render may outlive ordinary code commits. Never force-push
           # and never roll the mobile PR branch back: rebase the generated images
           # onto the latest head, then attempt a normal fast-forward push.

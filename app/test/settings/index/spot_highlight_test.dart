@@ -127,10 +127,10 @@ void main() {
     usePhoneSurface(tester);
     final page = pageForId('chat-text-size', null);
     expect(page, isA<SpotFocus>());
-    // The hub's last group, by its spot.
+    // Use the last settings group: the community spot was deliberately removed.
     await tester.pumpWidget(
       goldenApp(
-        home: spotPage(Spots.community),
+        home: spotPage(SettingsIndex.entry(SettingsPageId.about)),
         brightness: Brightness.light,
         overrides: [
           localRuntimeProvider.overrideWith(
@@ -144,10 +144,10 @@ void main() {
       await tester.pump(const Duration(milliseconds: 50));
     }
     expect(find.byType(SettingsScreen), findsOneWidget);
-    final rect = tester.getRect(find.byKey(SpotKey(Spots.community.id)));
+    final rect = tester.getRect(find.byKey(SpotKey(SettingsIndex.entry(SettingsPageId.about).id)));
     expect(rect.top, greaterThan(0));
     expect(rect.bottom, lessThan(844));
-    expect(find.text(appL10n.hubSettingsCommunity), findsOneWidget);
+    expect(find.text(appL10n.hubAbout), findsWidgets);
     await tester.pump(const Duration(seconds: 2));
   });
 }
