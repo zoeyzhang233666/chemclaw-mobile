@@ -27,9 +27,9 @@ import 'support.dart';
 const _version = '1.2.0+11011200';
 const _apk = 'dsh-go-1.2.0-arm64.apk';
 const _patchName = 'dsh-go-1.0.0-to-1.2.0-arm64.dshdlt';
-const _feed = 'https://dl.dshtui.com/update.json';
-const _dl = 'https://dl.dshtui.com/download/1.2.0';
-const _github = 'https://github.com/ccch1mneyyy/dsh-go/releases/download/v1.2.0';
+const _feed = 'https://chemclaw-mobile.invalid/update.json';
+const _dl = 'https://chemclaw-mobile.invalid/download/1.2.0';
+const _github = 'https://github.com/zoeyzhang233666/chemclaw-mobile/releases/download/v1.2.0';
 
 final _old = utf8.encode('PK the installed 1.0.0, ${'resources ' * 300}${'classes ' * 300}');
 final _new = [..._old.sublist(0, 2000), ...utf8.encode('the 1.2.0 code'), ..._old.sublist(2400)];
@@ -127,7 +127,7 @@ void main() {
     state = c.read(appUpdateProvider);
     expect(state.task, UpdateTaskPhase.ready);
     expect(state.total, _patch.length);
-    expect(state.source, 'dl.dshtui.com');
+    expect(state.source, 'chemclaw-mobile.invalid');
     expect(built().readAsBytesSync(), _new);
     expect(downloads().listSync().map((f) => f.uri.pathSegments.last), [_apk], reason: 'the patch is gone');
     expect(asked(_apk), isEmpty);

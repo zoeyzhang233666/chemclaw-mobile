@@ -1,4 +1,4 @@
-// The beta channel: builds with a channel token ask go.dshtui.com/beta first
+// The beta channel: builds with a channel token ask chemclaw-mobile.invalid/beta first
 // and download from it with the token; the token never goes anywhere else.
 
 import 'dart:convert';
@@ -18,12 +18,12 @@ import 'support.dart';
 
 const _token = 'dshc_0123456789abcdefghijklmnopqrstuvwxyzABCDEFG';
 const _auth = 'Bearer $_token';
-const _feed = 'https://go.dshtui.com/beta/update.json';
-const _api = 'https://api.github.com/repos/ccch1mneyyy/dsh-go/releases/latest';
+const _feed = 'https://chemclaw-mobile.invalid/beta/update.json';
+const _api = 'https://api.github.com/repos/zoeyzhang233666/chemclaw-mobile/releases/latest';
 const _apk = 'dsh-go-1.2.0-arm64.apk';
-const _betaApk = 'https://go.dshtui.com/beta/1.2.0/$_apk';
-const _githubApk = 'https://github.com/ccch1mneyyy/dsh-go/releases/download/v1.2.0/$_apk';
-const _dlFeed = 'https://dl.dshtui.com/update.json';
+const _betaApk = 'https://chemclaw-mobile.invalid/beta/1.2.0/$_apk';
+const _githubApk = 'https://github.com/zoeyzhang233666/chemclaw-mobile/releases/download/v1.2.0/$_apk';
+const _dlFeed = 'https://chemclaw-mobile.invalid/update.json';
 
 final _bytes = utf8.encode('PK pretend this is the 1.2.0 beta for arm64');
 
@@ -34,7 +34,7 @@ String _manifest({List<int>? apk}) => jsonEncode({
   'tag': 'v1.2.0',
   'notes': '### 中文\n\n- 内测\n\n### English\n\n- Beta',
   'notesByLocale': {'zh': '- 内测', 'en': '- Beta'},
-  'page': 'https://go.dshtui.com/beta',
+  'page': 'https://chemclaw-mobile.invalid/beta',
   'assets': {
     'arm64': {
       'name': _apk,
@@ -55,7 +55,7 @@ Route _guarded(Route inner) => (url, headers) {
 void _expectTokenOnlyOnChannel(FakeHttp http) {
   for (final (url, headers) in http.requests) {
     final carries = headers.values.any((v) => v.contains(_token));
-    expect(carries, url.host == 'go.dshtui.com' && url.path.startsWith('/beta/'), reason: '$url');
+    expect(carries, url.host == 'chemclaw-mobile.invalid' && url.path.startsWith('/beta/'), reason: '$url');
   }
 }
 
@@ -66,13 +66,13 @@ void main() {
     test('needs a token and an HTTPS origin', () {
       expect(UpdateChannel.tryCreate(token: ''), isNull);
       expect(UpdateChannel.tryCreate(token: '  '), isNull);
-      expect(UpdateChannel.tryCreate(token: _token, origin: 'http://go.dshtui.com'), isNull);
-      expect(UpdateChannel.tryCreate(token: _token, origin: 'https://go.dshtui.com/beta'), isNull);
+      expect(UpdateChannel.tryCreate(token: _token, origin: 'http://chemclaw-mobile.invalid'), isNull);
+      expect(UpdateChannel.tryCreate(token: _token, origin: 'https://chemclaw-mobile.invalid/beta'), isNull);
       expect(
         UpdateChannel.tryCreate(token: _token, origin: 'http://127.0.0.1:8787')!.manifest.toString(),
         'http://127.0.0.1:8787/beta/update.json',
       );
-      final channel = UpdateChannel.tryCreate(token: ' $_token\n', origin: 'https://go.dshtui.com/')!;
+      final channel = UpdateChannel.tryCreate(token: ' $_token\n', origin: 'https://chemclaw-mobile.invalid/')!;
       expect(channel.manifest.toString(), _feed);
       expect(channel.headers, {'authorization': _auth});
       expect(channel.toString(), isNot(contains(_token)));
@@ -83,12 +83,12 @@ void main() {
       expect(channel.covers(Uri.parse(_betaApk)), isTrue);
       expect(channel.covers(Uri.parse(_feed)), isTrue);
       for (final other in [
-        'http://go.dshtui.com/beta/1.2.0/$_apk',
-        'https://go.dshtui.com:8443/beta/1.2.0/$_apk',
+        'http://chemclaw-mobile.invalid/beta/1.2.0/$_apk',
+        'https://chemclaw-mobile.invalid:8443/beta/1.2.0/$_apk',
         'https://evil.example/beta/1.2.0/$_apk',
-        'https://go.dshtui.com.evil.example/beta/x.apk',
-        'https://go.dshtui.com/download/1.2.0/$_apk',
-        'https://go.dshtui.com/beta',
+        'https://chemclaw-mobile.invalid.evil.example/beta/x.apk',
+        'https://chemclaw-mobile.invalid/download/1.2.0/$_apk',
+        'https://chemclaw-mobile.invalid/beta',
         _githubApk,
       ]) {
         expect(channel.covers(Uri.parse(other)), isFalse, reason: other);
@@ -115,13 +115,13 @@ void main() {
       final urls = sources.downloadUrls([Uri.parse(_betaApk), Uri.parse(_githubApk)]);
       expect(urls.map((u) => u.url.toString()), [
         _betaApk,
-        'https://dl.dshtui.com/download/1.2.0/$_apk',
+        'https://chemclaw-mobile.invalid/download/1.2.0/$_apk',
         _githubApk,
         'https://ghfast.top/$_githubApk',
         'https://gh-proxy.com/$_githubApk',
       ]);
       expect(urls.first.headers, {'authorization': _auth});
-      expect(urls.first.label, 'go.dshtui.com');
+      expect(urls.first.label, 'chemclaw-mobile.invalid');
       expect(urls.skip(1).every((u) => u.headers.isEmpty), isTrue);
     });
   });
@@ -137,7 +137,7 @@ void main() {
       expect(found.endpoint.mirrorId, isNull);
       expect(found.release.version.toString(), '1.2.0+10261200');
       expect(found.release.apks[ApkFlavor.arm64]!.url.toString(), _betaApk);
-      expect(found.release.pageUrl.toString(), 'https://go.dshtui.com/beta');
+      expect(found.release.pageUrl.toString(), 'https://chemclaw-mobile.invalid/beta');
     });
 
     test('the channel refuses (token revoked) or is down: the public sources answer, without the token', () async {
@@ -198,7 +198,7 @@ void main() {
     });
 
     test('SHA256SUMS from the channel carries the token', () async {
-      const sums = 'https://go.dshtui.com/beta/1.2.0/SHA256SUMS';
+      const sums = 'https://chemclaw-mobile.invalid/beta/1.2.0/SHA256SUMS';
       final hex = sha256.convert(_bytes).toString();
       final http = FakeHttp({sums: _guarded((_, _) => textResponse('$hex  $_apk\n'))});
       expect(await fetchSha256FromSums(http, sources.downloadUrls([Uri.parse(sums)]), _apk), hex);
@@ -241,7 +241,7 @@ void main() {
       expect(c.read(appUpdateProvider).latest!.version.name, '1.2.0');
       await controller.startDownload();
       expect(c.read(appUpdateProvider).task, UpdateTaskPhase.ready);
-      expect(c.read(appUpdateProvider).source, 'go.dshtui.com');
+      expect(c.read(appUpdateProvider).source, 'chemclaw-mobile.invalid');
       await controller.install();
       expect(installer.calls, containsAllInOrder(['inspect', 'install']));
       expect(http.urls, [_feed, _betaApk]);
