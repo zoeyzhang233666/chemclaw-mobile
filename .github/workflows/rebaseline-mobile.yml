@@ -1,5 +1,5 @@
 # One-time PR branch rebaseline: regenerated screenshots are actual rendered images,
-# Refresh after Paper contrast fixes; retain all functional test assertions.
+# Refresh after Paper contrast and 7-palette responsive-layout fixes; keep all assertions.
 # not disabled tests. The PR remains Draft for visual review.
 name: ChemClaw Mobile · regenerate golden references
 
