@@ -2696,7 +2696,7 @@ class L10nEn extends L10n {
   String get botsPetSettings => 'Pet settings';
 
   @override
-  String get botsPetDeepy => 'Deepy';
+  String get botsPetDeepy => 'Orange Fish';
 
   @override
   String get botsPetWhaleGirl => 'Whale girl';

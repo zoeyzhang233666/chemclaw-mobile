@@ -1,4 +1,4 @@
-// Picks the pet (Deepy 小鲸鱼, 鲸娘, 不显示) with live previews, for 宠物设置 and the pet's
+// Picks the pet (橙鱼, 鲸娘, 不显示) with live previews, for 宠物设置 and the pet's
 // long-press menu. Same grid as the other pickers on the 主题 page (PickerGrid:
 // 16 in, 12 apart, label 8 under).
 
@@ -30,7 +30,7 @@ Map<String, String> get petNames => {
 /// │  🐋    │  │  👧    │  │        │   the pet standing on a little capsule
 /// │ ▔▔▔▔▔▔ │  │ ▔▔▔▔▔▔ │  │ ▔▔▔▔▔▔ │
 /// ╰────────╯  ╰────────╯  ╰────────╯
-///  Deepy 小鲸鱼   鲸娘       不显示
+///  橙鱼   鲸娘       不显示
 /// ```
 class PetPicker extends ConsumerWidget {
   const PetPicker({super.key, this.padding = const EdgeInsets.all(16), this.onPicked});

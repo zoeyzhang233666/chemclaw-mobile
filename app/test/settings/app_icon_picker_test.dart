@@ -77,6 +77,18 @@ AppIcon? _chosen(WidgetTester tester) {
 }
 
 void main() {
+  test('adaptive and monochrome launcher icons use the compact centred cloud', () {
+    for (final name in ['ic_chemclaw_foreground', 'ic_launcher_monochrome']) {
+      final xml = File('android/app/src/main/res/drawable/$name.xml').readAsStringSync();
+      expect(xml, contains('android:scaleX="0.72"'));
+      expect(xml, contains('android:scaleY="0.72"'));
+      expect(xml, contains('android:translateX="5.7"'));
+      expect(xml, contains('android:translateY="5.8"'));
+      expect(xml, contains('android:pivotX="16.5"'));
+      expect(xml, contains('android:pivotY="16.5"'));
+    }
+  });
+
   group('picker', () {
     testWidgets('four icons in order, the one on the phone chosen', (tester) async {
       final handle = tester.ensureSemantics();

@@ -16,10 +16,10 @@ Map<String, Object?> _json(String id) =>
     jsonDecode(File('assets/pets/$id/pack.json').readAsStringSync()) as Map<String, Object?>;
 
 void main() {
-  group('Deepy 小鲸鱼', () {
+  group('橙鱼', () {
     test('canvas, 5× sheets, foot point, body', () {
       expect(deepy.id, 'deepy-whale');
-      expect(deepy.name, 'Deepy 小鲸鱼');
+      expect(deepy.name, '橙鱼');
       expect(deepy.scale, 5);
       expect(deepy.pixelArt, isTrue);
       expect(deepy.canvas, const Size(52, 52));

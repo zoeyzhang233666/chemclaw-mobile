@@ -16,10 +16,8 @@ import '../../plugins/seams/seams.dart';
 import '../../state/plugins_state.dart';
 import '../common/feature_tile.dart';
 import '../agents/team_page.dart';
-import '../community/community_page.dart';
 import '../cordis/cordis_page.dart';
 import '../files/files_page.dart';
-import '../forum/forum_home_page.dart';
 import '../phone/phone_control_screen.dart';
 import '../plugins/plugin_detail_sheet.dart';
 import '../plugins/plugins_screen.dart';
@@ -29,7 +27,6 @@ import '../providers/providers_page.dart';
 import '../remote/remote_screen.dart';
 import '../session/session_artifacts.dart';
 import '../session/session_detail_page.dart';
-import '../share_code/profile_share_sheet.dart';
 import '../shell/session_search_page.dart';
 import '../terminal/terminal_page.dart';
 import '../theme/app_icons.dart';
@@ -145,10 +142,6 @@ class FeatureSection {
 }
 
 String _session(String? id) => id ?? '';
-
-/// 社区, with the forum card at its top opening the forum's home.
-Widget communityPage() =>
-    Builder(builder: (context) => CommunityPage(onOpenForum: () => Navigator.of(context).push(ForumHomePage.route())));
 
 /// Back to the chat, where the composer does the rest (`@`, the mic).
 void _backToChat(BuildContext context, WidgetRef ref, String? _) =>
@@ -317,30 +310,6 @@ final featureSections = <FeatureSection>[
       action: _backToChat,
       // l10n:keep DSH Web plugin title aliases used for deep-link matching
       web: const DshWebTarget(pluginItem: ['语音输入', 'Voice input']),
-    ),
-  ]),
-  FeatureSection.localized((l10n) => l10n.catalogCommunitySharingSection, [
-    FeatureItem.localized(
-      id: 'forum',
-      title: (l10n) => l10n.catalogForum,
-      summary: (l10n) => l10n.catalogForumSummary,
-      icon: AppIcons.forum,
-      native: (_) => const ForumHomePage(),
-    ),
-    FeatureItem.localized(
-      id: 'community',
-      title: (l10n) => l10n.catalogCommunity,
-      summary: (l10n) => l10n.catalogCommunitySummary,
-      icon: AppIcons.community,
-      tile: FeatureKind.community,
-      native: (_) => communityPage(),
-    ),
-    FeatureItem.localized(
-      id: 'share-profile',
-      title: (l10n) => l10n.catalogShareProfile,
-      summary: (l10n) => l10n.catalogShareProfileSummary,
-      icon: AppIcons.shareConfig,
-      action: (context, ref, _) => showShareProfileSheet(context),
     ),
   ]),
   FeatureSection.localized((l10n) => l10n.catalogToolsSection, [

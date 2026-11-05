@@ -4691,7 +4691,7 @@ abstract class L10n {
   /// No description provided for @botsPetDeepy.
   ///
   /// In zh, this message translates to:
-  /// **'Deepy 小鲸鱼'**
+  /// **'橙鱼'**
   String get botsPetDeepy;
 
   /// No description provided for @botsPetWhaleGirl.

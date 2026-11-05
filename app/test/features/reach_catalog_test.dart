@@ -3,7 +3,6 @@ import 'package:dsh_app/state/sessions_state.dart';
 import 'package:dsh_app/ui/features/all_features_page.dart';
 import 'package:dsh_app/ui/features/feature_catalog.dart';
 import 'package:dsh_app/ui/files/files_page.dart';
-import 'package:dsh_app/ui/forum/forum_home_page.dart';
 import 'package:dsh_app/ui/shell/session_search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,11 +17,11 @@ FeatureItem item(String id) => featureSections.expand((section) => section.items
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
-  test('论坛有原生入口，文件标题一致，搜索使用返回结果的 action', () {
-    final forum = item('forum');
-    expect(forum.title, '论坛');
-    expect(forum.native!(null), isA<ForumHomePage>());
-    expect(forum.web, isNull);
+  test('全部功能移除社区与分享分组及三个入口，保留文件与搜索', () {
+    final sections = featureSections.map((s) => s.title).toList();
+    expect(sections, isNot(contains('社区与分享')));
+    final ids = featureSections.expand((s) => s.items).map((i) => i.id).toSet();
+    expect(ids.intersection({'forum', 'community', 'share-profile'}), isEmpty);
     final files = item('files');
     expect(files.title, '文件');
     expect(files.native!('s1'), isA<WorkspaceFilesPage>());

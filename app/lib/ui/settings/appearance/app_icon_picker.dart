@@ -264,8 +264,9 @@ class _IconPainter extends CustomPainter {
     // The same vector outline as the native Android adaptive launcher icon.
     canvas
       ..save()
-      ..translate(14, 19)
-      ..scale(2.4)
+      // Match the native 108dp launcher: 0.72 scale and optical centre at (54, 54).
+      ..translate(25.2, 25.3)
+      ..scale(1.77)
       ..drawPath(
         BrandGlyph.cloud,
         Paint()
