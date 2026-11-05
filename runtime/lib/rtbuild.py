@@ -899,6 +899,22 @@ def overlay_entries(runtime_info, with_python=False, with_pnpm=False, with_bridg
                       "- insert:\n"
                       "    - id: dsh-go-bridge\n"
                       "      name: %s/lib/index.js\n" % DSH_GO_BRIDGE)
+            patch += ("# ChemClaw: portable source-cited search across third-party model routes,\n"
+                      "# with keyless search as fallback. Uses the DSH ctx.web seam.\n"
+                      "- insert:\n"
+                      "    - id: chemclaw-web-search-auto\n"
+                      "      name: %s/lib/web-search-auto.js\n"
+                      "      config:\n"
+                      "        native: true\n"
+                      "        fallback: true\n"
+                      "- id: web\n"
+                      "  config:\n"
+                      "    searchProvider: auto\n"
+                      "    fetchProvider: http\n" % DSH_GO_BRIDGE)
+            patch += ("# ChemClaw optional commercial web search APIs (credentials in DSH vault).\n"
+                      "- insert:\n"
+                      "    - id: chemclaw-third-party-search\n"
+                      "      name: %s/lib/third-party-search.js\n" % DSH_GO_BRIDGE)
         f(DSH_WEB_PATCH.lstrip("/"), patch)
     d("root/.dsh", 0o700)
     d("root/.l2s", 0o700)          # PROOT_L2S_DIR: hard-link backing files (kept with /root on upgrade)
