@@ -1,6 +1,7 @@
 import 'dart:ui' show SemanticsAction;
 
 import 'package:dsh_app/l10n/l10n.dart';
+import 'package:dsh_app/state/app_info.dart';
 import 'package:dsh_app/state/star_prompt.dart';
 import 'package:dsh_app/state/update_state.dart';
 import 'package:dsh_app/ui/settings/about_page.dart';
@@ -119,9 +120,7 @@ void main() {
           expect(tester.widget<SettingsTile>(row).onTap, isNotNull);
           expect(tester.takeException(), isNull, reason: 'No overflow at $key');
         }
-        final disclaimer = find.text(
-          english ? 'Built on DeepSeek Harness · Unofficial DeepSeek app' : '基于 DeepSeek Harness 构建 · 非 DeepSeek 官方应用',
-        );
+        final disclaimer = find.text(AppInfo.disclaimer);
         await tester.ensureVisible(disclaimer);
         await tester.pumpAndSettle();
         expect(disclaimer.hitTestable(), findsOneWidget);

@@ -279,14 +279,19 @@ void main() {
       await tester.pumpWidget(
         testApp(
           PluginsScreen(initialTab: tab),
-          overrides: pluginOverrides(
-            fakeHost(client),
-            official: official ?? () async => officialFixtureMarket(),
-            npmIntegrity: (name, version) async {
-              npmAsked.add((name, version));
-              return npm == null ? officialFixtureMarket().byName[name]?.listing?.integrity : npm(name, version);
-            },
-          ),
+          overrides: [
+            ...pluginOverrides(
+              fakeHost(client),
+              official: official ?? () async => officialFixtureMarket(),
+              npmIntegrity: (name, version) async {
+                npmAsked.add((name, version));
+                return npm == null ? officialFixtureMarket().byName[name]?.listing?.integrity : npm(name, version);
+              },
+            ),
+            // The fixture targets an installed 1.0.2 app; keep minApp enforcement
+            // intact and model the compatible version explicitly.
+            appVersionProvider.overrideWithValue(const AppVersion(1, 0, 2)),
+          ],
         ),
       );
       await tester.pumpAndSettle();

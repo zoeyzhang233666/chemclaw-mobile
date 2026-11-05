@@ -128,10 +128,12 @@ abstract final class DshPalette {
     final n = NeutralTones.forAccent(accent);
     return ColorScheme(
       brightness: Brightness.light,
-      // Keep the desktop Paper seed as the brand swatch, while making the
-      // interactive primary slightly deeper for >= 3:1 on warm paper surfaces.
-      primary: accent.id == 'paper' ? const Color(0xFFD16F50) : accent.seed,
-      onPrimary: accent.onSeed,
+      // Preserve the desktop Paper seed (#D97757) as the brand swatch,
+      // but use its darker pressed tone for controls so orange reads >=3:1
+      // even on the darkest warm-paper surfaces (#E4DFD4). White content
+      // is >=4.5:1 on this control tone; dark ink would be insufficient.
+      primary: accent.id == 'paper' ? accent.pressed : accent.seed,
+      onPrimary: accent.id == 'paper' ? const Color(0xFFFFFFFF) : accent.onSeed,
       primaryContainer: accent.container,
       onPrimaryContainer: accent.onContainer,
       secondary: n.slate,
