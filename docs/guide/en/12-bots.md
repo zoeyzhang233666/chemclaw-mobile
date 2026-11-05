@@ -4,7 +4,7 @@ ChemClaw Mobile uses the official DSH Agent Teams capability rather than the ret
 
 ## Enable the plugin
 
-Connect to your current host and open the team page. If the plugin is off, enable it there. If it is not installed, open **Settings › Plugins** and check the target host and its permissions. Some changes require an engine restart, which interrupts current work.
+Connect to your current host and open the team page. If the plugin is off, enable it there. If it is not installed, open the plugin management page and check the target host and its permissions. Some changes require an engine restart, which interrupts current work.
 
 Remote hosts enforce their own installation and toggle permissions. Enabling a plugin on the phone does not enable it on every connected host.
 
