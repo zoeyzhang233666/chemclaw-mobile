@@ -12,7 +12,8 @@ permissions:
 # Keep a single render job per feature branch; newer runs replace stale baselines.
 concurrency:
   group: chemclaw-golden-${{ github.ref }}
-  cancel-in-progress: true
+  # Skipped branch pushes must not cancel an active baseline render.
+  cancel-in-progress: false
 
 jobs:
   refresh:
@@ -58,7 +59,13 @@ jobs:
           # Non-golden functional tests can still fail. Record their exit code:
           # never report that the full test suite passed.
           set +e
-          flutter test --no-pub --update-goldens --concurrency=4 --reporter compact $(find test -name '*_test.dart' | sort) > "$RUNNER_TEMP/rebaseline.log" 2>&1
+          # Only files that actually assert screenshots: avoid executing hundreds of
+          # unrelated functional/update tests during image regeneration. Main CI
+          # still runs the complete suite separately, including security tests.
+          mapfile -t golden_tests < <(grep -rlE 'matchesGoldenFile|goldenBoth\\(' test --include='*_test.dart' | sort)
+          printf 'Golden test files: %s\\n' "${#golden_tests[@]}"
+          test "${#golden_tests[@]}" -gt 0
+          flutter test --no-pub --update-goldens --concurrency=4 --reporter compact "${golden_tests[@]}" > "$RUNNER_TEMP/rebaseline.log" 2>&1
           status=$?
           set -e
           echo "Flutter test exit status during rebaseline: $status" | tee "$RUNNER_TEMP/rebaseline-status.txt"
