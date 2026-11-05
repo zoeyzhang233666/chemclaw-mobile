@@ -1,5 +1,6 @@
 name: ChemClaw Mobile · search and expert-team validation
 # PR #2 also requires the repository-wide pull_request CI before main merge.
+# Final CI validates the regenerated 16 settings/search/landscape snapshots on main.
 
 on:
   push:
