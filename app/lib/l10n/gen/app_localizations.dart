@@ -19391,7 +19391,7 @@ abstract class L10n {
   /// No description provided for @pluginsNamespaceAgentTeam.
   ///
   /// In zh, this message translates to:
-  /// **'化工专家团'**
+  /// **'智能体团队'**
   String get pluginsNamespaceAgentTeam;
 
   /// No description provided for @pluginsNamespaceVoiceInput.

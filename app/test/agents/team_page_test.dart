@@ -146,7 +146,7 @@ void main() {
   testWidgets('bundle off: switch it on from the page', (tester) async {
     final installed = FakeInstalled([teamBundleOff]);
     await _pump(tester, installed: installed);
-    expect(find.text('智能体团队未开启'), findsOneWidget);
+    expect(find.text('化工专家团未开启'), findsOneWidget);
     await tester.tap(find.text('开启团队'));
     await settle(tester);
     expect(installed.switched, [(agentTeamBundle, true)]);
