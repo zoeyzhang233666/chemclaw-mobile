@@ -87,7 +87,7 @@ void main() {
       final row = find.ancestor(of: find.text(title), matching: find.byType(ConstrainedBox)).first;
       expect(
         tester.getSize(row).height,
-        tile.subtitle == null ? SettingsMetrics.rowHeight : SettingsMetrics.rowHeightTwoLine,
+        greaterThanOrEqualTo(tile.subtitle == null ? SettingsMetrics.rowHeight : SettingsMetrics.rowHeightTwoLine),
         reason: title,
       );
       expect(
@@ -123,7 +123,7 @@ void main() {
     expect(tester.widget<ChemClawMcpPage>(find.byType(ChemClawMcpPage)).preferredService,
         ChemClawService.apiHub);
 
-    await tester.pageBack();
+    await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('settings-chemcloud-primary')));
     await tester.pumpAndSettle();

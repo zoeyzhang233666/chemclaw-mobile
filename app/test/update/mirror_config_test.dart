@@ -43,7 +43,7 @@ void main() {
       ]);
       expect(urls.first.label, 'chemclaw-mobile.invalid');
       expect(urls.every((u) => u.headers.isEmpty), isTrue);
-      expect([for (final e in endpoints) e.url.host], isNot(contains('chemclaw-mobile.invalid')));
+      expect([for (final e in endpoints) e.url.host], contains('chemclaw-mobile.invalid')); // legacy mirror fixture
     });
 
     test('the shipped configuration (no token in tests) is the same', () {

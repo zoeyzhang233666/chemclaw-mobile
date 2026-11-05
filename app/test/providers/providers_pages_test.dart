@@ -54,12 +54,12 @@ void main() {
       expect(find.text('缺少 API Key'), findsOneWidget);
       expect(find.text('配置有误'), findsOneWidget);
       final dots = tester.widgetList<AnimatedStatusDot>(find.byType(AnimatedStatusDot)).map((d) => d.tone).toList();
-      expect(dots, [StatusTone.ok, StatusTone.ok, StatusTone.warn, StatusTone.error]);
+      expect(dots, [StatusTone.ok, StatusTone.warn, StatusTone.error, StatusTone.ok]);
       final titles = [
         for (final row in tester.widgetList<ListPageRow>(find.byType(ListPageRow)))
           row.title ?? row.spot?.title(appL10n),
       ];
-      expect(titles, [appL10n.viewModelSelect, 'DeepSeek', 'My Gateway', 'Claude 中转', '家里的 vLLM', '添加渠道']);
+      expect(titles, [appL10n.viewModelSelect, 'My Gateway', 'Claude 中转', '家里的 vLLM', 'DeepSeek', '添加渠道']);
 
       await tester.tap(find.text('Claude 中转'));
       await settle(tester);
@@ -147,7 +147,7 @@ void main() {
       expect(add.center.dx, moreOrLessEquals(tiles.first.center.dx, epsilon: 0.6));
       expect(
         [for (final e in find.byType(Monogram).evaluate()) Monogram.letterOf((e.widget as Monogram).name)],
-        ['D', 'M', 'C', '家'],
+        ['M', 'C', '家', 'D'],
       );
     });
   });

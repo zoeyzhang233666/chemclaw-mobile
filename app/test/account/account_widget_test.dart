@@ -68,7 +68,7 @@ void main() {
       await tester.tap(find.text('取消登录'));
       await _settle(tester);
       expect(api.calls, contains('cancelSignIn:att-1'));
-      expect(find.text('连接 DeepSeek'), findsOneWidget);
+      expect(find.text('连接 ChemClaw'), findsOneWidget);
       expect(find.text('登录没有完成'), findsNothing, reason: 'cancelling is not an error');
       expect(done, 0);
     });
@@ -151,7 +151,7 @@ void main() {
       await tester.binding.handlePopRoute();
       await _settle(tester);
       expect(find.byType(ApiKeyPage), findsNothing);
-      expect(find.text('连接 DeepSeek'), findsOneWidget);
+      expect(find.text('连接 ChemClaw'), findsOneWidget);
       expect(done, 0);
     });
 
@@ -164,7 +164,7 @@ void main() {
       await tester.binding.handlePopRoute();
       await _settle(tester);
       expect(api.calls, contains('cancelSignIn:att-1'));
-      expect(find.text('连接 DeepSeek'), findsOneWidget);
+      expect(find.text('连接 ChemClaw'), findsOneWidget);
       expect(done, 0);
     });
 
