@@ -456,6 +456,23 @@ class PalettePicker extends ConsumerWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         const ringSide = disc + 2 * (ringGap + ringWidth);
+        // Paper adds a seventh preset. On 320dp screens seven minimum-size
+        // swatches exceed the available width; scroll rather than overflow.
+        if (constraints.maxWidth < 2 * PickerGrid.inset + items.length * ringSide) {
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: PickerGrid.inset),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                for (final (index, item) in items.indexed) ...[
+                  if (index > 0) const SizedBox(width: 8),
+                  SizedBox(width: slot, child: item),
+                ],
+              ],
+            ),
+          );
+        }
         final step = (constraints.maxWidth - 2 * PickerGrid.inset - ringSide) / (items.length - 1);
         final width = math.max(ringSide, math.min(slot, step));
         final side = PickerGrid.inset - (width - ringSide) / 2;
