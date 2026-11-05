@@ -225,9 +225,9 @@ void main() {
 
     testWidgets('使用帮助 is not there in 网页模式', (tester) async {
       await pumpSettings(tester, overrides: [askAiAvailableProvider.overrideWithValue(false)]);
-      await tester.scrollUntilVisible(find.text('社区'), 300, scrollable: find.byType(Scrollable).first);
-      await tester.pumpAndSettle();
-      expect(find.widgetWithText(SettingsTile, '社区'), findsOneWidget);
+      // ChemClaw deliberately removes community and sharing settings.
+      expect(find.widgetWithText(SettingsTile, '社区'), findsNothing);
+      expect(find.widgetWithText(SettingsTile, '分享配置'), findsNothing);
       expect(find.widgetWithText(SettingsTile, '使用帮助'), findsNothing);
     });
   });

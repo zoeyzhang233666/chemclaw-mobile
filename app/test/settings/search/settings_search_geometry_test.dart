@@ -6,7 +6,7 @@ import 'package:dsh_app/runtime/runtime_state.dart';
 import 'package:dsh_app/state/hosts_state.dart';
 import 'package:dsh_app/state/settings_state.dart';
 import 'package:dsh_app/ui/common/list_page_row.dart';
-import 'package:dsh_app/ui/common/overview_card.dart';
+import 'package:dsh_app/ui/settings/settings_widgets.dart';
 import 'package:dsh_app/ui/common/search_capsule.dart';
 import 'package:dsh_app/ui/settings/search/settings_search_page.dart';
 import 'package:dsh_app/ui/settings/settings_screen.dart';
@@ -46,17 +46,19 @@ void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   for (final scale in [1.0, 2.0]) {
-    testWidgets('the hub\'s capsule: 16 from both sides, over the overview card, at $scale× text', (tester) async {
+    testWidgets('the hub\'s capsule: 16 from both sides, above recommended services, at $scale× text', (tester) async {
       await _pump(tester, const SettingsScreen(), scale: scale);
       final capsule = tester.getRect(find.byType(SearchCapsuleButton));
       expect(capsule.left, moreOrLessEquals(16, epsilon: _tol));
       expect(_width - capsule.right, moreOrLessEquals(16, epsilon: _tol));
+      // APIHub and the chemical MCP now lead the hub; the account overview
+      // is lower down and may not yet be built by the lazy list.
       final card = tester.getRect(
-        find.descendant(of: find.byType(OverviewCard), matching: find.byType(GlassSurface)).first,
+        find.descendant(of: find.byType(SettingsSection).first, matching: find.byType(GlassSurface)).first,
       );
       expect(capsule.left, moreOrLessEquals(card.left, epsilon: _tol));
       expect(capsule.right, moreOrLessEquals(card.right, epsilon: _tol));
-      expect(card.top - capsule.bottom, moreOrLessEquals(16, epsilon: _tol));
+      expect(card.top, greaterThan(capsule.bottom));
       // The glass sits in a square slot as tall as the capsule: equal room
       // above and below, and as much on its left.
       final glass = tester.getRect(

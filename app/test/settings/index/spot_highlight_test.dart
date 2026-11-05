@@ -10,6 +10,7 @@ import 'package:dsh_app/state/settings_state.dart';
 import 'package:dsh_app/ui/settings/index/settings_pages.dart';
 import 'package:dsh_app/ui/settings/index/spot_anchor.dart';
 import 'package:dsh_app/ui/settings/settings_screen.dart';
+import 'package:dsh_app/ui/settings/about_page.dart';
 import 'package:dsh_app/ui/settings/settings_widgets.dart';
 import 'package:dsh_app/ui/shell/page_frame.dart';
 import 'package:dsh_app/ui/theme/theme.dart';
@@ -123,11 +124,11 @@ void main() {
     expect(tester.getRect(find.text('行 0-0')).top, lessThan(400), reason: 'stays at the top');
   });
 
-  testWidgets('a row link opens the hub near its end', (tester) async {
+  testWidgets('an About entry opens its own page rather than scrolling the hub', (tester) async {
     usePhoneSurface(tester);
     final page = pageForId('chat-text-size', null);
     expect(page, isA<SpotFocus>());
-    // Use the last settings group: the community spot was deliberately removed.
+    // Entry links open the destination; they do not focus a row within the hub.
     await tester.pumpWidget(
       goldenApp(
         home: spotPage(SettingsIndex.entry(SettingsPageId.about)),
@@ -143,10 +144,9 @@ void main() {
     for (var i = 0; i < 30; i++) {
       await tester.pump(const Duration(milliseconds: 50));
     }
-    expect(find.byType(SettingsScreen), findsOneWidget);
-    final rect = tester.getRect(find.byKey(SpotKey(SettingsIndex.entry(SettingsPageId.about).id)));
-    expect(rect.top, greaterThan(0));
-    expect(rect.bottom, lessThan(844));
+    expect(find.byType(AboutPage), findsOneWidget);
+    expect(find.byType(SettingsScreen), findsNothing);
+    expect(find.text('ChemClaw 手机版'), findsWidgets);
     expect(find.text(appL10n.hubAbout), findsWidgets);
     await tester.pump(const Duration(seconds: 2));
   });
