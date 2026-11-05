@@ -242,7 +242,7 @@ void main() {
         const [],
         (tester) async {
           // At a large text size the page scrolls: bring the sign-in in first.
-          final signIn = find.byType(FilledButton).first;
+          final signIn = find.widgetWithText(TextButton, '用 DeepSeek 账号登录');
           await tester.ensureVisible(signIn);
           await tester.pump();
           await tester.tap(signIn);
