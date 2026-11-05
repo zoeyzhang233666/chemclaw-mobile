@@ -85,6 +85,8 @@ jobs:
           # Functional golden tests may modify tracked fixture files. Discard only
           # these uncommitted runner changes before rebasing committed PNGs.
           git reset --hard HEAD
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           # A long golden render may outlive ordinary code commits. Never force-push
           # and never roll the mobile PR branch back: rebase the generated images
           # onto the latest head, then attempt a normal fast-forward push.
