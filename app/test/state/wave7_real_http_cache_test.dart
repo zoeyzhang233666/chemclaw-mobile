@@ -370,11 +370,19 @@ void main() {
         await tester.pump();
         expect(tester.widget<Switch>(find.byType(Switch).first).onChanged, isNull);
       } else if (kind == 'providers') {
+        // ChemClaw places custom model channels ahead of official DeepSeek.
+        // Scroll to the secondary sign-in row before checking its navigation.
+        final listFinder = find.byWidgetPredicate((w) => identical(w, scroll.widget));
+        await tester.scrollUntilVisible(find.text('DeepSeek'), 180, scrollable: listFinder);
+        await tester.pump();
         await tester.tap(find.text('DeepSeek').first);
         await tester.pumpAndSettle();
         expect(find.byType(AccountPage), findsOneWidget);
         await tester.tap(find.byTooltip(appL10n.commonBack));
         await tester.pumpAndSettle();
+        // Leave room for the test's independent scroll check below.
+        await tester.drag(listFinder, const Offset(0, 500));
+        await tester.pump();
       }
       final before = scroll.position.pixels;
       await tester.drag(find.byWidgetPredicate((w) => identical(w, scroll.widget)), const Offset(0, -280));

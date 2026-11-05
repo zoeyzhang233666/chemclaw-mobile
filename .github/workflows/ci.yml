@@ -7,9 +7,10 @@ on:
   pull_request:
     branches: [main]
   push:
-    # Validate bot-generated visual baselines too: PR-triggered runs from
-    # github-actions[bot] may be held as action_required without any jobs.
-    branches: [main, feat/chemclaw-mobile-brand-and-mcp]
+    # PR branches are already checked by pull_request. Running the same
+    # expensive matrix on both events doubled load and left push runs Waiting.
+    # Keep workflow_dispatch for manual validation after bot-generated assets.
+    branches: [main]
   workflow_dispatch:
 
 permissions:
