@@ -62,8 +62,8 @@ jobs:
           # Only files that actually assert screenshots: avoid executing hundreds of
           # unrelated functional/update tests during image regeneration. Main CI
           # still runs the complete suite separately, including security tests.
-          mapfile -t golden_tests < <(grep -rlE 'matchesGoldenFile|goldenBoth\\(' test --include='*_test.dart' | sort)
-          printf 'Golden test files: %s\\n' "${#golden_tests[@]}"
+          mapfile -t golden_tests < <(grep -rlE 'matchesGoldenFile|goldenBoth\(' test --include='*_test.dart' | sort)
+          printf 'Golden test files: %s\n' "${#golden_tests[@]}"
           test "${#golden_tests[@]}" -gt 0
           flutter test --no-pub --update-goldens --concurrency=4 --reporter compact "${golden_tests[@]}" > "$RUNNER_TEMP/rebaseline.log" 2>&1
           status=$?
