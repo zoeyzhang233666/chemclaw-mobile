@@ -86,7 +86,14 @@ ThemeData _build(ColorScheme scheme, DshColors colors, DshSurfaces surfaces, App
   final lightKnob = isDark ? scheme.onSurface : Colors.white;
   final knobBlends = contrastRatio(lightKnob, scheme.primary) < 1.6;
   final onKnob = knobBlends ? scheme.onPrimary : lightKnob;
-  final checkOn = knobBlends ? scheme.primary : (isDark ? scheme.inversePrimary : scheme.primary);
+  // Keep the check readable against the actual knob (not just the accent).
+  // Paper's dark inversePrimary is too pale on the light thumb (~2.74:1).
+  final proposedCheck = knobBlends ? scheme.primary : (isDark ? scheme.inversePrimary : scheme.primary);
+  final checkOn = contrastRatio(proposedCheck, onKnob) > 3
+      ? proposedCheck
+      : (contrastRatio(Colors.black, onKnob) >= contrastRatio(Colors.white, onKnob)
+            ? Colors.black
+            : Colors.white);
   final textTheme = AppType.withGlyphLocale(
     AppType.textTheme,
     glyphLocale,
