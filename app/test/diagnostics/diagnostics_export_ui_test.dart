@@ -41,7 +41,7 @@ class _ScriptedExporter extends DiagnosticsExporter {
   @override
   Future<String> saveToDownloads({void Function(DiagnosticsStep step)? onStep}) async {
     await _walk(onStep, DiagnosticsStep.saving);
-    return 'Download/DSH-Go/dsh-go-diagnostics-20261024-153012.zip';
+    return 'Download/ChemClaw/dsh-go-diagnostics-20261024-153012.zip';
   }
 
   @override
@@ -98,7 +98,7 @@ Finder _row(String title) => find.ancestor(of: find.text(title), matching: find.
 void main() {
   testWidgets('saving shows each step, then where it went', (tester) async {
     final exporter = await _pump(tester);
-    expect(find.text('存进 下载/DSH-Go'), findsOneWidget);
+    expect(find.text('存进 下载/ChemClaw'), findsOneWidget);
 
     await tester.tap(find.text('存到「下载」'));
     await tester.pump();
@@ -114,8 +114,8 @@ void main() {
     exporter.done.complete();
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
-    expect(find.text('已存到 下载/DSH-Go/dsh-go-diagnostics-20261024-153012.zip'), findsOneWidget);
-    expect(find.text('存进 下载/DSH-Go'), findsOneWidget);
+    expect(find.text('已存到 下载/ChemClaw/dsh-go-diagnostics-20261024-153012.zip'), findsOneWidget);
+    expect(find.text('存进 下载/ChemClaw'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(tester.widget<ListPageRow>(_row('分享诊断包')).onTap, isNotNull);
   });
@@ -129,7 +129,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('没有存储权限，存不进「下载」'), findsOneWidget);
-    expect(find.text('存进 下载/DSH-Go'), findsOneWidget);
+    expect(find.text('存进 下载/ChemClaw'), findsOneWidget);
   });
 
   testWidgets('the sheet closes before it confirms a save', (tester) async {
@@ -146,7 +146,7 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 600));
     expect(find.text('导出诊断包'), findsNothing);
-    expect(find.text('已存到 下载/DSH-Go/dsh-go-diagnostics-20261024-153012.zip'), findsOneWidget);
+    expect(find.text('已存到 下载/ChemClaw/dsh-go-diagnostics-20261024-153012.zip'), findsOneWidget);
   });
 
   testWidgets('sharing from the sheet closes it once sent', (tester) async {

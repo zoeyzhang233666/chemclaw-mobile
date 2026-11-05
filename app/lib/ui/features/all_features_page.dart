@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../l10n/l10n.dart';
-import '../../state/bots_state.dart';
 import '../../state/sessions_state.dart';
 import '../common/app_sheet.dart' show groupTitleStyle;
 import '../common/feature_tile.dart';
@@ -170,7 +169,6 @@ class FeatureTileFor extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
     final scheme = Theme.of(context).colorScheme;
-    final unread = item.id == 'ds-bot' ? ref.watch(dsBotInboxProvider.select((inbox) => inbox.total)) : 0;
     return FeatureCard(
       icon: item.icon,
       art: switch (item.tile) {
@@ -182,11 +180,7 @@ class FeatureTileFor extends ConsumerWidget {
       subtitle: enabled ? item.summary : l10n.catalogOpenChatFirst,
       enabled: enabled,
       // 「网页版」 itself needs no badge saying so.
-      badge: unread > 0
-          ? (unread > 99 ? '99+' : '$unread')
-          : item.webOnly && item.web != const DshWebTarget()
-          ? l10n.commonWeb
-          : null,
+      badge: item.webOnly && item.web != const DshWebTarget() ? l10n.commonWeb : null,
       corner: onOpenWeb == null
           ? null
           : IconButton(

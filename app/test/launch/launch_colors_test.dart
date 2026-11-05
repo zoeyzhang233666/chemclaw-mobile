@@ -6,6 +6,7 @@ import 'dart:ui';
 
 import 'package:dsh_app/launch/custom_launch.dart';
 import 'package:dsh_app/ui/theme/palette.dart';
+import 'package:dsh_app/ui/theme/accent.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Color _color(String dir, String name) {
@@ -26,9 +27,9 @@ void main() {
   });
 
   test('the wordmark ink is the default palette text, and the page is the default backdrop', () {
-    expect(LaunchColors.ink, DshPalette.ink);
-    expect(LaunchColors.paper, DshPalette.paper);
-    expect(LaunchColors.mistTop, DshPalette.mistTop);
-    expect(LaunchColors.nightTop, DshPalette.nightTop);
+    expect(LaunchColors.ink, NeutralTones.forAccent(AppAccent.paper).ink);
+    expect(LaunchColors.paper, NeutralTones.forAccent(AppAccent.paper).paper);
+    expect(LaunchColors.mistTop, NeutralTones.forAccent(AppAccent.paper).mistTop);
+    expect(LaunchColors.nightTop, NeutralTones.forAccent(AppAccent.paper).nightTop);
   });
 }

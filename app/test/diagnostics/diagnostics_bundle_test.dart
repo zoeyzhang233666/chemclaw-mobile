@@ -232,10 +232,10 @@ void main() {
 
     test('save hands the ZIP to Downloads and says where', () async {
       final where = await exporter.saveToDownloads(onStep: steps.add);
-      expect(where, 'Download/DSH-Go/dsh-go-diagnostics-20261024-153012.zip');
+      expect(where, 'Download/ChemClaw/dsh-go-diagnostics-20261024-153012.zip');
       expect(files.saved.single.name, 'dsh-go-diagnostics-20261024-153012.zip');
       expect(files.saved.single.mime, 'application/zip');
-      expect(diagnosticsSavedText(where), '已存到 下载/DSH-Go/dsh-go-diagnostics-20261024-153012.zip');
+      expect(diagnosticsSavedText(where), '已存到 下载/ChemClaw/dsh-go-diagnostics-20261024-153012.zip');
       expect(steps.last, DiagnosticsStep.saving);
     });
 
@@ -263,6 +263,6 @@ class _Files extends FilesChannel {
   Future<String> saveToDownloads(String hostPath, {required String name, required String mime}) async {
     expect(File(hostPath).existsSync(), isTrue);
     saved.add((path: hostPath, name: name, mime: mime));
-    return 'Download/DSH-Go/$name';
+    return 'Download/ChemClaw/$name';
   }
 }

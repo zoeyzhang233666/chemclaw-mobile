@@ -7,11 +7,12 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 
 final _manifest = File('android/app/src/main/AndroidManifest.xml').readAsStringSync();
+const _nativeNamespace = 'io.github.ccch1mneyyy.dsh_app';
 
 /// The `<activity|service …>` element named [name], self-closing or with its
 /// children.
 String _component(String tag, String name) {
-  final start = RegExp('<$tag\\s[^>]*android:name="${RegExp.escape(name)}"[^>]*>').firstMatch(_manifest);
+  final start = RegExp('<$tag\\s[^>]*android:name="${RegExp.escape(name.startsWith('.') ? '$_nativeNamespace$name' : name)}"[^>]*>').firstMatch(_manifest);
   expect(start, isNotNull, reason: '$tag $name');
   final open = start!.group(0)!;
   if (open.endsWith('/>')) return open;
@@ -57,7 +58,7 @@ void main() {
     final aliases = _aliases();
     expect(aliases, hasLength(5));
     for (final alias in aliases) {
-      expect(alias, contains('android:targetActivity=".MainActivity"'));
+      expect(alias, contains('android:targetActivity="io.github.ccch1mneyyy.dsh_app.MainActivity"'));
       expect(alias, contains('android:exported="true"'));
       expect(alias, contains('android.intent.action.MAIN"'));
       expect(alias, contains(_launcher));

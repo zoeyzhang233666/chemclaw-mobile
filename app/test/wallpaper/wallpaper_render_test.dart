@@ -18,7 +18,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'support.dart';
 
-ThemeData buildThemeFor(Brightness b) => b == Brightness.dark ? buildDarkTheme() : buildLightTheme();
+ThemeData buildThemeFor(Brightness b) => b == Brightness.dark
+    ? buildDarkTheme(accent: AppAccent.mist)
+    : buildLightTheme(accent: AppAccent.mist);
 
 void main() {
   Future<ui.Image> bake(WidgetTester tester, CustomWallpaper w, WallpaperFrame frame, {double? density}) async =>

@@ -36,7 +36,7 @@ void main() {
     var cy = 0.0;
     var box = Rect.zero;
     var first = true;
-    for (final path in [BrandGlyph.body, BrandGlyph.bubble]) {
+    for (final path in [BrandGlyph.cloud]) {
       for (final poly in _outline(path)) {
         for (var i = 0; i < poly.length; i++) {
           final a = poly[i];
@@ -59,13 +59,6 @@ void main() {
     expect(box.right, closeTo(BrandGlyph.box.right, 0.01));
     expect(box.bottom, closeTo(BrandGlyph.box.bottom, 0.01));
     expect(BrandGlyph.aspect, closeTo(BrandGlyph.box.width / BrandGlyph.box.height, 1e-5));
-    // The fin and the belly lie on the silhouette.
-    final body = BrandGlyph.body.getBounds();
-    for (final layer in [BrandGlyph.fin, BrandGlyph.belly]) {
-      final b = layer.getBounds();
-      expect(b.left >= body.left - 1e-3 && b.right <= body.right + 1e-3, isTrue);
-      expect(b.top >= body.top - 1e-3 && b.bottom <= body.bottom + 1e-3, isTrue);
-    }
     // The glyph sits in the tile's visible square like the launcher's glyph.
     expect(BrandGlyph.tileBox.contains(BrandGlyph.box.topLeft), isTrue);
     expect(BrandGlyph.tileBox.contains(BrandGlyph.box.bottomRight), isTrue);

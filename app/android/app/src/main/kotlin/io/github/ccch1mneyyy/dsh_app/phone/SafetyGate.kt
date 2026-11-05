@@ -48,7 +48,7 @@ data class PhoneUnlocks(
     val systemPages: Boolean = false,
     /** Password, verification-code and payment-code inputs. Typed values never reach a log. */
     val secretFields: Boolean = false,
-    /** DSH Go's own screens (not its overlay, which the screen reader never sees). */
+    /** ChemClaw's own screens (not its overlay, which the screen reader never sees). */
     val ownApp: Boolean = false,
 ) {
     val any: Boolean get() = systemPages || secretFields || ownApp
@@ -311,7 +311,7 @@ class SafetyGate(
             }
             Decision.UNAVAILABLE -> Result.No(
                 // l10n:keep agent safety result
-                "这一步需要用户确认，但确认界面现在不可用。请用户打开 DSH Go 检查通知与手机操控设置；不要自动重试操作。",
+                "这一步需要用户确认，但确认界面现在不可用。请用户打开 ChemClaw 检查通知与手机操控设置；不要自动重试操作。",
                 "refused:no-gate",
             )
         }

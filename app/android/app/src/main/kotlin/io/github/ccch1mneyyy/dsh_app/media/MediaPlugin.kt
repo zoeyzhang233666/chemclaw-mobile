@@ -28,7 +28,7 @@ import kotlin.concurrent.thread
  * Images from chats into the phone's gallery (「保存到相册」): MethodChannel `dsh/media`.
  *
  * - `saveImage {bytes, name, mime}` → where it landed, as the gallery shows it
- *   (`Pictures/DSH Go/x.png`). Android 10+: MediaStore Images under `Pictures/DSH Go`,
+ *   (`Pictures/ChemClaw/x.png`). Android 10+: MediaStore Images under `Pictures/ChemClaw`,
  *   which needs no permission for the app's own pictures. Android 8–9: the public
  *   Pictures directory plus a media scan, after asking for the storage permission
  *   (this app targets SDK 28, so it is a runtime grant). On 10+ the permission is
@@ -219,9 +219,9 @@ class MediaPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCallHandle
     companion object {
         const val CHANNEL = "dsh/media"
 
-        /** The gallery album: `Pictures/DSH Go`, the app's name as galleries show it (downloads go to
-         *  `Download/DSH-Go`, a path the agent types). */
-        private const val ALBUM = "DSH Go"
+        /** The gallery album: `Pictures/ChemClaw`, the app's name as galleries show it (downloads go to
+         *  `Download/ChemClaw`, a path the agent types). */
+        private const val ALBUM = "ChemClaw"
         private const val STORAGE_REQUEST = 0x5d7
 
         /** What a gallery takes, by MIME type → file extension. */

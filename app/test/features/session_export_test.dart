@@ -26,7 +26,7 @@ class _Channel extends FilesChannel {
   @override
   Future<String> saveToDownloads(String hostPath, {required String name, required String mime}) async {
     saved.add((hostPath, name, mime));
-    return 'Download/DSH-Go/$name';
+    return 'Download/ChemClaw/$name';
   }
 }
 
@@ -62,7 +62,7 @@ class _Recording extends SessionLogExporter {
   @override
   Future<String> saveToDownloads(String sessionId) async {
     calls.add('save $sessionId');
-    return 'Download/DSH-Go/${sessionLogZipName(sessionId)}';
+    return 'Download/ChemClaw/${sessionLogZipName(sessionId)}';
   }
 }
 
@@ -136,7 +136,7 @@ void main() {
       () => _withRealHttp(() async {
         final channel = _Channel();
         final exporter = SessionLogExporter(connection: host(), channel: channel, cacheRoot: () async => cache);
-        expect(await exporter.saveToDownloads('s1'), 'Download/DSH-Go/dsh-session-s1.zip');
+        expect(await exporter.saveToDownloads('s1'), 'Download/ChemClaw/dsh-session-s1.zip');
         expect(channel.saved.single.$2, 'dsh-session-s1.zip');
         expect(channel.saved.single.$3, 'application/zip');
       }),
@@ -164,7 +164,7 @@ void main() {
       await tester.tap(find.text('存到「下载」'));
       await pumpFrames(tester);
       expect(exporter.calls, ['share s1', 'save s1']);
-      expect(find.text('已存到 Download/DSH-Go/dsh-session-s1.zip'), findsOneWidget);
+      expect(find.text('已存到 Download/ChemClaw/dsh-session-s1.zip'), findsOneWidget);
     });
 
     testWidgets('the relay tunnel explains instead of offering buttons', (tester) async {

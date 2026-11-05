@@ -77,6 +77,18 @@ AppIcon? _chosen(WidgetTester tester) {
 }
 
 void main() {
+  test('adaptive and monochrome launcher icons use the compact centred cloud', () {
+    for (final name in ['ic_chemclaw_foreground', 'ic_launcher_monochrome']) {
+      final xml = File('android/app/src/main/res/drawable/$name.xml').readAsStringSync();
+      expect(xml, contains('android:scaleX="0.72"'));
+      expect(xml, contains('android:scaleY="0.72"'));
+      expect(xml, contains('android:translateX="5.7"'));
+      expect(xml, contains('android:translateY="5.8"'));
+      expect(xml, contains('android:pivotX="16.5"'));
+      expect(xml, contains('android:pivotY="16.5"'));
+    }
+  });
+
   group('picker', () {
     testWidgets('four icons in order, the one on the phone chosen', (tester) async {
       final handle = tester.ensureSemantics();
@@ -262,19 +274,16 @@ void main() {
   group('the previews match the shipped icons', () {
     const res = 'android/app/src/main/res';
 
-    test('background gradients', () {
+    test('solid Paper background matches the Android drawable for every icon', () {
       for (final icon in AppIcon.values) {
         final file = icon == AppIcon.mist ? 'ic_launcher_background' : 'ic_launcher_${icon.name}_background';
         final xml = File('$res/drawable/$file.xml').readAsStringSync();
-        double attr(String a) => double.parse(RegExp('android:$a="([-0-9.]+)"').firstMatch(xml)!.group(1)!);
-        final colors = [
-          for (final m in RegExp('android:color="#([0-9A-Fa-f]{8})"').allMatches(xml))
-            Color(int.parse(m.group(1)!, radix: 16)),
-        ];
+        final match = RegExp('android:fillColor="#([0-9A-Fa-f]{8})"').firstMatch(xml);
+        expect(match, isNotNull, reason: file);
+        final nativeColor = Color(int.parse(match!.group(1)!, radix: 16));
         final art = AppIconArt.of(icon);
-        expect(colors, [art.from, art.to], reason: file);
-        expect(Offset(attr('startX'), attr('startY')), AppIconArt.start, reason: file);
-        expect(Offset(attr('endX'), attr('endY')), AppIconArt.end, reason: file);
+        expect(art.from, nativeColor, reason: file);
+        expect(art.to, nativeColor, reason: file);
       }
     });
 
@@ -284,14 +293,23 @@ void main() {
         final frame = await (await ui.instantiateImageCodec(bytes)).getNextFrame();
         return (await frame.image.toByteData())!;
       });
-      // Inside the body (108 grid (53.5, 70)), at 4 px per unit.
-      final at = (280 * 432 + 214) * 4;
-      final pixel = [for (var i = 0; i < 4; i++) rgba!.getUint8(at + i)];
+      // The cloud has been reduced and centred; the old fixed 280px sample
+      // now hits its edge/background. Scan the safe centre region for the
+      // actual flat orange glyph instead of depending on its old dimensions.
       final mono = AppIconArt.of(AppIcon.ink).mono!;
-      expect(pixel[3], 255);
-      expect(pixel[0], closeTo((mono.r * 255).round(), 2));
-      expect(pixel[1], closeTo((mono.g * 255).round(), 2));
-      expect(pixel[2], closeTo((mono.b * 255).round(), 2));
+      final expected = [(mono.r * 255).round(), (mono.g * 255).round(), (mono.b * 255).round()];
+      var glyphPixels = 0;
+      for (var y = 100; y < 332; y++) {
+        for (var x = 100; x < 332; x++) {
+          final at = (y * 432 + x) * 4;
+          if (rgba!.getUint8(at + 3) < 254) continue;
+          if (List.generate(3, (channel) => (rgba.getUint8(at + channel) - expected[channel]).abs())
+              .every((delta) => delta <= 2)) {
+            glyphPixels++;
+          }
+        }
+      }
+      expect(glyphPixels, greaterThan(100), reason: 'shipped centred cloud must contain the preview mono colour');
     });
   });
 

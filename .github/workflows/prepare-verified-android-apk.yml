@@ -1,0 +1,174 @@
+# A safer future download path: a direct APK release asset, not an Actions ZIP.
+# DOES NOT auto-publish; creates a GitHub draft only after manual confirmation,
+# a green full CI on main, a stable private signing key and a malware scan.
+# Draft assets are not public downloads until separately reviewed and published.
+name: ChemClaw Mobile · prepare verified APK draft
+
+on:
+  workflow_dispatch:
+    inputs:
+      rights_reviewed:
+        description: "I verified redistribution rights for ALL bundled artwork and components"
+        type: boolean
+        required: true
+        default: false
+      security_reviewed:
+        description: "I reviewed manifest permissions, target SDK and security risks"
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: chemclaw-mobile-verified-preview
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: >-
+      github.repository == 'zoeyzhang233666/chemclaw-mobile' &&
+      github.ref == 'refs/heads/main' &&
+      inputs.rights_reviewed == true &&
+      inputs.security_reviewed == true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TZ: Asia/Shanghai
+      DSH_MAVEN_MIRRORS: '0'
+    steps:
+      - name: Checkout exact main commit
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Require successful full CI for this exact commit
+        env:
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess, sys
+          repo = os.environ['REPO']
+          sha = os.environ['SHA']
+          payload = subprocess.check_output([
+              'gh', 'api', '-X', 'GET', f'repos/{repo}/actions/workflows/ci.yml/runs',
+              '-f', f'head_sha={sha}', '-f', 'branch=main', '-f', 'per_page=30',
+          ], text=True)
+          runs = json.loads(payload).get('workflow_runs', [])
+          if not any(r.get('head_sha') == sha and r.get('status') == 'completed'
+                     and r.get('conclusion') == 'success' for r in runs):
+              sys.exit('BLOCKED: full CI has not passed for the selected main commit')
+          print('Exact main SHA has green full CI')
+          PY
+
+      - name: Require private stable Android release signing credentials
+        env:
+          KEYSTORE_B64: ${{ secrets.CHEMCLAW_ANDROID_RELEASE_KEYSTORE_B64 }}
+          STORE_PASSWORD: ${{ secrets.CHEMCLAW_ANDROID_RELEASE_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.CHEMCLAW_ANDROID_RELEASE_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.CHEMCLAW_ANDROID_RELEASE_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+          for var in KEYSTORE_B64 STORE_PASSWORD KEY_PASSWORD KEY_ALIAS; do
+            if [[ -z "${!var:-}" ]]; then
+              echo "::error::Missing stable Android signing secret: $var"
+              exit 1
+            fi
+          done
+          umask 077
+          printf '%s' "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/chemclaw-release.jks"
+          printf 'storeFile=%s\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+            "$RUNNER_TEMP/chemclaw-release.jks" "$STORE_PASSWORD" "$KEY_ALIAS" "$KEY_PASSWORD" \
+            > app/android/key.properties
+          # key.properties and the keystore must never be uploaded as artifacts.
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xz-utils file unzip zip binutils clamav clamav-freshclam
+
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24.22.1'
+
+      - name: Setup Java
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: '3.47.7'
+          channel: stable
+          cache: true
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+        with:
+          gradle-version: '9.3.1'
+
+      - name: Build the signed ARM64 APK
+        run: |
+          set -euo pipefail
+          python3 -m unittest app/tool/test_chemclaw_brand.py tooling/test_audit_test_apk.py
+          (cd app && flutter pub get --enforce-lockfile)
+          printf 'sdk.dir=%s\nflutter.sdk=%s\n' "$ANDROID_HOME" "$FLUTTER_ROOT" > app/android/local.properties
+          bash runtime/build-runtime.sh arm64-v8a
+          bash tooling/build-apk.sh --release --flavor arm64
+
+      - name: Audit signature, APK structure and permissions
+        run: |
+          set -euo pipefail
+          mkdir -p dist/preview
+          apk=app/build/app/outputs/flutter-apk/app-arm64-release.apk
+          python3 tooling/audit_test_apk.py "$apk" --output dist/preview/APK_AUDIT.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path('dist/preview/APK_AUDIT.json').read_text())
+          if report['signature']['temporary_debug_signing'] is not False:
+              raise SystemExit('BLOCKED: debug or unknown signer identity; cannot create release preview')
+          PY
+          cp "$apk" dist/preview/ChemClaw-Mobile-Android-arm64.apk
+          (cd dist/preview && sha256sum ChemClaw-Mobile-Android-arm64.apk > SHA256SUMS)
+          (cd dist/preview && sha256sum -c SHA256SUMS)
+
+      - name: Run an independent antivirus engine (fail closed)
+        run: |
+          set -euo pipefail
+          sudo systemctl stop clamav-freshclam || true
+          # No signatures or scanning infrastructure = no public APK.
+          sudo freshclam --stdout
+          timeout 900 clamscan --infected --max-filesize=300M --max-scansize=900M \
+            --max-files=500000 dist/preview/ChemClaw-Mobile-Android-arm64.apk
+
+      - name: Create private review-ready GitHub draft (NOT published)
+        env:
+          SHA: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          tag="chemclaw-mobile-preview-${SHA:0:12}"
+          cat > dist/preview/REVIEW_REQUIRED.md <<EOF
+          # ChemClaw Mobile — REVIEW REQUIRED
+          Source: $SHA
+          This is a draft, not a published APK.
+          Check GitHub CI, APK_AUDIT.json, SHA256SUMS and the signing fingerprint.
+          Chrome Safe Browsing may still block even a signed release asset.
+          Do not bypass such warnings. Confirm security and asset rights manually.
+          EOF
+          gh release create "$tag" \
+            --repo "$REPO" --target "$SHA" --draft --prerelease \
+            --title "ChemClaw Mobile preview ($tag)" \
+            --notes-file dist/preview/REVIEW_REQUIRED.md \
+            dist/preview/ChemClaw-Mobile-Android-arm64.apk \
+            dist/preview/SHA256SUMS \
+            dist/preview/APK_AUDIT.json
+          echo "Draft created. Publication requires a separate human review."

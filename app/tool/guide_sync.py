@@ -36,7 +36,7 @@ NAV = re.compile(r'^<!-- nav: ([A-Za-z][A-Za-z0-9_]*(?:,[A-Za-z][A-Za-z0-9_]*)*)
 SPAN = re.compile(r'`([^`\n]+)`')
 BOLD = re.compile(r'\*\*([^*\n]+)\*\*')
 LINK = re.compile(r'\]\(([^)\s]+)\)')
-VERSION_LINE = re.compile(r'^> dsh-go (\S+)$', re.MULTILINE)
+VERSION_LINE = re.compile(r'^> ChemClaw (\S+)$', re.MULTILINE)
 BANNED = {'zh': ('会话', '实验'), 'en': ()}
 
 
@@ -199,7 +199,7 @@ def check(repo: Path, guide: Path) -> list[str]:
     version = app_version(repo / 'app/pubspec.yaml')
     stated = VERSION_LINE.findall((guide / 'README.md').read_text(encoding='utf-8'))
     if stated != [version]:
-        errors.append(f'README.md: want one line `> dsh-go {version}` (app/pubspec.yaml), found {stated}')
+        errors.append(f'README.md: want one line `> ChemClaw {version}` (app/pubspec.yaml), found {stated}')
     errors += check_skill((guide / 'SKILL.md').read_text(encoding='utf-8'))
     ids = read_page_ids(repo / 'app/lib/links/page_links.dart', repo / 'app/lib/ui/settings/index/spots.dart')
     res = repo / 'app/android/app/src/main/res'

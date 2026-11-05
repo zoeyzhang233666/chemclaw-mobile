@@ -1,5 +1,5 @@
 {
-  "starPromptTitle": "{hours, plural, =0{I’ve kept you company in DSH Go for half an hour now~} =1{I’ve kept you company in DSH Go for an hour now~} other{I’ve kept you company in DSH Go for {hours} hours now~}}",
+  "starPromptTitle": "{hours, plural, =0{You've used ChemClaw for half an hour} =1{You've used ChemClaw for an hour} other{You've used ChemClaw for {hours} hours}}",
   "@starPromptTitle": {
     "placeholders": {
       "hours": {
@@ -7,10 +7,10 @@
       }
     }
   },
-  "starPromptBody": "DSH Go is free and open source. If it’s made your phone a little nicer to use, please give it a Star — it means so much to this little whale!",
-  "starPromptPlea": "Pretty please~ It really matters!!",
+  "starPromptBody": "ChemClaw Mobile is open source. If it helps, please consider starring the project on GitHub.",
+  "starPromptPlea": "Thank you for supporting the project.",
   "starPromptStar": "Star it on GitHub",
   "starPromptDone": "Already starred",
   "starPromptLater": "Maybe later",
-  "starSettingsTitle": "Star DSH Go on GitHub"
+  "starSettingsTitle": "Star ChemClaw on GitHub"
 }

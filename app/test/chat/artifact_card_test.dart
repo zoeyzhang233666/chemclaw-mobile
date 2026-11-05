@@ -45,7 +45,7 @@ class _Android {
           if (openError case final error?) throw error;
           return null;
         case 'saveToDownloads':
-          return 'Download/DSH-Go/${args['name']}';
+          return 'Download/ChemClaw/${args['name']}';
         case 'listOutputs':
           return const <Object?>[];
         case 'pdfInfo':
@@ -207,7 +207,7 @@ void main() {
       'name': 'report.pdf',
       'mime': 'application/pdf',
     });
-    expect(find.text('已存到 下载/DSH-Go/report.pdf'), findsOneWidget);
+    expect(find.text('已存到 下载/ChemClaw/report.pdf'), findsOneWidget);
     // Success feedback stays five seconds, then the description is back.
     await tester.pump(const Duration(seconds: 5));
     await tester.pumpAndSettle();
@@ -361,7 +361,7 @@ void main() {
       saved.clear();
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(_files, (call) async {
         saved.add(call);
-        return 'Download/DSH-Go/a (2).png';
+        return 'Download/ChemClaw/a (2).png';
       });
       files = ArtifactFiles(
         connection: HostConnection(client: DshClient.withCarrier(carrier), label: '工作站', isLocal: false, hostId: 'h1'),
@@ -400,7 +400,7 @@ void main() {
       expect(carrier.calls.last, 'workspaceFiles/readBytes');
 
       final where = await files.saveToDownloads('s1', image);
-      expect(where, 'Download/DSH-Go/a (2).png');
+      expect(where, 'Download/ChemClaw/a (2).png');
       expect(saved.single.method, 'saveToDownloads');
       expect((saved.single.arguments as Map)['path'], fresh.path);
       expect((saved.single.arguments as Map)['mime'], 'image/png');

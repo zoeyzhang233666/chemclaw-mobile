@@ -25,7 +25,7 @@ enum AccentSource {
 class AppearanceSettings {
   const AppearanceSettings({
     this.source = AccentSource.preset,
-    this.presetId = 'mist',
+    this.presetId = 'paper',
     this.customColor = defaultCustom,
     this.loaded = false,
   });
@@ -75,7 +75,7 @@ class AppearanceController extends Notifier<AppearanceSettings> {
       final source = AccentSource.values.asNameMap()[prefs.getString(_sourceKey)] ?? AccentSource.preset;
       state = AppearanceSettings(
         source: source,
-        presetId: AppAccent.preset(prefs.getString(_presetKey)).id,
+        presetId: AppAccent.preset(prefs.getString(_presetKey) ?? 'paper').id,
         customColor: prefs.getInt(_customKey) ?? AppearanceSettings.defaultCustom,
         loaded: true,
       );

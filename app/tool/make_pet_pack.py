@@ -123,7 +123,7 @@ CATCH = 0.9               # every animation's hit box holds at least this share 
 PACKS = {
     'deepy-whale': dict(
         kind='clawd', dir='deepy-whale',
-        name='Deepy 小鲸鱼',
+        name='橙鱼',
         author='DSH-TUI',
         license='DSH-TUI 吉祥物，作者授权 dsh-go 使用',
         source='DSH-TUI（Clawd on Desk 主题包 v1.0.0）',

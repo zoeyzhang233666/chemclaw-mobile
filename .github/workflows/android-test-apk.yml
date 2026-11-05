@@ -1,0 +1,154 @@
+# Internal APK smoke-build only. This workflow never publishes a GitHub Release.
+# The fork's initial Android APK may still contain upstream restricted art:
+# restrict use to development/acceptance until the ASSETS.md audit is complete.
+name: ChemClaw Mobile · Android test APK
+
+on:
+  push:
+    branches:
+      - feat/chemclaw-mobile-brand-and-mcp
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mobile-apk-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk-arm64:
+    name: Build arm64 test APK
+    if: github.repository == 'zoeyzhang233666/chemclaw-mobile'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    env:
+      TZ: Asia/Shanghai
+      DSH_MAVEN_MIRRORS: '0'
+    steps:
+      - name: Checkout mobile fork only
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+
+      - name: Install Linux build prerequisites
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xz-utils file unzip zip binutils
+          df -h .
+
+      - name: Setup Node 24 (for embedded DSH)
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '24.22.1'
+
+      - name: Setup Java 17
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Setup Flutter 3.47.7
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2
+        with:
+          flutter-version: '3.47.7'
+          channel: stable
+          cache: true
+
+      - name: Setup Gradle 9.3.1
+        uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+        with:
+          gradle-version: '9.3.1'
+
+      - name: Verify ChemClaw brand, runtime shell and package isolation
+        run: |
+          bash -n runtime/build-runtime.sh
+          python3 -m unittest app/tool/test_chemclaw_brand.py tooling/test_audit_test_apk.py
+
+      - name: Resolve Flutter packages
+        working-directory: app
+        run: |
+          flutter pub get --enforce-lockfile
+          printf 'sdk.dir=%s\nflutter.sdk=%s\n' "$ANDROID_HOME" "$FLUTTER_ROOT" > android/local.properties
+
+      - name: Build bundled ARM64 DSH runtime
+        run: |
+          bash runtime/build-runtime.sh arm64-v8a
+          test -s runtime/out/arm64-v8a/assets/runtime/rootfs-arm64-v8a.tar.xz
+          test -s runtime/out/arm64-v8a/assets/runtime/manifest.json
+          df -h .
+
+      - name: Package signed-for-testing release-mode APK
+        run: |
+          # No release key is uploaded: Gradle uses a throwaway debug keystore.
+          # This APK must not be used for production releases/auto-updates.
+          bash tooling/build-apk.sh --release --flavor arm64
+
+      - name: Verify APK signing, manifest permissions and archive integrity
+        run: |
+          set -euo pipefail
+          apk=app/build/app/outputs/flutter-apk/app-arm64-release.apk
+          test -s "$apk"
+          # Verify the actual assembled APK, including certificate schemes,
+          # appId, embedded ARM64 runtime, archive CRC and sensitive permissions.
+          python3 tooling/audit_test_apk.py "$apk" --output dist/test/APK_AUDIT.json
+          cp "$apk" dist/test/ChemClaw-Mobile-Android-arm64-TEST.apk
+          (cd dist/test && sha256sum ChemClaw-Mobile-Android-arm64-TEST.apk > SHA256SUMS)
+          (cd dist/test && sha256sum -c SHA256SUMS)
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = json.loads(Path("dist/test/APK_AUDIT.json").read_text())
+          lines = [
+              "## ChemClaw Mobile — DEVELOPMENT APK integrity report",
+              f"- Source commit: `{os.environ['GITHUB_SHA']}`",
+              f"- SHA-256: `{report['apk_sha256']}`",
+              f"- Package: `{report['package']['application_id']}`",
+              f"- Signing certificate SHA-256: `{report['signature']['certificate_sha256']}`",
+              f"- Debug-signing certificate: `{report['signature']['temporary_debug_signing']}`",
+              f"- Android target SDK: `{report['package']['target_sdk']}`",
+              f"- Permissions requiring review: {', '.join(report['sensitive_permission_review']) or 'none'}",
+              "",
+              "**This checks integrity, not malware safety.** Chrome Safe Browsing or",
+              "Android security tools can still block this test package.",
+              "Do not bypass browser protection. Public releases require a",
+              "stable private signing key, green CI, verified asset rights and",
+              "independent security review.",
+          ]
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as f:
+              f.write("\n".join(lines) + "\n")
+          PY
+          ls -lh dist/test/
+
+      # A single GitHub Actions v7 artifact can be downloaded as a *direct*
+      # file without a ZIP archive. This is a format change, not an AV bypass.
+      - name: Upload APK directly (no ZIP)
+        id: direct-apk
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          path: dist/test/ChemClaw-Mobile-Android-arm64-TEST.apk
+          archive: false
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload checksum and signing audit separately
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ChemClaw-Mobile-Android-arm64-AUDIT
+          path: |
+            dist/test/SHA256SUMS
+            dist/test/APK_AUDIT.json
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Show direct download in build summary
+        env:
+          DIRECT_URL: ${{ steps.direct-apk.outputs.artifact-url }}
+        run: |
+          {
+            echo
+            echo "### Verified-format test APK (direct file, no ZIP)"
+            echo "[$(basename dist/test/ChemClaw-Mobile-Android-arm64-TEST.apk)]($DIRECT_URL)"
+            echo "GitHub sign-in required. This is a developer build, not malware-cleared."
+            echo "If Chrome blocks the APK itself, do NOT disable Safe Browsing."
+          } >> "$GITHUB_STEP_SUMMARY"

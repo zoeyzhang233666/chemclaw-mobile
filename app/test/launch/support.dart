@@ -66,6 +66,14 @@ Future<ui.Image> shippedIcon(int px, {String variant = 'mist'}) async {
   final bytes = File('android/app/src/main/res/mipmap-xxxhdpi/ic_launcher${suffix}_foreground.png').readAsBytesSync();
   final codec = await ui.instantiateImageCodec(bytes);
   final foreground = (await codec.getNextFrame()).image;
+  // ChemClaw Paper icons have a solid background. The old DSH test helper
+  // assumed multiple gradient stops and crashed on a single branded color.
+  final backgroundPaint = Paint()..color = colours.isNotEmpty ? colours.first : const Color(0xFFFAF9F5);
+  if (colours.length >= 2) {
+    backgroundPaint.shader = ui.Gradient.linear(
+      const Offset(7.57, -5.87), const Offset(100.43, 113.87), colours,
+    );
+  }
   final recorder = ui.PictureRecorder();
   final canvas = Canvas(recorder);
   final side = px.toDouble();
@@ -77,7 +85,7 @@ Future<ui.Image> shippedIcon(int px, {String variant = 'mist'}) async {
     ..translate(-18, -18)
     ..drawRect(
       const Rect.fromLTWH(0, 0, 108, 108),
-      Paint()..shader = ui.Gradient.linear(const Offset(7.57, -5.87), const Offset(100.43, 113.87), colours),
+      backgroundPaint,
     )
     ..drawImageRect(
       foreground,

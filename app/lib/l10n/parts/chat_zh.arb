@@ -312,7 +312,7 @@
   "chatSaveToDownloads": "存到「下载」",
   "chatCopyPath": "复制路径",
   "chatOpenInDefaultApp": "用默认应用打开",
-  "chatDownloadsFolderHint": "下载/DSH-Go 文件夹",
+  "chatDownloadsFolderHint": "下载/ChemClaw 文件夹",
   "chatSavedToDownloadsPath": "已存到 下载/{path}",
   "@chatSavedToDownloadsPath": {
     "placeholders": {

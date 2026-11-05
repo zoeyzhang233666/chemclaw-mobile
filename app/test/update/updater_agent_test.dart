@@ -17,7 +17,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'support.dart';
 
 const _token = 'dshc_0123456789abcdefghijklmnopqrstuvwxyzABCDEFG';
-const _feed = 'https://go.dshtui.com/beta/update.json';
+const _feed = 'https://chemclaw-mobile.invalid/beta/update.json';
 const _agent = 'dsh-app-updater/0.9.9+10301000 (arm64-v8a)';
 
 /// The share host's reading of it (services/share-worker/src/stats.ts).

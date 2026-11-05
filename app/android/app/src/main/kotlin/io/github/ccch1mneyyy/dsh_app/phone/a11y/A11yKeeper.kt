@@ -11,7 +11,7 @@ import android.util.Log
 import io.github.ccch1mneyyy.dsh_app.phone.PhoneControl
 
 /**
- * 自动恢复无障碍. With phone control switched on in DSH Go and WRITE_SECURE_SETTINGS granted
+ * 自动恢复无障碍. With phone control switched on in ChemClaw and WRITE_SECURE_SETTINGS granted
  * (`pm grant` from a computer or a root shell, or the one tap through the privileged channel), it
  * puts [PhoneA11yService] back into ENABLED_ACCESSIBILITY_SERVICES when something took it out (a
  * force stop does, on stock Android too), and takes it out and back in when it stays listed but
@@ -104,7 +104,7 @@ class KeeperPlan(private val pkg: String, private val cls: String) {
     private var nextAt = 0L
 
     /**
-     * What to do at [now]: [on] — phone control is switched on in DSH Go; [granted] —
+     * What to do at [now]: [on] — phone control is switched on in ChemClaw; [granted] —
      * WRITE_SECURE_SETTINGS is held; [list] — the setting as read; [connected] — our service is bound.
      */
     fun next(on: Boolean, granted: Boolean, list: String?, connected: Boolean, now: Long): Step {

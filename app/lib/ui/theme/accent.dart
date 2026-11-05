@@ -66,6 +66,7 @@ class AppAccent {
   String get label =>
       _label ??
       switch (id) {
+        'paper' => 'Paper · ChemClaw',
         'mist' => appL10n.phoneAccentMist,
         'daiqing' => appL10n.phoneAccentDaiqing,
         'dusk' => appL10n.phoneAccentDusk,
@@ -112,7 +113,7 @@ class AppAccent {
   final Color hazeDark;
 
   /// 浅色主色上的文字。所有配色都是白字。
-  Color get onSeed => const Color(0xFFFFFFFF);
+  Color get onSeed => id == 'paper' ? const Color(0xFF1F1E1B) : const Color(0xFFFFFFFF);
 
   /// 按亮度取主色。
   Color seedFor(Brightness brightness) => brightness == Brightness.dark ? seedDark : seed;
@@ -120,6 +121,28 @@ class AppAccent {
   // ══ 预设 ══════════════════════════════════════════════════════════════
 
   /// 默认:雾蓝。DeepSeek 色相,低彩度。
+  /// ChemClaw v0.3.0 Paper theme; match the desktop palette.
+  static const paper = AppAccent(
+    id: 'paper',
+    seed: Color(0xFFD97757),
+    pressed: Color(0xFFB45B3F),
+    container: Color(0xFFF5E1D8),
+    onContainer: Color(0xFF633324),
+    bubble: Color(0xFFEBE7DC),
+    glow: Color(0xFFF2D4C8),
+    seedDark: Color(0xFFE08A6D),
+    pressedDark: Color(0xFFCF7659),
+    onSeedDark: Color(0xFF1F1E1B),
+    containerDark: Color(0xFF503B32),
+    onContainerDark: Color(0xFFF3E4DC),
+    bubbleDark: Color(0xFF34322D),
+    glowDark: Color(0xFF65473C),
+    tintHue: 69,
+    tintChroma: 0.15,
+    haze: Color(0xFFF0E6DC),
+    hazeDark: Color(0xFF2A2925),
+  );
+
   static const mist = AppAccent(
     id: 'mist',
     seed: Color(0xFF4B67B4),
@@ -256,7 +279,7 @@ class AppAccent {
   );
 
   /// 设置页里的顺序。
-  static const presets = [mist, daiqing, dusk, turquoise, amber, graphite];
+  static const presets = [paper, mist, daiqing, dusk, turquoise, amber, graphite];
 
   static const customId = 'custom';
   static const wallpaperId = 'wallpaper';
@@ -266,7 +289,7 @@ class AppAccent {
     for (final p in presets) {
       if (p.id == id) return p;
     }
-    return mist;
+    return paper;
   }
 
   // ══ 现推:自定义、跟随壁纸 ═══════════════════════════════════════════

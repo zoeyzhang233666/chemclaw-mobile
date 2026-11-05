@@ -57,7 +57,7 @@ class GuideSyncTest(unittest.TestCase):
         self.write('app/lib/links/page_links.dart', PAGE_LINKS)
         self.write('app/lib/ui/settings/index/spots.dart', SPOTS)
         self.write('docs/guide/SKILL.md', SKILL)
-        self.write('docs/guide/README.md', '# Guide\n\n> dsh-go 0.9.2\n\n- [引擎](zh/01-engine.md)\n- [Engine](en/01-engine.md)\n')
+        self.write('docs/guide/README.md', '# Guide\n\n> ChemClaw 0.9.2\n\n- [引擎](zh/01-engine.md)\n- [Engine](en/01-engine.md)\n')
         for locale, text in PAGE.items():
             self.write(f'docs/guide/{locale}/01-engine.md', text)
             self.write(f'docs/guide/{locale}/02-settings.md', '# Settings\n')
@@ -140,7 +140,7 @@ class GuideSyncTest(unittest.TestCase):
 
     def test_version_must_match_pubspec(self):
         self.write('app/pubspec.yaml', 'version: 0.9.3+1\n')
-        self.assertFails('`> dsh-go 0.9.3`')
+        self.assertFails('`> ChemClaw 0.9.3`')
 
     def test_both_languages_hold_the_same_pages(self):
         (self.guide / 'en/02-settings.md').unlink()

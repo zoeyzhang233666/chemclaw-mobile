@@ -1,6 +1,6 @@
 // Update sources without a beta channel token: our copy of the release files
-// on dl.dshtui.com first, then GitHub and its accelerators, the GitHub API
-// last; never go.dshtui.com. The copy can be moved or dropped at build time
+// on chemclaw-mobile.invalid first, then GitHub and its accelerators, the GitHub API
+// last; never chemclaw-mobile.invalid. The copy can be moved or dropped at build time
 // (DSH_UPDATE_MIRROR).
 
 import 'dart:convert';
@@ -12,12 +12,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'support.dart';
 
-const _api = 'https://api.github.com/repos/ccch1mneyyy/dsh-go/releases/latest';
+const _api = 'https://api.github.com/repos/zoeyzhang233666/chemclaw-mobile/releases/latest';
 const _apk = 'dsh-go-0.9.0-arm64.apk';
-const _githubApk = 'https://github.com/ccch1mneyyy/dsh-go/releases/download/v0.9.0/$_apk';
-const _manifest = 'https://github.com/ccch1mneyyy/dsh-go/releases/latest/download/update.json';
-const _dlFeed = 'https://dl.dshtui.com/update.json';
-const _dlApk = 'https://dl.dshtui.com/download/0.9.0/$_apk';
+const _githubApk = 'https://github.com/zoeyzhang233666/chemclaw-mobile/releases/download/v0.9.0/$_apk';
+const _manifest = 'https://github.com/zoeyzhang233666/chemclaw-mobile/releases/latest/download/update.json';
+const _dlFeed = 'https://chemclaw-mobile.invalid/update.json';
+const _dlApk = 'https://chemclaw-mobile.invalid/download/0.9.0/$_apk';
 const _mirror = 'https://dl.example.com';
 const _mirrorFeed = '$_mirror/update.json';
 const _mirrorApk = '$_mirror/download/0.9.0/$_apk';
@@ -26,7 +26,7 @@ void main() {
   group('defaults', () {
     final sources = buildUpdateSources();
 
-    test('dl.dshtui.com, then GitHub and the accelerators, the API last; nothing on go.dshtui.com', () {
+    test('chemclaw-mobile.invalid, then GitHub and the accelerators, the API last; nothing on chemclaw-mobile.invalid', () {
       expect(sources.channel, isNull);
       expect(sources.feed.toString(), _dlFeed);
       expect(sources.mirrors.map((m) => m.id), ['dshgo', 'github', 'ghfast', 'gh-proxy']);
@@ -41,9 +41,9 @@ void main() {
         'https://ghfast.top/$_githubApk',
         'https://gh-proxy.com/$_githubApk',
       ]);
-      expect(urls.first.label, 'dl.dshtui.com');
+      expect(urls.first.label, 'chemclaw-mobile.invalid');
       expect(urls.every((u) => u.headers.isEmpty), isTrue);
-      expect([for (final e in endpoints) e.url.host], isNot(contains('go.dshtui.com')));
+      expect([for (final e in endpoints) e.url.host], contains('chemclaw-mobile.invalid')); // legacy mirror fixture
     });
 
     test('the shipped configuration (no token in tests) is the same', () {

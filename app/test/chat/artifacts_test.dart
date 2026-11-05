@@ -105,7 +105,7 @@ void main() {
           '见 [报告](<out/Q3 report.pdf>) 和 ![图](chart%20v2.png "趋势")、'
           '[年报](https://example.com/a.pdf)、[锚点](#top)、[行](<src/a.py#L3-L9>)、'
           '[绝对](/sdcard/Download/DSH/x.xlsx)、[再提一次](<out/Q3 report.pdf>)、'
-          '[手机](/sdcard/Download/DSH-Go/y.pdf)。';
+          '[手机](/sdcard/Download/ChemClaw/y.pdf)。';
       expect(linkedPaths(reply, cwd: _ws), [
         '$_ws/out/Q3 report.pdf',
         '$_ws/chart v2.png',

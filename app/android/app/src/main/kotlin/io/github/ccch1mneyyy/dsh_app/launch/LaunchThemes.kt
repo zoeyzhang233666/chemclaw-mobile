@@ -83,8 +83,8 @@ internal object LaunchThemes {
     }
 
     /** res/values{,-night}/colors.xml launch_background_top (LaunchGeometryTest keeps them equal). */
-    const val PAGE_LIGHT = 0xFFEBF1FE.toInt()
-    const val PAGE_DARK = 0xFF1D222C.toInt()
+    const val PAGE_LIGHT = 0xFFFAF9F5.toInt()
+    const val PAGE_DARK = 0xFF1F1E1B.toInt()
 }
 
 /**

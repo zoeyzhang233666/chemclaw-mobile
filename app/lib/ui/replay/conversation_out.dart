@@ -1,5 +1,5 @@
 // Where a shared conversation goes — a `.dshgo` file, a self-contained `.html`
-// or Markdown (the Android share sheet, or Download/DSH-Go), plain text, or a
+// or Markdown (the Android share sheet, or Download/ChemClaw), plain text, or a
 // hosted link (the share host's client, app/lib/share_hosted/). Seams: tests
 // record instead.
 
@@ -93,7 +93,7 @@ class ConversationOut {
   /// The Android share sheet with a link.
   Future<void> shareText(String text) => _share(ShareParams(text: text));
 
-  /// Into `Download/DSH-Go`; returns where it landed.
+  /// Into `Download/ChemClaw`; returns where it landed.
   Future<String> save(File file, ConversationFormat format) =>
       files.saveToDownloads(file.path, name: file.uri.pathSegments.last, mime: format.mime);
 }

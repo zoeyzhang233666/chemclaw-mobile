@@ -42,7 +42,7 @@ enum DsBotAvailability {
   /// The host has no DS Bot (or has it turned off).
   missing,
 
-  /// A DS Bot from before the mobile API, or one with no version in common.
+  /// A DS Bot from before the mobile API, or one with no common version.
   outdated,
 
   /// Talking to DS Bot.

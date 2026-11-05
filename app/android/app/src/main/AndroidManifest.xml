@@ -48,7 +48,7 @@
          TODO(targetSdk >= 31): also configure dataExtractionRules. -->
     <application
         android:allowBackup="false"
-        android:label="DSH Go"
+        android:label="ChemClaw"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -56,7 +56,7 @@
         android:requestLegacyExternalStorage="true"
         android:networkSecurityConfig="@xml/network_security_config">
         <activity
-            android:name=".MainActivity"
+            android:name="io.github.ccch1mneyyy.dsh_app.MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
             android:taskAffinity=""
@@ -86,8 +86,8 @@
              opened through it. LauncherMistAlt is 雾蓝 again once LauncherMist has been switched
              off. Keep names: a launcher's home-screen icon points at one of them. -->
         <activity-alias
-            android:name=".LauncherMist"
-            android:targetActivity=".MainActivity"
+            android:name="io.github.ccch1mneyyy.dsh_app.LauncherMist"
+            android:targetActivity="io.github.ccch1mneyyy.dsh_app.MainActivity"
             android:enabled="true"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
@@ -99,8 +99,8 @@
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity-alias>
         <activity-alias
-            android:name=".LauncherMistAlt"
-            android:targetActivity=".MainActivity"
+            android:name="io.github.ccch1mneyyy.dsh_app.LauncherMistAlt"
+            android:targetActivity="io.github.ccch1mneyyy.dsh_app.MainActivity"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
@@ -112,8 +112,8 @@
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity-alias>
         <activity-alias
-            android:name=".LauncherNight"
-            android:targetActivity=".MainActivity"
+            android:name="io.github.ccch1mneyyy.dsh_app.LauncherNight"
+            android:targetActivity="io.github.ccch1mneyyy.dsh_app.MainActivity"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_night"
@@ -125,8 +125,8 @@
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity-alias>
         <activity-alias
-            android:name=".LauncherFrost"
-            android:targetActivity=".MainActivity"
+            android:name="io.github.ccch1mneyyy.dsh_app.LauncherFrost"
+            android:targetActivity="io.github.ccch1mneyyy.dsh_app.MainActivity"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_frost"
@@ -138,8 +138,8 @@
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity-alias>
         <activity-alias
-            android:name=".LauncherInk"
-            android:targetActivity=".MainActivity"
+            android:name="io.github.ccch1mneyyy.dsh_app.LauncherInk"
+            android:targetActivity="io.github.ccch1mneyyy.dsh_app.MainActivity"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher_ink"
@@ -155,7 +155,7 @@
              (links/LinkTrampolineActivity.kt → links/LinksPlugin.kt). https App Links need an
              assetlinks.json on the landing domain first (docs/design/share-codes.md §6). -->
         <activity
-            android:name=".links.LinkTrampolineActivity"
+            android:name="io.github.ccch1mneyyy.dsh_app.links.LinkTrampolineActivity"
             android:exported="true"
             android:excludeFromRecents="true"
             android:noHistory="true"
@@ -180,7 +180,7 @@
         <!-- The share sheet's target: text, photos, files (a lone .dshgo goes on to the share-code
              importer, the rest into a new conversation). share/ShareActivity.kt → SharePlugin.kt. -->
         <activity
-            android:name=".share.ShareActivity"
+            android:name="io.github.ccch1mneyyy.dsh_app.share.ShareActivity"
             android:exported="true"
             android:excludeFromRecents="true"
             android:noHistory="true"
@@ -201,7 +201,7 @@
         <!-- Launcher shortcuts and the Quick Settings tile land here (shortcuts/EntryActivity.kt).
              Not exported: launchers start shortcuts as this app, the tile's PendingIntent is ours. -->
         <activity
-            android:name=".shortcuts.EntryActivity"
+            android:name="io.github.ccch1mneyyy.dsh_app.shortcuts.EntryActivity"
             android:exported="false"
             android:excludeFromRecents="true"
             android:noHistory="true"
@@ -210,7 +210,7 @@
 
         <!-- Quick Settings tile 「新对话」 (tile/NewChatTileService.kt). -->
         <service
-            android:name=".tile.NewChatTileService"
+            android:name="io.github.ccch1mneyyy.dsh_app.tile.NewChatTileService"
             android:exported="true"
             android:icon="@drawable/ic_tile_new_chat"
             android:label="@string/tile_new_chat"
@@ -223,7 +223,7 @@
 
         <!-- Keeps the local DSH process alive while the app is in the background. -->
         <service
-            android:name=".runtime.DshService"
+            android:name="io.github.ccch1mneyyy.dsh_app.runtime.DshService"
             android:exported="false"
             android:foregroundServiceType="specialUse">
             <property
@@ -233,7 +233,7 @@
 
         <!-- Keeps the floating pet's process up when only remote hosts are used (pet/PetOverlayService.kt). -->
         <service
-            android:name=".pet.PetOverlayService"
+            android:name="io.github.ccch1mneyyy.dsh_app.pet.PetOverlayService"
             android:exported="false"
             android:foregroundServiceType="specialUse">
             <property
@@ -243,7 +243,7 @@
 
         <!-- 手机操控: reads and drives the main screen, owns the status bar / confirm overlay (phone/a11y). -->
         <service
-            android:name=".phone.a11y.PhoneA11yService"
+            android:name="io.github.ccch1mneyyy.dsh_app.phone.a11y.PhoneA11yService"
             android:label="@string/phone_a11y_label"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:exported="true">
@@ -266,28 +266,28 @@
 
         <!-- 不打扰模式: self-ADB wireless-debugging pairing code, typed in the notification. -->
         <receiver
-            android:name=".phone.background.AdbPairingNotification$Receiver"
+            android:name="io.github.ccch1mneyyy.dsh_app.phone.background.AdbPairingNotification$Receiver"
             android:exported="false">
             <intent-filter>
                 <action android:name="io.github.ccch1mneyyy.dsh_app.PHONE_ADB_PAIR_CODE" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".notify.NotifyActionReceiver" android:exported="false" />
-        <receiver android:name=".phone.a11y.A11yKeeper$Receiver" android:exported="false">
+        <receiver android:name="io.github.ccch1mneyyy.dsh_app.notify.NotifyActionReceiver" android:exported="false" />
+        <receiver android:name="io.github.ccch1mneyyy.dsh_app.phone.a11y.A11yKeeper$Receiver" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
 
         <!-- Explicit per-channel keep only; no periodic job or foreground service. -->
-        <receiver android:name=".phone.background.PrivilegedKeepJob$Receiver" android:exported="false">
+        <receiver android:name="io.github.ccch1mneyyy.dsh_app.phone.background.PrivilegedKeepJob$Receiver" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
-        <service android:name=".phone.background.PrivilegedKeepJob" android:permission="android.permission.BIND_JOB_SERVICE" android:exported="false" />
+        <service android:name="io.github.ccch1mneyyy.dsh_app.phone.background.PrivilegedKeepJob" android:permission="android.permission.BIND_JOB_SERVICE" android:exported="false" />
 
         <!-- Chat artifacts: hands one file at a time to the app that opens it (files/FilesPlugin.kt). -->
         <provider

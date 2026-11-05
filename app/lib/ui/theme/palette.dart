@@ -128,8 +128,12 @@ abstract final class DshPalette {
     final n = NeutralTones.forAccent(accent);
     return ColorScheme(
       brightness: Brightness.light,
-      primary: accent.seed,
-      onPrimary: accent.onSeed,
+      // Preserve the desktop Paper seed (#D97757) as the brand swatch,
+      // but use its darker pressed tone for controls so orange reads >=3:1
+      // even on the darkest warm-paper surfaces (#E4DFD4). White content
+      // is >=4.5:1 on this control tone; dark ink would be insufficient.
+      primary: accent.id == 'paper' ? accent.pressed : accent.seed,
+      onPrimary: accent.id == 'paper' ? const Color(0xFFFFFFFF) : accent.onSeed,
       primaryContainer: accent.container,
       onPrimaryContainer: accent.onContainer,
       secondary: n.slate,
@@ -349,13 +353,68 @@ class NeutralTones {
     terminalKey: Color(0xFF262A33),
   );
 
+  /// Exact ChemClaw Paper neutral surfaces.
+  static const chemPaper = NeutralTones(
+    mistTop: Color(0xFFFAF9F5),
+    mistBottom: Color(0xFFFAF9F5),
+    mist: Color(0xFFFAF9F5),
+    mistLowest: Color(0xFFF6F3EB),
+    mistLow: Color(0xFFF3F0E8),
+    mistContainer: Color(0xFFF6F3EB),
+    mistHigh: Color(0xFFEBE7DC),
+    mistHighest: Color(0xFFE4DFD4),
+    ink: Color(0xFF1F1E1B),
+    inkMuted: Color(0xFF59564E),
+    inkFaint: Color(0xFF6F6A60),
+    inkGhost: Color(0xFF928D85),
+    outlineLight: Color(0xFF6D695F),
+    ruleLight: Color(0xFFD8D3C8),
+    shadowInk: Color(0xFF2B2A26),
+    slate: Color(0xFF605B53),
+    slateContainer: Color(0xFFE9E5DB),
+    inverseSurface: Color(0xFF2B2A26),
+    onInverseSurface: Color(0xFFFAF9F5),
+    scrim: Color(0xFF1F1E1B),
+    codeWell: Color(0xFFEFEDE7),
+    codeWellHeader: Color(0xFFE9E6DF),
+    codeWellBorder: Color(0xFFD8D3C8),
+    lineNumber: Color(0xFF686459),
+    comment: Color(0xFF716A61),
+    nightTop: Color(0xFF1F1E1B),
+    nightBottom: Color(0xFF1F1E1B),
+    night: Color(0xFF1F1E1B),
+    nightLowest: Color(0xFF1B1A17),
+    nightLow: Color(0xFF262521),
+    nightContainer: Color(0xFF2A2925),
+    nightHigh: Color(0xFF34322D),
+    nightHighest: Color(0xFF3B3832),
+    paper: Color(0xFFF3F0E8),
+    paperMuted: Color(0xFFC9C4B9),
+    paperFaint: Color(0xFFB0AA9F),
+    paperGhost: Color(0xFF7B756A),
+    outlineDark: Color(0xFFA0998D),
+    ruleDark: Color(0xFF4C4943),
+    shadowNight: Color(0xFF0F0E0D),
+    slateLift: Color(0xFFD7CEC0),
+    onSlateLift: Color(0xFF1F1E1B),
+    smoke: Color(0xFF282621),
+    sheetDark: Color(0xFF262521),
+    codeWellDark: Color(0xFF171613),
+    codeWellHeaderDark: Color(0xFF262521),
+    codeWellBorderDark: Color(0xFF4C4943),
+    lineNumberDark: Color(0xFFA49D93),
+    commentDark: Color(0xFFB0AA9F),
+    terminal: Color(0xFF181714),
+    terminalKey: Color(0xFF34322D),
+  );
+
   static final _cache = <(double, double), NeutralTones>{};
 
-  static NeutralTones forAccent(AppAccent accent) => of(tintHue: accent.tintHue, tintChroma: accent.tintChroma);
+  static NeutralTones forAccent(AppAccent accent) => accent.id == 'paper' ? chemPaper : of(tintHue: accent.tintHue, tintChroma: accent.tintChroma);
 
   /// 当前主题那套配色的中性色。
   static NeutralTones current(BuildContext context) =>
-      forAccent(Theme.of(context).extension<DshSurfaces>()?.accent ?? AppAccent.mist);
+      forAccent(Theme.of(context).extension<DshSurfaces>()?.accent ?? AppAccent.paper);
 
   /// 把一个按雾蓝调出来的中性色换到 [accent] 的色调上(零散的灰,比如图表
   /// 里的「其他」)。

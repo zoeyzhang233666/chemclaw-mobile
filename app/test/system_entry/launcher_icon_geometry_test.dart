@@ -127,7 +127,7 @@ void main() {
       );
       for (final s in shortcuts) {
         expect(attr(s, 'targetPackage'), applicationId);
-        expect(attr(s, 'targetClass'), '$applicationId.shortcuts.EntryActivity');
+        expect(attr(s, 'targetClass'), 'io.github.ccch1mneyyy.dsh_app.shortcuts.EntryActivity');
       }
     });
   });

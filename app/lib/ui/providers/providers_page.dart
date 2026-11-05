@@ -1,7 +1,5 @@
-// 模型渠道 (a list page): where the chat's models come from. DeepSeek (account or
-// API Key, kept by the app) first, then the ChatGPT / Claude subscriptions
-// (when the engine has the sign-in bridge), then the custom providers of the
-// active engine (llm-pi-ai routes) and 「添加渠道」.
+// 模型渠道：ChemClaw APIHub and chemical data MCP are the prominent first
+// connection path. DeepSeek and generic providers remain fully accessible.
 
 import 'package:dsh_client/dsh_client.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +22,7 @@ import '../features/feature_kit.dart';
 import '../features/feature_widgets.dart';
 import '../onboarding/api_key_page.dart' show maskApiKey;
 import '../settings/index/spots.dart';
+import '../settings/chemclaw_mcp_page.dart';
 import '../shell/page_frame.dart';
 import '../theme/app_icons.dart';
 import '../theme/theme.dart';
@@ -56,9 +55,24 @@ class ProvidersPage extends ConsumerWidget {
           ? null
           : Text(summary),
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
+          child: Card(
+            child: ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              leading: Icon(AppIcons.cloud, color: Theme.of(context).colorScheme.primary),
+              title: Text(AppLocale.isEnglish
+                  ? 'Recommended · APIHub / ChemCloud data'
+                  : '官方推荐 · APIHub / 芯化和云数据中台'),
+              subtitle: Text(AppLocale.isEnglish
+                  ? 'Paste your keys, discover models and connect chemical spot-data MCP on the active Host.'
+                  : '粘贴密钥即可发现模型，并在当前主机接入化工现货数据 MCP。'),
+              trailing: const Icon(AppIcons.disclosure),
+              onTap: () => _push(context, const ChemClawMcpPage()),
+            ),
+          ),
+        ),
         const NewChatDefaultsCard(),
-        const _DeepSeekCard(),
-        const _SubscriptionAccounts(),
         if (view.value?.supported == false)
           FeatureMessage(
             icon: AppIcons.unsupported,
@@ -105,6 +119,10 @@ class ProvidersPage extends ConsumerWidget {
               }
             },
           ),
+        // Keep every legacy provider and official DeepSeek sign-in, but do not
+        // place them above ChemClaw's recommended connections.
+        const _DeepSeekCard(),
+        const _SubscriptionAccounts(),
       ],
     );
   }

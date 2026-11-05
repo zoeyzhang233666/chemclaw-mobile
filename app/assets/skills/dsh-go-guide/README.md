@@ -1,6 +1,6 @@
-# dsh-go 使用说明 · User guide
+# ChemClaw 使用说明 · User guide
 
-> dsh-go 1.0.9
+> ChemClaw 0.1.0
 
 ## 中文
 

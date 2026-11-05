@@ -50,7 +50,7 @@ class LocalWebScreen extends ConsumerWidget {
         // load: rebuild the WebView for either.
         key: ValueKey((status.token, phoneLayout)),
         url: localWebUri(status.baseUrl!, status.token!),
-        title: context.l10n.webTitle,
+        title: AppLocale.isEnglish ? 'ChemClaw · Classic' : 'ChemClaw · 经典模式',
         subtitle: context.l10n.commonThisPhone,
         externalDisabledReason: context.l10n.webLocalAppOnly,
         dshWeb: true,

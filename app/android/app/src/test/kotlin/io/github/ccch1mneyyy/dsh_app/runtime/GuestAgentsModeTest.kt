@@ -34,13 +34,13 @@ class GuestAgentsModeTest {
         } finally { root.deleteRecursively() }
     }
 
-    @Test fun phoneStorageSendsOutputsToTheDshGoFolder() {
+    @Test fun phoneStorageSendsOutputsToTheChemClawFolder() {
         val root = kotlin.io.path.createTempDirectory("agents-storage").toFile()
         try {
             GuestSetup.writeAgentsMd(root, phoneStorage = true)
             val text = File(root, "root/.dsh/AGENTS.md").readText()
             // The folder FilesPlugin saves into and lists, with no space to quote in shell commands.
-            assertTrue(text.contains("给用户的产出文件放到 `/sdcard/Download/DSH-Go/`。"))
+            assertTrue(text.contains("给用户的产出文件放到 `/sdcard/Download/ChemClaw/`。"))
             assertFalse(text.contains("/sdcard/Download/DSH/"))
         } finally { root.deleteRecursively() }
     }

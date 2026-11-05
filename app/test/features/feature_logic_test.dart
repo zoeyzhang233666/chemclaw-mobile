@@ -152,11 +152,13 @@ void main() {
           'cot-translation',
           'voice-input',
           'account',
-          'community',
-          'ds-bot',
-          'share-profile',
         ]),
       );
+    });
+
+    test('built-in Agent Teams remains without the separate chemical roster', () {
+      expect(items.any((item) => item.id == 'agent-team'), isTrue);
+      expect(items.any((item) => item.id == 'chemclaw-team' || item.id == 'ds-bot'), isFalse);
     });
 
     test('only the web itself is web-only now', () {

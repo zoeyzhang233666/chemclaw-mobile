@@ -5,16 +5,10 @@ import '../../state/app_info.dart';
 import '../theme/theme.dart';
 import 'brand_glyph.g.dart';
 
-/// The dsh-go mark: a fish tail with its bubble.
+/// ChemClaw cloud mark, shared with the desktop ChemClaw logo.
 ///
-/// Vector paths generated from the brand masters in `assets/brand/`
-/// (`brand_glyph.g.dart`, by `tool/make_brand_mark.py`), in the launcher icon's
-/// 108 grid, so the mark and the themed launcher layer
-/// (`android/app/src/main/res/drawable/ic_launcher_monochrome.xml`) never drift
-/// apart.
-///
-/// - By default the colour glyph: soft blue and lilac glass, one tuning for light
-///   pages and one for dark, picked by the theme.
+/// The path comes from the Apache-2.0 ChemClaw brand master.
+/// - Default stroke uses ChemClaw orange on both Paper and dark surfaces.
 /// - [color]: one flat tint (a quiet footer, white on the poster card).
 /// - [tile]: the launcher tile, the glyph on the icon's gradient rounded square.
 class BrandMark extends StatelessWidget {
@@ -78,34 +72,26 @@ class _BrandPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     canvas.save();
     if (style == _Style.tile) {
-      const box = BrandGlyph.tileBox;
-      canvas.scale(size.width / box.width, size.height / box.height);
-      canvas.translate(-box.left, -box.top);
-      canvas.drawPath(BrandGlyph.tile, Paint()..shader = BrandGlyph.tileFill);
-      _glass(canvas, dark: true);
+      canvas.scale(size.width / 34, size.height / 34);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(BrandGlyph.tileBox, const Radius.circular(8)),
+        Paint()..color = const Color(0xFFFAF9F5),
+      );
+      canvas.translate(0, 2);
     } else {
-      const box = BrandGlyph.box;
-      canvas.scale(size.height / box.height);
-      canvas.translate(-box.left, -box.top);
-      if (style == _Style.mono) {
-        final paint = Paint()..color = color!;
-        canvas.drawPath(BrandGlyph.body, paint);
-        canvas.drawPath(BrandGlyph.bubble, paint);
-      } else {
-        _glass(canvas, dark: style == _Style.dark);
-      }
+      canvas.scale(size.height / BrandGlyph.box.height);
+      canvas.translate(-BrandGlyph.box.left, -BrandGlyph.box.top);
     }
+    canvas.drawPath(
+      BrandGlyph.cloud,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.3
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round
+        ..color = style == _Style.mono ? color! : const Color(0xFFF16A45),
+    );
     canvas.restore();
-  }
-
-  /// The colour glyph: the tail's gradient over the whole silhouette, the fin (behind
-  /// the stem) and the belly (in front of it) over that, then the bubble.
-  static void _glass(Canvas canvas, {required bool dark}) {
-    canvas
-      ..drawPath(BrandGlyph.body, Paint()..shader = dark ? BrandGlyph.tailDark : BrandGlyph.tailLight)
-      ..drawPath(BrandGlyph.fin, Paint()..shader = dark ? BrandGlyph.finDark : BrandGlyph.finLight)
-      ..drawPath(BrandGlyph.belly, Paint()..shader = dark ? BrandGlyph.bellyDark : BrandGlyph.bellyLight)
-      ..drawPath(BrandGlyph.bubble, Paint()..shader = dark ? BrandGlyph.bubbleDark : BrandGlyph.bubbleLight);
   }
 
   @override

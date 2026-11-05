@@ -283,7 +283,7 @@ void main() {
 
     testWidgets('three choices with names, the source line, size and quiet mode', (tester) async {
       await page(tester);
-      expect(find.text('Deepy 小鲸鱼'), findsOneWidget);
+      expect(find.text('橙鱼'), findsOneWidget);
       expect(find.text('鲸娘'), findsOneWidget);
       expect(find.text('不显示'), findsOneWidget);
       expect(find.text('来自 DSH-TUI'), findsOneWidget);

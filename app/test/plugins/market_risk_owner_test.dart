@@ -1,4 +1,6 @@
 import 'package:dsh_app/state/hosts_state.dart';
+import 'package:dsh_app/state/plugins_state.dart';
+import 'package:dsh_app/update/version.dart';
 import 'package:dsh_app/ui/plugins/market_tab.dart';
 import 'package:dsh_app/ui/plugins/plugins_screen.dart';
 import 'package:dsh_client/dsh_client.dart';
@@ -38,6 +40,7 @@ void main() {
               npmIntegrity: (name, _) async => officialFixtureMarket().byName[name]?.listing?.integrity,
             ),
             activeHostProvider.overrideWith(FixedHost.new),
+            appVersionProvider.overrideWithValue(const AppVersion(1, 0, 2)),
           ],
         ),
       );

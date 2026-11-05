@@ -101,7 +101,7 @@
       }
     }
   },
-  "plugslotsIssueNeedsApp": "Needs DSH Go {version} or later",
+  "plugslotsIssueNeedsApp": "Needs ChemClaw {version} or later",
   "@plugslotsIssueNeedsApp": {
     "placeholders": {
       "version": {

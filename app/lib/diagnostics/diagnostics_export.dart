@@ -71,7 +71,7 @@ class DiagnosticsExporter {
   }
 
   /// A fresh bundle in the phone's Downloads; returns where
-  /// (`Download/DSH-Go/dsh-go-diagnostics-….zip`).
+  /// (`Download/ChemClaw/dsh-go-diagnostics-….zip`).
   Future<String> saveToDownloads({void Function(DiagnosticsStep step)? onStep}) async {
     final file = await build(onStep: onStep);
     onStep?.call(DiagnosticsStep.saving);
@@ -86,7 +86,7 @@ String diagnosticsErrorText(Object error) => switch (error) {
   _ => appL10n.stateDiagnosticsExportFailed,
 };
 
-/// `已存到 下载/DSH-Go/…` for a saved bundle.
+/// `已存到 下载/ChemClaw/…` for a saved bundle.
 String diagnosticsSavedText(String where) =>
     appL10n.stateDiagnosticsSaved(where.replaceFirst(RegExp(r'^Download/'), appL10n.stateDownloadsPrefix));
 

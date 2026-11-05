@@ -15,6 +15,16 @@ import '../../pets/pet_sheets.dart';
 import '../../pets/pet_state.dart';
 import '../theme/motion.dart';
 
+// Swap the original blue pet channels to a warm ChemClaw orange without changing
+// animation sheets, transparency, white highlights or dark outlines. Other packs
+// remain untouched; the licensed upstream assets and attribution are preserved.
+const _chemClawOrangeMatrix = <double>[
+  0, 0, 1, 0, 0,
+  0, 1, 0, 0, 0,
+  1, 0, 0, 0, 0,
+  0, 0, 0, 1, 0,
+];
+
 /// Device pixels per art pixel for [size]: whole numbers, one apart at
 /// least, so the three sizes always differ.
 int petDevicePixels(PetPack pack, PetSize size, double devicePixelRatio) {
@@ -332,7 +342,10 @@ class _SpritePainter extends CustomPainter {
       dst,
       Paint()
         ..isAntiAlias = false
-        ..filterQuality = pack.pixelArt ? FilterQuality.none : FilterQuality.medium,
+        ..filterQuality = pack.pixelArt ? FilterQuality.none : FilterQuality.medium
+        ..colorFilter = pack.id == 'deepy-whale'
+            ? const ui.ColorFilter.matrix(_chemClawOrangeMatrix)
+            : null,
     );
     if (flip) canvas.restore();
   }

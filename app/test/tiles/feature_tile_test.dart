@@ -255,7 +255,8 @@ void main() {
       });
 
       testWidgets('every accent', (tester) async {
-        useView(tester, 620, 500);
+        // Seven presets including Paper + custom hues need a taller sheet.
+        useView(tester, 620, 560);
         await tester.pumpWidget(tileApp(_AccentSheet(brightness), brightness: brightness));
         await decodeImages(tester);
         await expectLater(find.byType(MaterialApp), matchesGoldenFile('goldens/tiles_accents_$mode.png'));

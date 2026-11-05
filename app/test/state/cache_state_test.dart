@@ -200,7 +200,17 @@ void main() {
     expect(a.modelCalls, 1);
     expect(a.fake.argsOf('pluginManager/listBundles'), hasLength(1));
     a.hosts.add(const HostReadyEvent('reconnected', '/root'));
-    await Future<void>.delayed(const Duration(milliseconds: 450));
+    // Session lists debounce ready events for 400 ms. Avoid treating runner
+    // scheduling jitter as a broken refresh while keeping the exact-once
+    // contract for all three caches.
+    for (var attempt = 0; attempt < 40; attempt++) {
+      if (a.listCalls >= 2 &&
+          a.modelCalls >= 2 &&
+          a.fake.argsOf('pluginManager/listBundles').length >= 2) {
+        break;
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    }
     expect(a.listCalls, 2);
     expect(a.modelCalls, 2);
     expect(a.fake.argsOf('pluginManager/listBundles'), hasLength(2));

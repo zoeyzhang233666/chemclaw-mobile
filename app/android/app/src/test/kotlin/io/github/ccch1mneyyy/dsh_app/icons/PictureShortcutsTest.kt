@@ -7,8 +7,8 @@ import org.junit.Test
 
 class PictureShortcutsTest {
     @Test fun anEmptyNameIsTheApps() {
-        assertEquals("DSH Go", PictureShortcuts.label(null))
-        assertEquals("DSH Go", PictureShortcuts.label("   "))
+        assertEquals("ChemClaw", PictureShortcuts.label(null))
+        assertEquals("ChemClaw", PictureShortcuts.label("   "))
     }
 
     @Test fun namesAreOneLineAndCutByCharacter() {

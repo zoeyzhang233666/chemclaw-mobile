@@ -91,7 +91,7 @@ class ShareExporter {
     ),
   );
 
-  /// Into the shared pictures the album shows (`Download/DSH-Go`, indexed as an
+  /// Into the shared pictures the album shows (`Download/ChemClaw`, indexed as an
   /// image by MediaStore); returns where it landed.
   Future<String> save(File image) =>
       files.saveToDownloads(image.path, name: image.uri.pathSegments.last, mime: 'image/png');

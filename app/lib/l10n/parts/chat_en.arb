@@ -164,7 +164,7 @@
   "chatSaveToDownloads": "Save to Downloads",
   "chatCopyPath": "Copy path",
   "chatOpenInDefaultApp": "Open in default app",
-  "chatDownloadsFolderHint": "Downloads/DSH-Go folder",
+  "chatDownloadsFolderHint": "Downloads/ChemClaw folder",
   "chatSavedToDownloadsPath": "Saved to Downloads/{path}",
   "chatSavedToPath": "Saved to {path}",
   "chatDeliveredFiles": "{count, plural, =1{Delivered 1 file} other{Delivered {count} files}}",

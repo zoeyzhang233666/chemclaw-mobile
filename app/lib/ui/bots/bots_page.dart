@@ -34,7 +34,9 @@ class BotsPage extends ConsumerWidget {
     final status = ref.watch(dsBotProvider);
     final team = status.team;
     return AppPage.list(
-      title: 'DS Bot',
+      // UI is ChemClaw-branded; installed Host plugin compatibility is checked
+      // separately. Do not misrepresent an absent DS Bot-compatible service.
+      title: 'ChemClaw · Bot 与群聊',
       subtitle: Text(_summary(status)),
       children: [
         if (status.ready && team != null)

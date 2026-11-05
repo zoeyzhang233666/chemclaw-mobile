@@ -81,7 +81,7 @@ void main() {
         size: ShareCard.qrSize,
         quietZone: 3,
       );
-      expect((code.version, code.ecc), (5, QrEcc.high));
+      expect((code.version, code.ecc), (6, QrEcc.high));
       final cell = ShareCard.qrSize / (code.size + 6);
       expect(logo.width, closeTo(plate!.logoSide * cell, 1e-6));
       for (final gap in [logo.left - qr.left, qr.right - logo.right, logo.top - qr.top, qr.bottom - logo.bottom]) {
@@ -91,7 +91,7 @@ void main() {
   }
 
   test('at 72 the card takes the logo at every logo version: links up to 58 bytes', () {
-    for (final (link, version) in [('https://qm.qq.com/q/example', 4), (dshGoProjectUrl, 5), ('x' * 58, 6)]) {
+    for (final (link, version) in [('https://qm.qq.com/q/example', 4), (dshGoProjectUrl, 6), ('x' * 58, 6)]) {
       final (code, plate) = QrCodeView.codeFor(link, QrEcc.medium, logo: true, size: ShareCard.qrSize, quietZone: 3);
       expect((code.version, code.ecc, plate?.side), (version, QrEcc.high, QrCode.logoPlates[version]));
       expect(ShareCard.qrSize / (code.size + 6), greaterThanOrEqualTo(QrCodeView.logoMinModule));
@@ -104,7 +104,7 @@ void main() {
     expect(ShareCard.qrSize / (4 * 6 + 17 + 6), greaterThanOrEqualTo(ShareCard.qrMinModule));
     expect(ShareCard.qrSize / (4 * 7 + 17 + 6), lessThan(ShareCard.qrMinModule));
     for (final (text, version, ecc, logo) in [
-      (dshGoProjectUrl, 5, QrEcc.high, true),
+      (dshGoProjectUrl, 6, QrEcc.high, true),
       (link(58), 6, QrEcc.high, true),
       (link(59), 4, QrEcc.medium, false),
       (link(106), 6, QrEcc.medium, false),

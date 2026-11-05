@@ -27,8 +27,8 @@ final _palettes = <AppAccent>[
 
 void main() {
   test('mist is the original Mist Glass, untouched', () {
-    final light = buildLightTheme();
-    final dark = buildDarkTheme();
+    final light = buildLightTheme(accent: AppAccent.mist);
+    final dark = buildDarkTheme(accent: AppAccent.mist);
     expect(light.colorScheme.primary, const Color(0xFF4B67B4));
     expect(light.colorScheme.surface, DshPalette.mist);
     expect(light.colorScheme.onSurface, DshPalette.ink);
@@ -41,6 +41,14 @@ void main() {
     expect(s.accent, AppAccent.mist);
     expect(identical(NeutralTones.forAccent(AppAccent.mist), NeutralTones.defaults), isTrue);
     expect(dshHighlightTheme(Brightness.light)['root']!.color, const Color(0xFF1E232E));
+  });
+
+  test('ChemClaw paper is the default for both builders and absent saved presets', () {
+    expect(buildLightTheme().extension<DshSurfaces>()!.accent.id, 'paper');
+    expect(buildDarkTheme().extension<DshSurfaces>()!.accent.id, 'paper');
+    expect(buildLightTheme().colorScheme.surface, const Color(0xFFFAF9F5));
+    expect(buildDarkTheme().colorScheme.surface, const Color(0xFF1F1E1B));
+    expect(AppAccent.preset(null).id, 'paper');
   });
 
   test('the derivation reproduces mist from its seed (one recipe for every hue)', () {
@@ -61,11 +69,11 @@ void main() {
     near(d.bubbleDark, m.bubbleDark, 'bubbleDark');
   });
 
-  test('presets: unique ids and names, mist first', () {
-    expect(AppAccent.presets.first, AppAccent.mist);
-    expect(AppAccent.presets.map((p) => p.id).toSet(), hasLength(6));
-    expect(AppAccent.presets.map((p) => p.label), ['雾蓝', '黛青', '暮紫', '松石', '琥珀', '石墨']);
-    expect(AppAccent.preset('nope'), AppAccent.mist);
+  test('presets: ChemClaw Paper leads and legacy Mist remains available', () {
+    expect(AppAccent.presets.first, AppAccent.paper);
+    expect(AppAccent.presets.map((p) => p.id).toSet(), hasLength(7));
+    expect(AppAccent.presets.map((p) => p.label), ['Paper · ChemClaw', '雾蓝', '黛青', '暮紫', '松石', '琥珀', '石墨']);
+    expect(AppAccent.preset('nope'), AppAccent.paper);
     expect(AppAccent.preset('amber'), AppAccent.amber);
   });
 
@@ -115,8 +123,17 @@ void main() {
     }
   }
 
+  test('Paper neutrals match the desktop ChemClaw palette', () {
+    final n = NeutralTones.forAccent(AppAccent.paper);
+    expect(n.mist, const Color(0xFFFAF9F5));
+    expect(n.ink, const Color(0xFF1F1E1B));
+    expect(n.night, const Color(0xFF1F1E1B));
+    expect(n.paper, const Color(0xFFF3F0E8));
+  });
+
   test('neutrals keep their lightness when re-tinted', () {
-    for (final accent in AppAccent.presets) {
+    // Paper uses intentionally different warm neutrals, not a retint of Mist.
+    for (final accent in AppAccent.presets.where((p) => p.id != 'paper')) {
       final n = NeutralTones.forAccent(accent);
       const m = NeutralTones.defaults;
       for (final (a, b) in [
