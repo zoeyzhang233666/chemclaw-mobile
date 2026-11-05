@@ -243,7 +243,7 @@ class PackFormat(unittest.TestCase):
     def test_metadata(self):
         """Both pets are DSH-TUI mascots, used with the author's permission."""
         want = {
-            'deepy-whale': ('Deepy 小鲸鱼', 'DSH-TUI（Clawd on Desk 主题包 v1.0.0）'),
+            'deepy-whale': ('橙鱼', 'DSH-TUI（Clawd on Desk 主题包 v1.0.0）'),
             'whale-girl': ('鲸娘', 'https://dshtui.com/pets/whale-girl-emoji/'),
         }
         for pid, (name, source) in want.items():

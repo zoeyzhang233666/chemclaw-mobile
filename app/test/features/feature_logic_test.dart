@@ -152,8 +152,6 @@ void main() {
           'cot-translation',
           'voice-input',
           'account',
-          'community',
-          'share-profile',
         ]),
       );
     });

@@ -584,13 +584,6 @@ abstract final class Spots {
     keywords: (l) => l.searchKwHelp,
     condition: SpotCondition.nativeUi,
   );
-  static final community = SettingSpot(
-    'community',
-    page: SettingsPageId.hub,
-    group: _help,
-    title: (l) => l.hubSettingsCommunity,
-    keywords: (l) => l.searchKwCommunity,
-  );
 
   /// Primary model and chemical-data connections shown before DeepSeek login.
   static final apiHub = SettingSpot(
@@ -1054,7 +1047,6 @@ final _rows = <SettingSpot>[
   Spots.foldTurns,
   Spots.language,
   Spots.askAi,
-  Spots.community,
   Spots.apiHub,
   Spots.chemMcp,
   Spots.addProvider,
