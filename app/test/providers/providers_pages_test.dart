@@ -45,7 +45,7 @@ void main() {
   });
 
   group('list', () {
-    testWidgets('defaults first, then DeepSeek and each provider with its state, then 添加渠道', (tester) async {
+    testWidgets('custom providers first, then 添加渠道, with official DeepSeek last', (tester) async {
       await _pump(tester, const ProvidersPage(), providerOverrides(sampleBackend(), account: signedInAccount));
       expect(find.text('4 个渠道 · 2 个可用'), findsOneWidget);
       expect(find.textContaining('新渠道的模型'), findsNothing);
@@ -59,7 +59,7 @@ void main() {
         for (final row in tester.widgetList<ListPageRow>(find.byType(ListPageRow)))
           row.title ?? row.spot?.title(appL10n),
       ];
-      expect(titles, [appL10n.viewModelSelect, 'My Gateway', 'Claude 中转', '家里的 vLLM', 'DeepSeek', '添加渠道']);
+      expect(titles, [appL10n.viewModelSelect, 'My Gateway', 'Claude 中转', '家里的 vLLM', '添加渠道', 'DeepSeek']);
 
       await tester.tap(find.text('Claude 中转'));
       await settle(tester);
