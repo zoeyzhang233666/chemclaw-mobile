@@ -128,7 +128,9 @@ abstract final class DshPalette {
     final n = NeutralTones.forAccent(accent);
     return ColorScheme(
       brightness: Brightness.light,
-      primary: accent.seed,
+      // Keep the desktop Paper seed as the brand swatch, while making the
+      // interactive primary slightly deeper for >= 3:1 on warm paper surfaces.
+      primary: accent.id == 'paper' ? const Color(0xFFD16F50) : accent.seed,
       onPrimary: accent.onSeed,
       primaryContainer: accent.container,
       onPrimaryContainer: accent.onContainer,
