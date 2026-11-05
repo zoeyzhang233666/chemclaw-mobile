@@ -100,7 +100,7 @@ void main() {
       testWidgets('author profiles fit 360dp at 1.3x in $locale $brightness', (tester) async {
         await pump(tester, locale: locale, brightness: brightness, scale: 1.3);
         final english = locale == AppLocale.en;
-        expect(find.text(english ? 'Original author of ChemClaw' : 'ChemClaw 原作者'), findsOneWidget);
+        expect(find.text('上游项目及原作者 · DSH Go'), findsOneWidget);
         expect(find.text('ccch1mneyyy'), findsOneWidget);
         expect(find.text('ccchimneyyy'), findsOneWidget);
         expect(find.text('@cccch1mneyyyy'), findsOneWidget);

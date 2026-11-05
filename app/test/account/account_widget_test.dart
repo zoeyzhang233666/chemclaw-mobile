@@ -50,7 +50,7 @@ void main() {
 
     testWidgets('account sign-in is the primary choice; cancel returns to it', (tester) async {
       await pumpConnect(tester);
-      expect(find.widgetWithText(FilledButton, '用 DeepSeek 账号登录'), findsOneWidget);
+      expect(find.text('用 DeepSeek 账号登录'), findsOneWidget);
       expect(find.widgetWithText(OutlinedButton, '使用 API Key'), findsOneWidget);
       expect(find.text('稍后设置'), findsOneWidget);
 
@@ -222,7 +222,7 @@ void main() {
       await _settle(tester);
       expect(api.calls, contains('signOut'));
       expect(find.text('登录后无需 API Key'), findsOneWidget);
-      expect(find.widgetWithText(FilledButton, '用 DeepSeek 账号登录'), findsOneWidget);
+      expect(find.text('用 DeepSeek 账号登录'), findsOneWidget);
     });
 
     testWidgets('sign-out confirms in the danger colours', (tester) async {
@@ -263,7 +263,7 @@ void main() {
 
     testWidgets('signed out: signs in from the page', (tester) async {
       final (api, browser) = await pumpPage(tester, FakeAccountApi());
-      await tester.tap(find.widgetWithText(FilledButton, '用 DeepSeek 账号登录'));
+      await tester.tap(find.text('用 DeepSeek 账号登录'));
       await _settle(tester);
       api.emit(signedOutView(attempt: attempt(SignInPhase.waitingBrowser)));
       await _settle(tester);

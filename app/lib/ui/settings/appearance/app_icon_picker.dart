@@ -3,7 +3,6 @@
 
 import 'dart:async';
 import 'dart:math' as math;
-import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -191,9 +190,8 @@ class _RingPainter extends CustomPainter {
   bool shouldRepaint(_RingPainter old) => old.color != color || old.icon != icon || old.mask != mask;
 }
 
-/// How each launcher icon is drawn: the gradient of its background layer
-/// (`res/drawable/ic_launcher[_<name>]_background.xml`, the same diagonal for
-/// all four) and its glyph.
+/// Each launcher icon preview uses the exact solid Paper background from
+/// `res/drawable/ic_launcher[_<name>]_background.xml` and the same cloud mark.
 class AppIconArt {
   const AppIconArt._(this.from, this.to, this.glyph, [this.mono]);
 
@@ -212,10 +210,10 @@ class AppIconArt {
   static AppIconArt of(AppIcon icon) => switch (icon) {
     // The default icon; on the phone its glyph is the original art, here the
     // brand master's glass (the same fit).
-    AppIcon.mist => const AppIconArt._(Color(0xFFFAF9F5), Color(0xFFF3F0E8), AppIconGlyph.glassDark),
-    AppIcon.night => const AppIconArt._(Color(0xFF34322D), Color(0xFF1F1E1B), AppIconGlyph.glassDark),
-    AppIcon.frost => const AppIconArt._(Color(0xFFF6F3EB), Color(0xFFFAF9F5), AppIconGlyph.glassLight),
-    AppIcon.ink => const AppIconArt._(Color(0xFF34322D), Color(0xFF262521), AppIconGlyph.mono, Color(0xFFF5F7FB)),
+    AppIcon.mist => const AppIconArt._(Color(0xFFFAF9F5), Color(0xFFFAF9F5), AppIconGlyph.glassDark),
+    AppIcon.night => const AppIconArt._(Color(0xFF1F1E1B), Color(0xFF1F1E1B), AppIconGlyph.glassDark),
+    AppIcon.frost => const AppIconArt._(Color(0xFFF6F3EB), Color(0xFFF6F3EB), AppIconGlyph.glassLight),
+    AppIcon.ink => const AppIconArt._(Color(0xFF34322D), Color(0xFF34322D), AppIconGlyph.mono, Color(0xFFF16A45)),
   };
 }
 
@@ -259,7 +257,7 @@ class _IconPainter extends CustomPainter {
       ..translate(-18, -18)
       ..drawRect(
         const Rect.fromLTWH(0, 0, 108, 108),
-        Paint()..shader = ui.Gradient.linear(AppIconArt.start, AppIconArt.end, [art.from, art.to]),
+        Paint()..color = art.from,
       );
     // The same vector outline as the native Android adaptive launcher icon.
     canvas

@@ -274,19 +274,16 @@ void main() {
   group('the previews match the shipped icons', () {
     const res = 'android/app/src/main/res';
 
-    test('background gradients', () {
+    test('solid Paper background matches the Android drawable for every icon', () {
       for (final icon in AppIcon.values) {
         final file = icon == AppIcon.mist ? 'ic_launcher_background' : 'ic_launcher_${icon.name}_background';
         final xml = File('$res/drawable/$file.xml').readAsStringSync();
-        double attr(String a) => double.parse(RegExp('android:$a="([-0-9.]+)"').firstMatch(xml)!.group(1)!);
-        final colors = [
-          for (final m in RegExp('android:color="#([0-9A-Fa-f]{8})"').allMatches(xml))
-            Color(int.parse(m.group(1)!, radix: 16)),
-        ];
+        final match = RegExp('android:fillColor="#([0-9A-Fa-f]{8})"').firstMatch(xml);
+        expect(match, isNotNull, reason: file);
+        final nativeColor = Color(int.parse(match!.group(1)!, radix: 16));
         final art = AppIconArt.of(icon);
-        expect(colors, [art.from, art.to], reason: file);
-        expect(Offset(attr('startX'), attr('startY')), AppIconArt.start, reason: file);
-        expect(Offset(attr('endX'), attr('endY')), AppIconArt.end, reason: file);
+        expect(art.from, nativeColor, reason: file);
+        expect(art.to, nativeColor, reason: file);
       }
     });
 

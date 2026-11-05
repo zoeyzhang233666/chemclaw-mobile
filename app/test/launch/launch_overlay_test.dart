@@ -96,7 +96,7 @@ void main() {
       expect(c.phase, LaunchPhase.playing);
       final text = tester.widget<Text>(find.descendant(of: _wordmark, matching: find.byType(Text)));
       expect(text.style!.color, const Color(0xFFF3F0E8));
-      expect(text.data, 'ChemClaw 手机版');
+      expect(text.data, 'ChemClaw');
     });
   });
 
