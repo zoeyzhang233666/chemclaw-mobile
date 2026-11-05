@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Launcher shortcut icons: the default accent (雾蓝, lib/ui/theme/accent.dart) — its
-     container tone behind a glyph in the seed colour. -->
+<!-- ChemClaw Paper shortcuts: warm-paper container with accessible deep-orange glyph. -->
 <resources>
     <color name="shortcut_icon_background">#FFF5E1D8</color>
-    <color name="shortcut_icon_glyph">#FFD97757</color>
+    <color name="shortcut_icon_glyph">#FFB45B3F</color>
 </resources>

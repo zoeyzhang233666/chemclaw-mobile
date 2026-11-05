@@ -293,14 +293,23 @@ void main() {
         final frame = await (await ui.instantiateImageCodec(bytes)).getNextFrame();
         return (await frame.image.toByteData())!;
       });
-      // Inside the body (108 grid (53.5, 70)), at 4 px per unit.
-      final at = (280 * 432 + 214) * 4;
-      final pixel = [for (var i = 0; i < 4; i++) rgba!.getUint8(at + i)];
+      // The cloud has been reduced and centred; the old fixed 280px sample
+      // now hits its edge/background. Scan the safe centre region for the
+      // actual flat orange glyph instead of depending on its old dimensions.
       final mono = AppIconArt.of(AppIcon.ink).mono!;
-      expect(pixel[3], 255);
-      expect(pixel[0], closeTo((mono.r * 255).round(), 2));
-      expect(pixel[1], closeTo((mono.g * 255).round(), 2));
-      expect(pixel[2], closeTo((mono.b * 255).round(), 2));
+      final expected = [(mono.r * 255).round(), (mono.g * 255).round(), (mono.b * 255).round()];
+      var glyphPixels = 0;
+      for (var y = 100; y < 332; y++) {
+        for (var x = 100; x < 332; x++) {
+          final at = (y * 432 + x) * 4;
+          if (rgba!.getUint8(at + 3) < 254) continue;
+          if (List.generate(3, (channel) => (rgba.getUint8(at + channel) - expected[channel]).abs())
+              .every((delta) => delta <= 2)) {
+            glyphPixels++;
+          }
+        }
+      }
+      expect(glyphPixels, greaterThan(100), reason: 'shipped centred cloud must contain the preview mono colour');
     });
   });
 
