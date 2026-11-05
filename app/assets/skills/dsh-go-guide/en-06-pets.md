@@ -9,7 +9,7 @@ Pick a pet to keep you company in chats. When a turn finishes, fails, or waits f
 
 Tap **Pets** in the Appearance group of Settings, or touch and hold the pet in a chat and choose **Pet settings**. Choose a pet first; the other settings appear below it.
 
-- Choose **Deepy**, **Whale girl** or **None**.
+- Choose **Orange Fish**, **Whale girl** or **None**.
 - **Size**: **Small**, **Standard** or **Large**. Standard by default.
 - **Quiet mode**: animations only, no bubbles.
 
