@@ -1015,7 +1015,7 @@
       }
     }
   },
-  "botsAgentTeam": "智能体团队",
+  "botsAgentTeam": "化工专家团",
   "botsSubagentRunningCount": "{count} 个子代理，{running} 个运行中",
   "@botsSubagentRunningCount": {
     "placeholders": {
@@ -1032,8 +1032,8 @@
   "botsOpenChatFirst": "先打开一个对话",
   "botsTeamReadFailed": "没能读到团队",
   "botsNoTeamOnHost": "这台主机没有智能体团队",
-  "botsTeamNotEnabled": "智能体团队未开启",
-  "botsTeamDescription": "多个智能体分工协作，共用一块任务板",
+  "botsTeamNotEnabled": "化工专家团未开启",
+  "botsTeamDescription": "化工贸易专家按任务分工，共享任务板与消息",
   "botsTeamEnabling": "正在开启…",
   "botsTeamEnable": "开启团队",
   "botsMembersWorking": "{count} 位成员在工作",
@@ -1050,7 +1050,7 @@
   "botsTeamRecordUnreadable": "团队记录有一条读不出来",
   "botsMessages": "消息",
   "botsOwner": "负责人",
-  "botsTeamCreateHint": "在对话里请 AI 组建团队",
+  "botsTeamCreateHint": "在对话里请 AI 根据业务需求组建化工专家团",
   "botsCurrent": "当前",
   "botsNoTasks": "还没有任务",
   "botsTodo": "待办",
@@ -1942,8 +1942,8 @@
   "catalogPluginInventory": "插件清单",
   "catalogPluginInventorySummary": "已加载的全部插件",
   "catalogCordisSummary": "插件创建的动态面板",
-  "catalogAgentTeam": "智能体团队",
-  "catalogAgentTeamSummary": "成员、任务板与消息",
+  "catalogAgentTeam": "化工专家团",
+  "catalogAgentTeamSummary": "创建化工贸易专家团队，查看成员、任务板与消息",
   "catalogCotTranslation": "思考过程翻译",
   "catalogCotTranslationSummary": "展开思考后点「翻译」",
   "catalogVoiceInput": "语音输入",
