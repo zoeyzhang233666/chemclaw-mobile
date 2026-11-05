@@ -248,7 +248,7 @@ void main() {
       rig.runtime.unpack(0.5);
       await pastAppearance(tester);
 
-      await tester.tap(find.widgetWithText(FilledButton, '用 DeepSeek 账号登录'));
+      await tester.tap(find.widgetWithText(TextButton, '用 DeepSeek 账号登录'));
       await frames(tester);
       expect(find.text('就绪后自动打开 DeepSeek 登录'), findsOneWidget);
       // The page is the progress: no capsule under it.
@@ -270,7 +270,7 @@ void main() {
       await chooseThisPhone(tester);
       rig.runtime.unpack(0.5);
       await pastAppearance(tester);
-      await tester.tap(find.widgetWithText(FilledButton, '用 DeepSeek 账号登录'));
+      await tester.tap(find.widgetWithText(TextButton, '用 DeepSeek 账号登录'));
       await frames(tester);
 
       for (final state in [AppLifecycleState.inactive, AppLifecycleState.hidden, AppLifecycleState.paused]) {
@@ -296,14 +296,14 @@ void main() {
       rig.runtime.unpack(0.5);
       await pastAppearance(tester);
 
-      await tester.tap(find.widgetWithText(FilledButton, '用 DeepSeek 账号登录'));
+      await tester.tap(find.widgetWithText(TextButton, '用 DeepSeek 账号登录'));
       await frames(tester);
       await tester.tap(find.widgetWithText(OutlinedButton, '取消'));
       await frames(tester);
       expect(find.text('就绪后自动打开 DeepSeek 登录'), findsNothing);
       expect(find.widgetWithText(OutlinedButton, '使用 API Key'), findsOneWidget);
 
-      await tester.tap(find.widgetWithText(FilledButton, '用 DeepSeek 账号登录'));
+      await tester.tap(find.widgetWithText(TextButton, '用 DeepSeek 账号登录'));
       await frames(tester);
       await tester.binding.handlePopRoute();
       await frames(tester);
@@ -320,7 +320,7 @@ void main() {
       await chooseThisPhone(tester);
       rig.runtime.unpack(0.5);
       await pastAppearance(tester);
-      await tester.tap(find.widgetWithText(FilledButton, '用 DeepSeek 账号登录'));
+      await tester.tap(find.widgetWithText(TextButton, '用 DeepSeek 账号登录'));
       await frames(tester);
 
       rig.runtime.fail();
