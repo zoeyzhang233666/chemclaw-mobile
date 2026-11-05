@@ -26,6 +26,8 @@ jobs:
     env:
       TZ: Asia/Shanghai
       DSH_TEST_FONT_DIR: /usr/share/fonts/opentype/noto
+      # Re-render the two suites left after the first Paper rebaseline.
+      GOLDEN_FOCUS: ${{ contains(github.event.head_commit.message, '[focus-star-team]') && 'star-team' || 'all' }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -63,7 +65,11 @@ jobs:
           # Only files that actually assert screenshots: avoid executing hundreds of
           # unrelated functional/update tests during image regeneration. Main CI
           # still runs the complete suite separately, including security tests.
+          if [[ "$GOLDEN_FOCUS" == 'star-team' ]]; then
+            golden_tests=(test/star/star_prompt_test.dart test/agents/team_page_test.dart)
+          else
           mapfile -t golden_tests < <(grep -rlE 'matchesGoldenFile|goldenBoth\(' test --include='*_test.dart' | sort)
+          fi
           printf 'Golden test files: %s\n' "${#golden_tests[@]}"
           test "${#golden_tests[@]}" -gt 0
           flutter test --no-pub --update-goldens --concurrency=4 --reporter compact "${golden_tests[@]}" > "$RUNNER_TEMP/rebaseline.log" 2>&1
