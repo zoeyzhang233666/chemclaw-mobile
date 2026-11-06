@@ -241,6 +241,12 @@ function packageList(ctx, graph) {
   return [...packages.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
+/** Register all ChemClaw search providers through one DSH Loader package. */
+export function registerChemClawSearch(ctx) {
+  enableAutoSearch(ctx, { native: true, fallback: true });
+  enableThirdPartySearch(ctx);
+}
+
 export function apply(ctx, config) {
   const options = isObject(config) ? config : {};
   const persist = options.persist !== false;
@@ -275,10 +281,7 @@ export function apply(ctx, config) {
   // each file as a separate Loader entry prevents even safe-mode startup.
   // Register them through the existing single bridge entry instead, and only
   // when the web seam is available.
-  ctx.inject(["web"], (webCtx) => {
-    enableAutoSearch(webCtx, { native: true, fallback: true });
-    enableThirdPartySearch(webCtx);
-  });
+  ctx.inject(["web"], registerChemClawSearch);
 
   ctx.on("internal/plugin", () => native.markDirty());
   let pluginConfig;
