@@ -200,6 +200,7 @@ jobs:
         run: |
           bash runtime/tests/run-guard-tests.sh "$DSH_PREFIX"
           bash runtime/tests/run-native-tests.sh "$DSH_PREFIX"
+          bash runtime/tests/run-mobile-search-startup.sh "$DSH_PREFIX"
 
   android:
     name: Android JVM
