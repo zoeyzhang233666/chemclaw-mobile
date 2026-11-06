@@ -243,6 +243,9 @@ function packageList(ctx, graph) {
 
 /** Register all ChemClaw search providers through one DSH Loader package. */
 export function registerChemClawSearch(ctx) {
+  // Some safe-mode and host-only contexts do not expose the web seam. The
+  // bridge must still boot so users can repair their settings and credentials.
+  if (typeof ctx.web?.registerSearchProvider !== 'function') return;
   enableAutoSearch(ctx, { native: true, fallback: true });
   enableThirdPartySearch(ctx);
 }
