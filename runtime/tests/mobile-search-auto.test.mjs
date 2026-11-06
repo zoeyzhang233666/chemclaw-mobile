@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createAutoSearchProvider, parseDuckDuckGo, AUTO_PROVIDER_ID } from '../bridge/dsh-go-bridge/lib/web-search-auto.js';
+import { registerChemClawSearch } from '../bridge/dsh-go-bridge/lib/index.js';
 
 test('mobile keeps the official DSH web provider contract', () => {
   assert.equal(AUTO_PROVIDER_ID, 'auto');
@@ -20,4 +21,23 @@ test('mobile keeps the official DSH web provider contract', () => {
 
 test('DuckDuckGo parsing never invents a source', () => {
   assert.deepEqual(parseDuckDuckGo('<div>No results found</div>').sources ?? [], []);
+});
+
+test('single bridge Loader entry registers all four search backends', () => {
+  const ids = [];
+  const disposers = [];
+  const ctx = {
+    web: {
+      registerSearchProvider(provider) {
+        ids.push(provider.id);
+        return () => disposers.push(provider.id);
+      },
+      fetch: async () => { throw new Error('No network in registration test'); },
+    },
+    get: () => undefined,
+    effect: (factory) => { const cleanup = factory(); if (typeof cleanup === 'function') cleanup(); },
+  };
+  registerChemClawSearch(ctx);
+  assert.deepEqual(ids, ['auto', 'chemclaw-brave', 'chemclaw-tavily', 'chemclaw-serper']);
+  assert.deepEqual(disposers, ['chemclaw-brave', 'chemclaw-tavily', 'chemclaw-serper']);
 });
