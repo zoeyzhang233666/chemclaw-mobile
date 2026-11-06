@@ -41,3 +41,9 @@ test('single bridge Loader entry registers all four search backends', () => {
   assert.deepEqual(ids, ['auto', 'chemclaw-brave', 'chemclaw-tavily', 'chemclaw-serper']);
   assert.deepEqual(disposers, ['chemclaw-brave', 'chemclaw-tavily', 'chemclaw-serper']);
 });
+
+test('bridge starts with no web seam in safe or minimal host contexts', () => {
+  assert.doesNotThrow(() => registerChemClawSearch({}));
+  assert.doesNotThrow(() => registerChemClawSearch({ web: undefined }));
+  assert.doesNotThrow(() => registerChemClawSearch({ web: {} }));
+});
