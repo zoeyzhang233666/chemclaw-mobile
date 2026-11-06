@@ -168,7 +168,7 @@ class SettingsScreen extends ConsumerWidget {
               key: const ValueKey('settings-chemical-expert-team'),
               icon: AppIcons.team,
               tint: SettingsHues.services,
-              title: AppLocale.isEnglish ? 'Chemical expert team' : '化工专家团',
+              spot: Spots.chemicalExpertTeam,
               subtitle: AppLocale.isEnglish
                   ? 'Create AI specialists dynamically for chemical trade tasks'
                   : '按化工贸易任务创建 AI 专家团队，自动分工协作',
