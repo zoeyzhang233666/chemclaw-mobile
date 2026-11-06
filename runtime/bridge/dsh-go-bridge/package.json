@@ -13,6 +13,8 @@
     "lib/index.js",
     "lib/plugin-config.js",
     "lib/chemclaw-connectors.js",
+    "lib/web-search-auto.js",
+    "lib/third-party-search.js",
     "lib/config-source.js",
     "lib/client.js",
     "lib/native/*.js",

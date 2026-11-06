@@ -17,6 +17,7 @@ import '../../state/drawer_view_state.dart' show drawerSelectionProvider;
 import '../../state/quick_panel_state.dart';
 import '../../state/sessions_state.dart' show currentSessionProvider;
 import '../chat/chat_screen.dart';
+import '../agents/chem_team_bootstrap_host.dart';
 import '../chat/composer_toast.dart' show composerToastGap;
 import '../engine/engine_screen.dart';
 import '../features/all_features_page.dart';
@@ -322,6 +323,8 @@ class _HomeShellState extends ConsumerState<HomeShell> with TickerProviderStateM
                       const BackgroundNetHost(),
                       // Daily update check + install resume (draws nothing).
                       const UpdateLaunchCheck(),
+                       // Official chemical expert team: one-time, local-only bootstrap.
+                       const ChemTeamBootstrapHost(),
                       // The voice model chosen during setup: download, resume, ready / failed notices (draws nothing).
                       const VoiceModelHost(),
                       // 公测版: once in a while, an invitation to star the project (draws nothing).

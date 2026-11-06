@@ -1619,7 +1619,7 @@ class L10nZh extends L10n {
   }
 
   @override
-  String get botsAgentTeam => '智能体团队';
+  String get botsAgentTeam => '化工专家团';
 
   @override
   String botsSubagentRunningCount(int count, int running) {
@@ -1642,10 +1642,10 @@ class L10nZh extends L10n {
   String get botsNoTeamOnHost => '这台主机没有智能体团队';
 
   @override
-  String get botsTeamNotEnabled => '智能体团队未开启';
+  String get botsTeamNotEnabled => '化工专家团未开启';
 
   @override
-  String get botsTeamDescription => '多个智能体分工协作，共用一块任务板';
+  String get botsTeamDescription => '化工贸易专家按任务分工，共享任务板与消息';
 
   @override
   String get botsTeamEnabling => '正在开启…';
@@ -1677,7 +1677,7 @@ class L10nZh extends L10n {
   String get botsOwner => '负责人';
 
   @override
-  String get botsTeamCreateHint => '在对话里请 AI 组建团队';
+  String get botsTeamCreateHint => '在对话里请 AI 根据业务需求组建化工专家团';
 
   @override
   String get botsCurrent => '当前';
@@ -3017,10 +3017,10 @@ class L10nZh extends L10n {
   String get catalogCordisSummary => '插件创建的动态面板';
 
   @override
-  String get catalogAgentTeam => '智能体团队';
+  String get catalogAgentTeam => '化工专家团';
 
   @override
-  String get catalogAgentTeamSummary => '成员、任务板与消息';
+  String get catalogAgentTeamSummary => '创建化工贸易专家团队，查看成员、任务板与消息';
 
   @override
   String get catalogCotTranslation => '思考过程翻译';

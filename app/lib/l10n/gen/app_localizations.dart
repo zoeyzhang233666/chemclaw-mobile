@@ -3041,7 +3041,7 @@ abstract class L10n {
   /// No description provided for @botsAgentTeam.
   ///
   /// In zh, this message translates to:
-  /// **'智能体团队'**
+  /// **'化工专家团'**
   String get botsAgentTeam;
 
   /// No description provided for @botsSubagentRunningCount.
@@ -3083,13 +3083,13 @@ abstract class L10n {
   /// No description provided for @botsTeamNotEnabled.
   ///
   /// In zh, this message translates to:
-  /// **'智能体团队未开启'**
+  /// **'化工专家团未开启'**
   String get botsTeamNotEnabled;
 
   /// No description provided for @botsTeamDescription.
   ///
   /// In zh, this message translates to:
-  /// **'多个智能体分工协作，共用一块任务板'**
+  /// **'化工贸易专家按任务分工，共享任务板与消息'**
   String get botsTeamDescription;
 
   /// No description provided for @botsTeamEnabling.
@@ -3149,7 +3149,7 @@ abstract class L10n {
   /// No description provided for @botsTeamCreateHint.
   ///
   /// In zh, this message translates to:
-  /// **'在对话里请 AI 组建团队'**
+  /// **'在对话里请 AI 根据业务需求组建化工专家团'**
   String get botsTeamCreateHint;
 
   /// No description provided for @botsCurrent.
@@ -5561,13 +5561,13 @@ abstract class L10n {
   /// No description provided for @catalogAgentTeam.
   ///
   /// In zh, this message translates to:
-  /// **'智能体团队'**
+  /// **'化工专家团'**
   String get catalogAgentTeam;
 
   /// No description provided for @catalogAgentTeamSummary.
   ///
   /// In zh, this message translates to:
-  /// **'成员、任务板与消息'**
+  /// **'创建化工贸易专家团队，查看成员、任务板与消息'**
   String get catalogAgentTeamSummary;
 
   /// No description provided for @catalogCotTranslation.

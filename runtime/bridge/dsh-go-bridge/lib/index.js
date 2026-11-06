@@ -24,6 +24,8 @@ import { get as httpsGet } from "node:https";
 import { createPluginConfig, pluginConfigUnavailable } from "./plugin-config.js";
 import { createSessionDeletion, sessionDeletionUnavailable } from "./session-deletion.js";
 import { createChemClawConnectors } from "./chemclaw-connectors.js";
+import { apply as enableAutoSearch } from "./web-search-auto.js";
+import { apply as enableThirdPartySearch } from "./third-party-search.js";
 import { NativeCore } from "./native/core.js";
 import { effectiveLimits } from "./native/limits.js";
 import { STREAM_PATH, createNativeRoutes } from "./native/routes.js";
@@ -239,6 +241,15 @@ function packageList(ctx, graph) {
   return [...packages.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
+/** Register all ChemClaw search providers through one DSH Loader package. */
+export function registerChemClawSearch(ctx) {
+  // Some safe-mode and host-only contexts do not expose the web seam. The
+  // bridge must still boot so users can repair their settings and credentials.
+  if (typeof ctx.web?.registerSearchProvider !== 'function') return;
+  enableAutoSearch(ctx, { native: true, fallback: true });
+  enableThirdPartySearch(ctx);
+}
+
 export function apply(ctx, config) {
   const options = isObject(config) ? config : {};
   const persist = options.persist !== false;
@@ -267,6 +278,14 @@ export function apply(ctx, config) {
   const native = new NativeCore(ctx, effectiveLimits(options.native), VERSION);
   ctx.effect(() => () => native.dispose(), "dsh-go-bridge: native core");
   ctx.provide("dshGo", native.service);
+
+  // DSH's ClientModuleRegistry identifies Loader entries by their owning
+  // package.json. Both search modules share this bridge package, so inserting
+  // each file as a separate Loader entry prevents even safe-mode startup.
+  // Register them through the existing single bridge entry instead, and only
+  // when the web seam is available.
+  ctx.inject(["web"], registerChemClawSearch);
+
   ctx.on("internal/plugin", () => native.markDirty());
   let pluginConfig;
   ctx.on("internal/status", (fiber) => { native.markDirty(); pluginConfig?.statusChanged(fiber); });

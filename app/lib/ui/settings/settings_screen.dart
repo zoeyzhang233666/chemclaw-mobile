@@ -22,6 +22,7 @@ import '../../state/update_state.dart';
 import '../account/account_page.dart';
 import '../account/account_widgets.dart';
 import '../chat/balance_widgets.dart' show formatMoney;
+import '../agents/chemical_expert_team_page.dart';
 import '../common/ask_ai.dart';
 import '../common/overview_card.dart';
 import '../common/search_capsule.dart';
@@ -162,6 +163,16 @@ class SettingsScreen extends ConsumerWidget {
                   : '粘贴数据中台密钥，连接化工现货、企业与化合物 MCP 数据',
               onTap: () => _push(context,
                   const ChemClawMcpPage(preferredService: ChemClawService.dataHub)),
+            ),
+            SettingsTile(
+              key: const ValueKey('settings-chemical-expert-team'),
+              icon: AppIcons.team,
+              tint: SettingsHues.services,
+              spot: Spots.chemicalExpertTeam,
+              subtitle: AppLocale.isEnglish
+                  ? 'Create AI specialists dynamically for chemical trade tasks'
+                  : '按化工贸易任务创建 AI 专家团队，自动分工协作',
+              onTap: () => _push(context, const ChemicalExpertTeamPage()),
             ),
           ],
         ),

@@ -603,6 +603,17 @@ abstract final class Spots {
     freq: Freq.high,
   );
 
+  // The chemical expert team is a searchable first-class hub row.
+  // Keep its visible title and the settings search index in sync.
+  static final chemicalExpertTeam = SettingSpot(
+    'chemical-expert-team',
+    page: SettingsPageId.hub,
+    group: _services,
+    title: (_) => AppLocale.isEnglish ? 'Chemical expert team' : '化工专家团',
+    keywords: (_) => '化工专家团, 化工贸易, 智能体团队, Agent Teams, chemical expert team, chemical trade',
+    freq: Freq.high,
+  );
+
   // 模型.
   static final addProvider = SettingSpot(
     'add-provider',
@@ -1049,6 +1060,7 @@ final _rows = <SettingSpot>[
   Spots.askAi,
   Spots.apiHub,
   Spots.chemMcp,
+  Spots.chemicalExpertTeam,
   Spots.addProvider,
   Spots.permissionCurrent,
   Spots.permissionDefault,

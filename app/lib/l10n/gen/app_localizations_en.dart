@@ -1721,7 +1721,7 @@ class L10nEn extends L10n {
   }
 
   @override
-  String get botsAgentTeam => 'Agent team';
+  String get botsAgentTeam => 'Chemical expert team';
 
   @override
   String botsSubagentRunningCount(int count, int running) {
@@ -1746,10 +1746,10 @@ class L10nEn extends L10n {
   String get botsNoTeamOnHost => 'No agent team on this host';
 
   @override
-  String get botsTeamNotEnabled => 'Agent team is off';
+  String get botsTeamNotEnabled => 'Chemical expert team is off';
 
   @override
-  String get botsTeamDescription => 'Agents work together on a shared task board';
+  String get botsTeamDescription => 'Chemical trade specialists coordinate on a shared task board';
 
   @override
   String get botsTeamEnabling => 'Turning on…';
@@ -1787,7 +1787,7 @@ class L10nEn extends L10n {
   String get botsOwner => 'Owner';
 
   @override
-  String get botsTeamCreateHint => 'Ask AI to form a team in a chat';
+  String get botsTeamCreateHint => 'Ask AI to assemble specialists for your chemical trade task';
 
   @override
   String get botsCurrent => 'Current';
@@ -3170,10 +3170,10 @@ class L10nEn extends L10n {
   String get catalogCordisSummary => 'Dynamic panels from plugins';
 
   @override
-  String get catalogAgentTeam => 'Agent team';
+  String get catalogAgentTeam => 'Chemical expert team';
 
   @override
-  String get catalogAgentTeamSummary => 'Members, task board and messages';
+  String get catalogAgentTeamSummary => 'Create a chemical trade team, track members, tasks and messages';
 
   @override
   String get catalogCotTranslation => 'Translate thinking';
