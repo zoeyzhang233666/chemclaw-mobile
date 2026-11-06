@@ -270,7 +270,7 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
           _keyField(_apiKey, '粘贴 APIHub 密钥', _hideApi, () => setState(() => _hideApi = !_hideApi)),
           const SizedBox(height: 12),
           FilledButton.icon(
-            onPressed: busy || backend == null ? null : _saveApiHub,
+            onPressed: busy ? null : _saveApiHub,
             icon: const Icon(AppIcons.completed),
             label: Text(_busyApi ? '正在获取模型…' : '验证并保存 APIHub'),
           ),
@@ -285,7 +285,7 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
           _keyField(_hubKey, '粘贴数据中台 MCP 密钥', _hideHub, () => setState(() => _hideHub = !_hideHub)),
           const SizedBox(height: 12),
           FilledButton.icon(
-            onPressed: busy || client == null ? null : _connectHub,
+            onPressed: busy ? null : _connectHub,
             icon: const Icon(AppIcons.cloud),
             label: Text(_busyHub ? '正在连接 MCP…' : '保存密钥并连接数据中台'),
           ),
@@ -332,6 +332,13 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
             '模型 API Key 与数据中台 MCP 密钥分别授权，需各粘贴一次。'
             '密钥不会随 APK 发布。'),
         const SizedBox(height: 16),
+        if (backend == null || client == null) ...[
+          const Text(
+            'DSH 主机尚未连接。你可以填写密钥并点击保存按钮查看连接状态，'
+            '但密钥必须在主机正常启动后才能安全写入；不会在未保存成功时清空输入。',
+          ),
+          const SizedBox(height: 12),
+        ],
         if (widget.preferredService == ChemClawService.dataHub) ...[
           hubCard,
           apiCard,
@@ -351,7 +358,7 @@ class _ChemClawMcpPageState extends ConsumerState<ChemClawMcpPage> {
                       () => setState(() => _hideQcc = !_hideQcc)),
                   const SizedBox(height: 12),
                   FilledButton.icon(
-                    onPressed: busy || client == null ? null : _connectQcc,
+                    onPressed: busy ? null : _connectQcc,
                     icon: const Icon(AppIcons.workspace),
                     label: Text(_busyQcc ? '正在连接企查查…' : '保存密钥并连接 4 个 MCP'),
                   ),
