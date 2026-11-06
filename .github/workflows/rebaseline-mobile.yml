@@ -27,7 +27,7 @@ jobs:
       TZ: Asia/Shanghai
       DSH_TEST_FONT_DIR: /usr/share/fonts/opentype/noto
       # Re-render the two suites left after the first Paper rebaseline.
-      GOLDEN_FOCUS: ${{ contains(github.event.head_commit.message, '[focus-pr2-team]') && 'pr2-team' || (contains(github.event.head_commit.message, '[focus-pr2]') && 'pr2' || (contains(github.event.head_commit.message, '[focus-star-team]') && 'star-team' || 'all')) }}
+      GOLDEN_FOCUS: ${{ contains(github.event.head_commit.message, '[focus-mcp-buttons]') && 'mcp-buttons' || (contains(github.event.head_commit.message, '[focus-pr2-team]') && 'pr2-team' || (contains(github.event.head_commit.message, '[focus-pr2]') && 'pr2' || (contains(github.event.head_commit.message, '[focus-star-team]') && 'star-team' || 'all'))) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -65,7 +65,9 @@ jobs:
           # Only files that actually assert screenshots: avoid executing hundreds of
           # unrelated functional/update tests during image regeneration. Main CI
           # still runs the complete suite separately, including security tests.
-          if [[ "$GOLDEN_FOCUS" == 'pr2-team' ]]; then
+          if [[ "$GOLDEN_FOCUS" == 'mcp-buttons' ]]; then
+            golden_tests=(test/onboarding/parallel_setup_golden_test.dart)
+          elif [[ "$GOLDEN_FOCUS" == 'pr2-team' ]]; then
             golden_tests=(
               test/agents/team_page_test.dart
               test/integration/wiring_test.dart
